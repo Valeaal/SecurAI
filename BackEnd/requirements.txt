@@ -1,0 +1,9 @@
+scapy==2.6.0
+pandas
+numpy
+scikit-learn
+tensorflow
+joblib
+flask
+matplotlib
+seaborn
