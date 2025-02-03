@@ -20,7 +20,7 @@ def create_app():
 
     spoofing_thread = threading.Thread(target=arpSpoofing)
     spoofing_thread.daemon = True
-    # spoofing_thread.start()
+    spoofing_thread.start()
 
     return app
 

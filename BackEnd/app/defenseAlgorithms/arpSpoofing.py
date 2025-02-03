@@ -4,17 +4,18 @@ import socket
 import numpy as np
 import tensorflow as tf
 from scapy.layers.l2 import ARP, Ether
-from tensorflow.keras.models import load_model  # type: ignore
+from tensorflow.keras.models import load_model
 from sklearn.preprocessing import StandardScaler
 
 # Cargar modelo entrenado y escalador
 model = load_model('./app/machineModels/models/arpSpoofing_flooding.h5')
 scaler = joblib.load('./app/machineModels/models/arpSpoofing_flooding.pkl')
 
-# Diccionarios globales para el conteo de paquetes por MAC en tiempo real
+# Diccionarios globales para métricas en tiempo real
 arp_counts = {}  
 arp_request_counts = {}  
 arp_reply_counts = {}  
+unique_dst_ips = {}  # Nuevo diccionario para IPs destino únicas
 
 # Función para convertir direcciones MAC en enteros
 def mac_to_int(mac):
@@ -29,33 +30,40 @@ def extract_features(packet):
         src_mac_arp = mac_to_int(arp_layer.hwsrc)
         src_mac_eth = mac_to_int(ether_layer.src)
         op_code = arp_layer.op  # 1 = Request, 2 = Reply
+        dst_ip = arp_layer.pdst if op_code == 1 else "0.0.0.0"  # Obtener IP destino
 
         # Inicializar contadores si la MAC no existe
         if src_mac_arp not in arp_counts:
             arp_counts[src_mac_arp] = 0
             arp_request_counts[src_mac_arp] = 0
             arp_reply_counts[src_mac_arp] = 0
+            unique_dst_ips[src_mac_arp] = set()  # Nuevo conjunto para IPs únicas
 
         # Actualizar conteo de paquetes ARP
         arp_counts[src_mac_arp] += 1
 
-        # Actualizar conteo de requests/replies
+        # Actualizar conteo de requests y IPs únicas
         if op_code == 1:
             arp_request_counts[src_mac_arp] += 1
+            # Filtrar IPs inválidas y añadir al conjunto
+            if dst_ip not in ["0.0.0.0", "", None] and arp_layer.ptype == 0x0800:  # IPv4
+                unique_dst_ips[src_mac_arp].add(dst_ip)
         elif op_code == 2:
             arp_reply_counts[src_mac_arp] += 1
 
-        # Calcular el ratio de requests/replies (para evitar división por 0 se suma 1)
-        ratio_request_reply = arp_request_counts[src_mac_arp] / (arp_reply_counts[src_mac_arp] + 1)
+        # Calcular métricas
+        ratio_request_reply = arp_request_counts[src_mac_arp] / (arp_reply_counts[src_mac_arp] + 1e-6)
+        unique_ip_count = len(unique_dst_ips[src_mac_arp])  # Nueva métrica
 
-        # Crear la lista de características (sin incluir direcciones MAC ni protocol)
+        # Crear la lista de características
         features = np.array([
-            int(src_mac_eth != src_mac_arp), # mac_diferente_eth_arp
-            arp_counts[src_mac_arp],         # arp_packets_por_mac
+            op_code,                           # op_code(arp)
+            int(src_mac_eth != src_mac_arp),   # mac_diferente_eth_arp
+            arp_counts[src_mac_arp],           # arp_packets_por_mac
             arp_request_counts[src_mac_arp],   # arp_request_count
             arp_reply_counts[src_mac_arp],     # arp_reply_count
-            ratio_request_reply,             # ratio_request_reply
-            op_code                          # op_code(arp)
+            ratio_request_reply,               # ratio_request_reply
+            unique_ip_count                    # unique_dst_ip_count
         ]).reshape(1, -1)
 
         return features
@@ -67,21 +75,20 @@ def detect(packet):
     features = extract_features(packet)
 
     if features is not None:
-        # Imprimir las características calculadas para el paquete
-        print("Características del paquete ARP:", features)
-
-        # Escalar características
+        print("Características calculadas:", features[0])  # Debug
+        
+        # Escalar características (ajustar según el orden usado en el entrenamiento)
         features_scaled = scaler.transform(features)
-
-        # Hacer la predicción con la red neuronal
+        
+        # Hacer predicción
         prediction = model.predict(features_scaled)
-
-        # Interpretar el resultado
-        if prediction[0] > 0.8:
-            print("🚨 ¡Alerta: Ataque ARP Flooding detectado! Probabilidad:", prediction[0])
-            return "Attack: ARP Flooding"
+        
+        # Umbral de detección
+        if prediction[0] > 0.5:
+            print(f"🚨 ¡Alerta ARP Flooding! (Prob: {prediction[0][0]:.2%})")
+            return "Attack"
         else:
-            print("✅ ARP normal. Probabilidad:", prediction[0])
+            print(f"✅ Tráfico normal (Prob: {prediction[0][0]:.2%})")
             return "No Attack"
     else:
         return "Not an ARP Packet"
