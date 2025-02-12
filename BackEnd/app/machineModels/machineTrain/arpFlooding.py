@@ -157,10 +157,10 @@ model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy']
 early_stopping = EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
 model.fit(X_train, y_train, epochs=2, batch_size=32, validation_data=(X_test, y_test), callbacks=[early_stopping])
 
-model.save('./app/machineModels/models/arpSpoofing_flooding.h5')
-joblib.dump(scaler, './app/machineModels/models/arpSpoofing_flooding.pkl')
+model.save('./app/machineModels/models/arpFlooding.h5')
+joblib.dump(scaler, './app/machineModels/models/arpFlooding.pkl')
 
-data.to_csv('./app/machineModels/dataSets/arpSpoofing_transformed.csv', index=False)
+data.to_csv('./app/machineModels/dataSets/arpFlooding_transformed.csv', index=False)
 
 print("Dataset actualizado guardado correctamente")
 print("Primeras filas del dataset:")

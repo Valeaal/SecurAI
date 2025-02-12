@@ -1,15 +1,17 @@
 import joblib
 import struct
 import socket
+import warnings
 import numpy as np
 import tensorflow as tf
 from scapy.layers.l2 import ARP, Ether
 from tensorflow.keras.models import load_model
 from sklearn.preprocessing import StandardScaler
 
+warnings.simplefilter("ignore", category=UserWarning)
 # Cargar modelo entrenado y escalador
-model = load_model('./app/machineModels/models/arpSpoofing_flooding.h5')
-scaler = joblib.load('./app/machineModels/models/arpSpoofing_flooding.pkl')
+model = load_model('./app/machineModels/models/arpFlooding.h5')
+scaler = joblib.load('./app/machineModels/models/arpFlooding.pkl')
 
 # Diccionarios globales para métricas en tiempo real
 arp_counts = {}  
@@ -75,9 +77,14 @@ def detect(packet):
     features = extract_features(packet)
 
     if features is not None:
+        print("----------------------------------------")
         print("Características calculadas:", features[0])  # Debug
         
-        # Escalar características (ajustar según el orden usado en el entrenamiento)
+        # Si es un ARP Request, mostrar la IP solicitada
+        if packet.haslayer(ARP) and packet[ARP].op == 1:
+            print(f"ARP Request: Busca la IP {packet[ARP].pdst}")
+
+        # Escalar características
         features_scaled = scaler.transform(features)
         
         # Hacer predicción
@@ -86,9 +93,11 @@ def detect(packet):
         # Umbral de detección
         if prediction[0] > 0.5:
             print(f"🚨 ¡Alerta ARP Flooding! (Prob: {prediction[0][0]:.2%})")
+            print("----------------------------------------")
             return "Attack"
         else:
             print(f"✅ Tráfico normal (Prob: {prediction[0][0]:.2%})")
+            print("----------------------------------------")
             return "No Attack"
-    else:
-        return "Not an ARP Packet"
+    
+    return "Not an ARP Packet"
