@@ -1,11 +1,12 @@
+import os
+import time
 import joblib
 import warnings
 import numpy as np
 from scapy.layers.l2 import ARP, Ether
 from app.packetCapture import packetBuffer
 from tensorflow.keras.models import load_model  # type: ignore
-import queue
-import os
+
 
 ALGORITHM_NAME = os.path.basename(__file__).replace('.py', '')
 
@@ -71,29 +72,40 @@ def extract_features(packet):
         return None
 
 def detect():
+    next_packet_to_analyze = 0
+
     while True:
-       
-        indexed_packet = packetBuffer.get(timeout=5)
-        packet = indexed_packet.packet
-        features = extract_features(packet)
+        if next_packet_to_analyze < packetBuffer.qsize():
 
-        if features is not None:
-            print("----------------------------------------")
-            print("Características calculadas:", features[0])
-            if packet.haslayer(ARP) and packet[ARP].op == 1:
-                print(f"ARP Request: Busca la IP {packet[ARP].pdst}")
+            indexed_packet = packetBuffer.queue[next_packet_to_analyze]
+            packet = indexed_packet.packet
 
-            # Escalar características y hacer la predicción
-            features_scaled = scaler.transform(features)
-            prediction = model.predict(features_scaled)
-            
-            # Umbral de detección
-            if prediction[0] > 0.5:
-                print(f"🚨 ¡Alerta ARP Flooding! (Prob: {prediction[0][0]:.2%})")
+            # Si el paquete no tiene la capa ARP, lo marcamos como procesado
+            # Si el paquete es ARP, se extraen las características y se analiza
+            if not packet.haslayer(ARP):
+                indexed_packet.mark_processed(ALGORITHM_NAME)
+                next_packet_to_analyze += 1
             else:
-                print(f"✅ Tráfico normal (Prob: {prediction[0][0]:.2%})")
-            
-            # Marcar el paquete como procesado por este filtro
-            indexed_packet.mark_processed(ALGORITHM_NAME)
-            print(f"Estado del filtro: {indexed_packet.processed}")
-            print("----------------------------------------")
+                features = extract_features(packet)
+                print("----------------------------------------")
+                print("Características calculadas:", features[0])
+                if packet.haslayer(ARP) and packet[ARP].op == 1:
+                    print(f"ARP Request: Busca la IP {packet[ARP].pdst}")
+
+                # Escalar características y hacer la predicción
+                features_scaled = scaler.transform(features)
+                prediction = model.predict(features_scaled)
+                
+                # Umbral de detección
+                if prediction[0] > 0.5:
+                    print(f"🚨 ¡Alerta ARP Flooding! (Prob attk: {prediction[0][0]:.2%})")
+                else:
+                    print(f"✅ Tráfico normal (Prob attk: {prediction[0][0]:.2%})")
+                
+                # Marcar el paquete como procesado por este filtro
+                indexed_packet.mark_processed(ALGORITHM_NAME)
+                print(f"Estado de los filtros: {indexed_packet.processed}")
+                print("————————————————————")
+
+                # Avanzar al siguiente paquete
+                next_packet_to_analyze += 1

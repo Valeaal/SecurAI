@@ -3,6 +3,7 @@ import threading
 from flask import Flask
 from .routes.start import main_bp
 from .routes.arpSpoofing import arpSpoofing_bp
+from .bufferCleaner import bufferCleaner
 from .packetCapture import packetCapture
 from .loadAttackTests import loadAttackTests
 from .loadDefenseAlgorithms import loadDefenseAlgorithms
@@ -22,5 +23,9 @@ def create_app():
 
     # Cargar algoritmos de defensa
     loadAttackTests()
+
+    # Hilo de limpieza del buffer
+    cleanerThread = threading.Thread(target=bufferCleaner, daemon=True)
+    cleanerThread.start()
 
     return app
