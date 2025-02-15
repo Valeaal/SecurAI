@@ -1,24 +1,27 @@
 import time
-from scapy.all import ARP, scapy 
+import sys
 from .packetCapture import packetBuffer
 
+#len(packetBuffer.queue) porque si no dentro del mutex lo queremos volver a coger y tenemos deadlock. En otros metodos 
 def bufferCleaner():
+
     while True:
-        time.sleep(15)
+        time.sleep(5)
+        paquetesEliminados = 0
+        print(f"🗑️ 🗑️ 🗑️ Limpiando el buffer, tam: {packetBuffer.qsize()}")
+       
+        while packetBuffer.qsize() > 0:
+            with packetBuffer.mutex:
+                first_packet = packetBuffer.queue[0]
+            if first_packet.is_fully_processed():
+                packetBuffer.get()
+                paquetesEliminados += 1
+                print(f"Filtros del eliminado: ", first_packet.processed)
+            else:
+                print(f"Total eliminados: {paquetesEliminados}")
+                break
 
-        with packetBuffer.mutex:
-            print(f"🗑️ Limpiando el buffer manteniendo el orden")
+        if packetBuffer.qsize() == 0:
+            print("El buffer quedó vacío tras la limpieza.")
 
-            original_list = list(packetBuffer.queue)
-            new_list = []
-            
-            for indexed_packet in original_list:
-                if indexed_packet.is_fully_processed():
-                    continue
-                else:
-                    new_list.append(indexed_packet)
-            
-            # Limpiamos la cola interna y reinsertamos los paquetes en el mismo orden
-            packetBuffer.queue.clear()
-            for item in new_list:
-                packetBuffer.queue.append(item)
+        print(f"🗑️ 🗑️ 🗑️ Limpieza terminada.")

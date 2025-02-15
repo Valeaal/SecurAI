@@ -21,7 +21,7 @@ def create_app():
     # Cargar algoritmos de defensa
     loadDefenseAlgorithms()
 
-    # Cargar algoritmos de defensa
+    # Cargar algoritmos de ataque
     loadAttackTests()
 
     # Hilo de limpieza del buffer

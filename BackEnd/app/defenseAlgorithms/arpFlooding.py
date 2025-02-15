@@ -70,42 +70,62 @@ def extract_features(packet):
         return features
     else:
         return None
-
+    
 def detect():
-    next_packet_to_analyze = 0
 
+    with packetBuffer.mutex:
+        current_packet = packetBuffer.queue[0]
+    while current_packet == None:
+        time.sleep(0.5)
+        try:
+            with packetBuffer.mutex:
+                current_packet = packetBuffer.queue[0]
+        except:
+            current_packet == None
+            
     while True:
-        if next_packet_to_analyze < packetBuffer.qsize():
+        packet = current_packet.packet  # Referencia al paquete actual
 
-            indexed_packet = packetBuffer.queue[next_packet_to_analyze]
-            packet = indexed_packet.packet
+        ### PROCESO DE ANALISIS ###
+        if packet.haslayer(ARP):
+            features = extract_features(packet)
+            print("----------------------------------------")
+            print("Características calculadas:", features[0])
 
-            # Si el paquete no tiene la capa ARP, lo marcamos como procesado
-            # Si el paquete es ARP, se extraen las características y se analiza
-            if not packet.haslayer(ARP):
-                indexed_packet.mark_processed(ALGORITHM_NAME)
-                next_packet_to_analyze += 1
+            if packet.haslayer(ARP) and packet[ARP].op == 1:
+                print(f"ARP Request: Busca la IP {packet[ARP].pdst}")
+
+            # Escalar características y hacer la predicción
+            features_scaled = scaler.transform(features)
+            prediction = model.predict(features_scaled)
+
+            # Umbral de detección
+            if prediction[0] > 0.5:
+                print(f"🚨 ¡Alerta ARP Flooding! (Prob attk: {prediction[0][0]:.2%})")
             else:
-                features = extract_features(packet)
-                print("----------------------------------------")
-                print("Características calculadas:", features[0])
-                if packet.haslayer(ARP) and packet[ARP].op == 1:
-                    print(f"ARP Request: Busca la IP {packet[ARP].pdst}")
+                print(f"✅ Tráfico normal (Prob attk: {prediction[0][0]:.2%})")
 
-                # Escalar características y hacer la predicción
-                features_scaled = scaler.transform(features)
-                prediction = model.predict(features_scaled)
-                
-                # Umbral de detección
-                if prediction[0] > 0.5:
-                    print(f"🚨 ¡Alerta ARP Flooding! (Prob attk: {prediction[0][0]:.2%})")
-                else:
-                    print(f"✅ Tráfico normal (Prob attk: {prediction[0][0]:.2%})")
-                
-                # Marcar el paquete como procesado por este filtro
-                indexed_packet.mark_processed(ALGORITHM_NAME)
-                print(f"Estado de los filtros: {indexed_packet.processed}")
-                print("————————————————————")
+        ### PROCESO DE ENLACE AL SIGUIENTE PAQUETE ###
 
-                # Avanzar al siguiente paquete
-                next_packet_to_analyze += 1
+        # Asignacion normal del siguiente indice:
+        # Actualizamos siempre el indice del paquete actual, por si el cleaner ha limpiado el buffer y cambiado los mismos.
+        with packetBuffer.mutex:
+            current_index = packetBuffer.queue.index(current_packet)
+            remaining_packets = len(packetBuffer.queue) - (current_index + 1)
+        
+        # Si hemos acabado con el buffer:
+        # El ultimo paquete no se marca como analizado para no perder la referencia del indice.
+        # Cuando el limpiador actualice el buffer, el indice cambiara. 
+        # Como tenemos aun tendremos un elemento, podemos usarlo para hallar el nuevo indice y a partir de ahi seguir.
+        while remaining_packets == 0:
+            time.sleep(0.5)                
+            with packetBuffer.mutex:
+                current_index = packetBuffer.queue.index(current_packet)
+                remaining_packets = len(packetBuffer.queue) - (current_index + 1)
+        
+        next_packet = packetBuffer.queue[current_index + 1]
+
+        #Cuando ya se ha actualizado el indice de forma segura con el siguiente paquete a analizar
+        current_packet.mark_processed(ALGORITHM_NAME)
+        current_packet = next_packet
+                

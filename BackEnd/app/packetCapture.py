@@ -25,3 +25,8 @@ class PacketIndexed:
         # Verifica si el paquete ha sido procesado por todos los filtros
         with self.lock:
             return all(v == 1 for v in self.processed.values())
+        
+    def is_processed_by_algorithm(self, filter_name):
+        # Verifica si el paquete ha sido procesado por un filtro específico
+        with self.lock:
+            return self.processed.get(filter_name, 0) == 1  # Retorna True si está procesado, False si no lo está
