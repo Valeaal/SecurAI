@@ -16,7 +16,7 @@ def bufferCleaner():
             if first_packet.is_fully_processed():
                 packetBuffer.get()
                 paquetesEliminados += 1
-                print(f"Filtros del eliminado: ", first_packet.processed)
+                #print(f"Filtros del eliminado: ", first_packet.processed)
             else:
                 print(f"Total eliminados: {paquetesEliminados}")
                 break

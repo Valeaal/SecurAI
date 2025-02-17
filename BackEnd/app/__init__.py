@@ -1,15 +1,30 @@
+import time
 import threading
 
 from flask import Flask
+from flask_cors import CORS
+from flask_socketio import SocketIO
 from .routes.start import main_bp
 from .routes.arpSpoofing import arpSpoofing_bp
+
+from .packetCapture import *
 from .bufferCleaner import bufferCleaner
-from .packetCapture import packetCapture
 from .loadAttackTests import loadAttackTests
 from .loadDefenseAlgorithms import loadDefenseAlgorithms
 
+app = Flask(__name__)
+socketio = SocketIO(app, cors_allowed_origins="*")
+CORS(app, resources={r"/*": {"origins": "*"}})
+
+def bufferMonitor():
+    print(f"Emitiendo estado del buffer")
+    while True:
+        time.sleep(0.2)
+        socketio.emit('buffer_status', {'size': packetBuffer.qsize()})
+        print(f"Emitiendo desde el socket: {packetBuffer.qsize()}")
+        
+
 def create_app():
-    app = Flask(__name__)
 
     app.register_blueprint(main_bp)
     app.register_blueprint(arpSpoofing_bp)
@@ -22,7 +37,11 @@ def create_app():
     loadDefenseAlgorithms()
 
     # Cargar algoritmos de ataque
-    loadAttackTests()
+    #loadAttackTests()
+
+    # Envio constante del estado del buffer al frontend
+    bufferMonitorThread = threading.Thread(target=bufferMonitor, daemon=True)
+    bufferMonitorThread.start()
 
     # Hilo de limpieza del buffer
     cleanerThread = threading.Thread(target=bufferCleaner, daemon=True)
