@@ -10,7 +10,7 @@ from .routes.loadDefenseAlgorithms import loadDefenseAlgorithms_bp
 from .packetCapture import *
 from .bufferCleaner import bufferCleaner
 from .loadAttackTests import loadAttackTests
-from .loadDefenseAlgorithms import loadDefenseAlgorithms
+from .loadDefenseAlgorithms import *
 
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
@@ -36,7 +36,7 @@ def createApp():
     loadDefenseAlgorithms()
 
     # Cargar algoritmos de ataque
-    loadAttackTests()
+    #loadAttackTests()
 
     # Envio constante del estado del buffer al frontend
     bufferMonitorThread = threading.Thread(target=bufferMonitor, daemon=True)

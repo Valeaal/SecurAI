@@ -9,7 +9,7 @@ from tensorflow.keras.models import load_model  # type: ignore
 
 
 ALGORITHM_NAME = os.path.basename(__file__).replace('.py', '')
-running = True # Variable global de control para detener el algoritmo
+running = False # Variable global de control para detener el algoritmo
 
 warnings.simplefilter("ignore", category=UserWarning)
 

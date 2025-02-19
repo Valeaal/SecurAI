@@ -1,3 +1,4 @@
+import time
 import queue
 import threading
 from scapy.all import sniff
@@ -7,6 +8,7 @@ packetBuffer = queue.Queue()
 defenseAlgorithmsNames = getDefenseAlgorithmNames()
 
 def packetCapture():
+    print(f"defenseAlgorithmsNames: ",defenseAlgorithmsNames)
     sniff(prn=lambda packet: packetBuffer.put(PacketIndexed(packet, defenseAlgorithmsNames)), store=False)
 
 # Estructura de dato que almacena un paquete conjunto con los filtros que ya ha pasado o no
@@ -20,11 +22,6 @@ class PacketIndexed:
         # Marca el filtro como procesado para este paquete
         with self.lock:
             self.processed[filter_name] = 1
-
-    def is_fully_processed(self):
-        # Verifica si el paquete ha sido procesado por todos los filtros
-        with self.lock:
-            return all(v == 1 for v in self.processed.values())
         
     def is_processed_by_algorithm(self, filter_name):
         # Verifica si el paquete ha sido procesado por un filtro específico
