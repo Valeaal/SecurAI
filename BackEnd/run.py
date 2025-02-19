@@ -1,7 +1,7 @@
 from app import socketio
-from app import create_app
+from app import createApp
 
-app = create_app()
+app = createApp()
 
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=4000)

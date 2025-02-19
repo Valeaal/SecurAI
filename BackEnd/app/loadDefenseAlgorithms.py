@@ -1,6 +1,6 @@
 import os
-import importlib.util
 import threading
+import importlib.util
 
 # Ruta donde se encuentran los algoritmos de defensa
 defenseAlgorithmsPath = "./app/defenseAlgorithms"

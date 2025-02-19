@@ -4,7 +4,7 @@ import threading
 from flask import Flask
 from flask_cors import CORS
 from flask_socketio import SocketIO
-from .routes.start import main_bp
+from .routes.loadDefenseAlgorithms import loadDefenseAlgorithms_bp
 
 
 from .packetCapture import *
@@ -21,13 +21,12 @@ def bufferMonitor():
     while True:
         time.sleep(0.2)
         socketio.emit('buffer_status', {'size': packetBuffer.qsize()})
-        print(f"Emitiendo desde el socket: {packetBuffer.qsize()}")
+        #print(f"Emitiendo desde el socket: {packetBuffer.qsize()}")
         
 
-def create_app():
+def createApp():
 
-    app.register_blueprint(main_bp)
-
+    app.register_blueprint(loadDefenseAlgorithms_bp, url_prefix="/loadDefenseAlgorithms")
 
     # Hilo de captura de paquetes
     captureThread = threading.Thread(target=packetCapture, daemon=True)
@@ -37,7 +36,7 @@ def create_app():
     loadDefenseAlgorithms()
 
     # Cargar algoritmos de ataque
-    #loadAttackTests()
+    loadAttackTests()
 
     # Envio constante del estado del buffer al frontend
     bufferMonitorThread = threading.Thread(target=bufferMonitor, daemon=True)

@@ -31,7 +31,7 @@ def attack():
 
         if packet_count % 200 == 0:
             print(f"Pausa de 20 segundos... Última IP atacada: {target_ip}")
-            time.sleep(20)
+            time.sleep(2)
             print("Iniciando una iteración de ARP Flooding")
 
-        time.sleep(1)
+        time.sleep(0.1)

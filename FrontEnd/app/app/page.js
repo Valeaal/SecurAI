@@ -1,10 +1,38 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
 export default function FilterSection() {
   const [activeFilters, setActiveFilters] = useState({});
+  const [filters, setFilters] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Cargar los nombres de los algoritmos desde el backend al montar el componente
+  useEffect(() => {
+    const fetchFilters = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/loadDefenseAlgorithms/loadedNames", {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+        if (!response.ok) {
+          throw new Error("Error al obtener los filtros");
+        }
+        const data = await response.json();
+        // data debería tener la forma { algorithms: [...] }
+        setFilters(data.algorithms);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error al cargar filtros:", err);
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchFilters();
+  }, []);
 
   const handleFilterClick = (filter) => {
     setActiveFilters((prev) => ({
@@ -12,19 +40,12 @@ export default function FilterSection() {
       [filter]: !prev[filter],
     }));
 
-    // TODO: Enviar petición HTTP aquí
+    // Aquí podrías enviar una petición HTTP para notificar el cambio si es necesario.
     console.log(`Filtro ${filter} ${!activeFilters[filter] ? "activado" : "desactivado"}`);
   };
 
-  const filters = [
-    "Filtro de lo que sea 1",
-    "Filtro de lo que sea 2",
-    "Filtro de lo que sea 3",
-    "Filtro de lo que sea 4",
-    "Filtro de lo que sea 5",
-    "Filtro de lo que sea 6",
-    "Filtro de lo que sea 7",
-  ];
+  if (loading) return <div>Cargando filtros...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <div className="w-full h-screen flex max-h-[calc(100vh-120px)]">
