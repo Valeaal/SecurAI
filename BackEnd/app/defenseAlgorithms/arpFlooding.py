@@ -9,6 +9,7 @@ from tensorflow.keras.models import load_model  # type: ignore
 
 
 ALGORITHM_NAME = os.path.basename(__file__).replace('.py', '')
+running = False # Variable global de control para detener el algoritmo
 
 warnings.simplefilter("ignore", category=UserWarning)
 
@@ -73,6 +74,8 @@ def extract_features(packet):
     
 def detect():
 
+    global running
+
     with packetBuffer.mutex:
         current_packet = packetBuffer.queue[0]
     while current_packet == None:
@@ -87,7 +90,7 @@ def detect():
         packet = current_packet.packet  # Referencia al paquete actual
 
         ### PROCESO DE ANALISIS ###
-        if packet.haslayer(ARP):
+        if running and packet.haslayer(ARP):
             features = extract_features(packet)
             print("----------------------------------------")
             print("Características calculadas:", features[0])
@@ -128,4 +131,11 @@ def detect():
         #Cuando ya se ha actualizado el indice de forma segura con el siguiente paquete a analizar
         current_packet.mark_processed(ALGORITHM_NAME)
         current_packet = next_packet
+
+def stop():
+    """
+    Detiene la detección de ARP Flooding estableciendo `running = False`.
+    """
+    global running
+    running = False  # Esto hará que el bucle de `detect()` termine
                 

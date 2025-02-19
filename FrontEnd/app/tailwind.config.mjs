@@ -12,6 +12,7 @@ export default {
   			backgroundP: '#260028',
   			backgroundG: '#14230B',
   			darkP: '#651A67',
+			darkG: '#346517',
   			textG1: '#53D609',
   			textG2: '#DBFFC7',
   			textP1: '#F93DFF',
@@ -64,5 +65,5 @@ export default {
   		}
   	}
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require("tailwind-scrollbar")],
 };

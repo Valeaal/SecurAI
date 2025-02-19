@@ -5,7 +5,7 @@ from flask import Flask
 from flask_cors import CORS
 from flask_socketio import SocketIO
 from .routes.start import main_bp
-from .routes.arpSpoofing import arpSpoofing_bp
+
 
 from .packetCapture import *
 from .bufferCleaner import bufferCleaner
@@ -27,7 +27,7 @@ def bufferMonitor():
 def create_app():
 
     app.register_blueprint(main_bp)
-    app.register_blueprint(arpSpoofing_bp)
+
 
     # Hilo de captura de paquetes
     captureThread = threading.Thread(target=packetCapture, daemon=True)

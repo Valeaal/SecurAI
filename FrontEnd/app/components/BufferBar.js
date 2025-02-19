@@ -5,7 +5,7 @@ import useSocket from "../useSocket";
 
 export default function BufferBar() {
   const [bufferSize, setBufferSize] = useState(0);
-  const maxBuffer = 2500; // Máximo de paquetes antes de llenarse
+  const maxBuffer = 100000; // Máximo de paquetes antes de llenarse
 
   useSocket(setBufferSize);
 
@@ -13,7 +13,7 @@ export default function BufferBar() {
   const progress = Math.min((bufferSize / maxBuffer) * 100, 100);
 
   return (
-    <div className="sticky bottom-0 w-full p-4 bg-transparent z-50">
+    <div className="fixed bottom-0 left-0 right-0 p-4 bg-backgroundP z-50">
       <h2 className="text-textG2 text-lg font-bold mb-2">
         Estado de la cola de mensajes:
       </h2>
@@ -24,7 +24,7 @@ export default function BufferBar() {
         ></div>
       </div>
       <p className="text-textG2 mt-2 text-sm">
-        Tamaño actual: {bufferSize} / {maxBuffer}
+        {bufferSize} / {maxBuffer} paquetes en cola para ser procesados o limpiados
       </p>
     </div>
   );

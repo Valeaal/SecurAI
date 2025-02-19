@@ -1,31 +1,58 @@
 import os
-import threading
 import importlib.util
+import threading
 
+# Ruta donde se encuentran los algoritmos de defensa
 defenseAlgorithmsPath = "./app/defenseAlgorithms"
-algorithms = []
-algorithm_names = []
+
+# Diccionario donde almacenamos los módulos y la lista de nombres
+algorithms = {} # Clave->Nombre, Valor->Modulo
+
+def getDefenseAlgorithmNames():
+    return list(algorithms.keys())
+
 
 def loadDefenseAlgorithms(path=defenseAlgorithmsPath):
+
     print("Cargando algoritmos de defensa...")
+    global algorithm_names
+    algorithms.clear()
+
     for fileName in os.listdir(path):
-        if fileName.endswith(".py"):
-            moduleName = fileName[:-3]
+        if fileName.endswith(".py"):  # Solo archivos .py
+            moduleName = fileName[:-3]  # Nombre del módulo sin extensión
             modulePath = os.path.join(path, fileName)
             spec = importlib.util.spec_from_file_location(moduleName, modulePath)
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
 
             if hasattr(module, "detect"):
-                algorithms.append(module)
-                algorithm_names.append(moduleName)
+                algorithms[moduleName] = module
+                moduleThread = threading.Thread(target=module.detect, daemon=True)
+                moduleThread.start()
             else:
                 print(f"⚠️ {fileName} no contiene una función `detect`.")
 
-    for module in algorithms:
-        # Esto arrancará cada módulo. La lógica dependerá del módulo, la restricción es que tengan un método detect.
-        moduleThread = threading.Thread(target=module.detect, daemon=True)
-        moduleThread.start()
+def startModule(algorithm_name):
+    if algorithm_name in algorithms:
+        module = algorithms[algorithm_name]
+        if module.running:
+            print(f"⚠️ El módulo {algorithm_name} ya está en ejecución.")
+            return
 
-def getDefenseAlgorithmNames():
-    return algorithm_names
+        module.running = True
+
+    else:
+        print(f"⚠️ El módulo {algorithm_name} no está cargado. ¿El .py sigue la especificación?.")
+
+def stopModule(algorithm_name):
+    if algorithm_name in algorithms:
+        module = algorithms[algorithm_name]
+        if not module.running:
+            print(f"⚠️ El módulo {algorithm_name} no estaba en ejecución.")
+            return
+
+        module.running = False
+
+    else:
+        print(f"⚠️ El módulo {algorithm_name} no está cargado. ¿El .py sigue la especificación?.")

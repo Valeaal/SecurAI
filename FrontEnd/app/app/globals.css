@@ -6,6 +6,24 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Scrollbar*/
+.my-scrollbar {
+  scrollbar-width: thin; /* O 'auto' si lo prefieres */
+  scrollbar-color: #DBFFC7 transparent; /* thumb y track respectivamente */
+}
+.my-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.my-scrollbar::-webkit-scrollbar-track {
+  background: transparent !important; /* Fondo transparente */
+}
+.my-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #DBFFC7 !important; /* Color para el thumb */
+  border-radius: 8px; /* Opcional: redondear el thumb */
+}
+
+
 @layer base {
   :root {
     --background: 0 0% 100%;
