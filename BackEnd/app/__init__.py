@@ -1,28 +1,22 @@
-import time
 import threading
+
 
 from flask import Flask
 from flask_cors import CORS
 from flask_socketio import SocketIO
-from .routes.loadDefenseAlgorithms import loadDefenseAlgorithms_bp
-
 
 from .packetCapture import *
+from .bufferMonitor import bufferMonitor
 from .bufferCleaner import bufferCleaner
 from .loadAttackTests import loadAttackTests
 from .loadDefenseAlgorithms import *
 
+from .routes.loadDefenseAlgorithms import loadDefenseAlgorithms_bp
+
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
-CORS(app, resources={r"/*": {"origins": "*"}})
 
-def bufferMonitor():
-    print(f"Emitiendo estado del buffer")
-    while True:
-        time.sleep(0.2)
-        socketio.emit('buffer_status', {'size': packetBuffer.qsize()})
-        #print(f"Emitiendo desde el socket: {packetBuffer.qsize()}")
-        
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 def createApp():
 
@@ -39,7 +33,7 @@ def createApp():
     #loadAttackTests()
 
     # Envio constante del estado del buffer al frontend
-    bufferMonitorThread = threading.Thread(target=bufferMonitor, daemon=True)
+    bufferMonitorThread = threading.Thread(target=bufferMonitor, args=(socketio,), daemon=True)
     bufferMonitorThread.start()
 
     # Hilo de limpieza del buffer

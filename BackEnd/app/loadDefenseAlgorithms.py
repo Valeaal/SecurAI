@@ -28,6 +28,7 @@ def loadDefenseAlgorithms(path=defenseAlgorithmsPath):
 
             if hasattr(module, "detect"):
                 algorithms[moduleName] = module
+                print(f"✅ {fileName} cargado correctamente.")
                 moduleThread = threading.Thread(target=module.detect, daemon=True)
                 moduleThread.start()
             else:

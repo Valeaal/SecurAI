@@ -15,9 +15,9 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        filter:
+        module:
           "bg-darkG text-textG2 font-bold text-lg !h-20 hover:bg-textG2 hover:text-darkG text-center overflow-hidden",
-        activeFilter:
+        activeModule:
           "bg-textG1 text-darkG font-bold text-lg !h-20 hover:bg-textG2 hover:text-darkG text-center overflow-hidden",
       },
     },
