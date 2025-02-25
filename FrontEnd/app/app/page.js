@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import StatusCard from "@/components/statusCard";
 
-export default function Modulesection() {
+export default function home() {
   const [activeModules, setActiveModules] = useState({});
   const [modules, setModules] = useState([]);
   const [loading, setLoading] = useState(true);

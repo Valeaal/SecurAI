@@ -1,8 +1,5 @@
-import * as React from "react";
+"use client"
 
-import { HelpCircle, ShieldAlert, BarChart2 } from "lucide-react";
-
-import { cn } from "@/lib/utils";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -12,6 +9,11 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+
+import * as React from "react";
+import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation"
+import { HelpCircle, ShieldAlert, BarChart2 } from "lucide-react";
 
 // Definición de ListItem en JavaScript (sin tipos)
 const ListItem = React.forwardRef(({ className, title, children, ...props }, ref) => {
@@ -47,7 +49,7 @@ export default function NavBar() {
 
         <NavigationMenu>
           <NavigationMenuList>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+            <NavigationMenuLink href="/" className={navigationMenuTriggerStyle()}>
               Inicio
             </NavigationMenuLink>
 
@@ -131,14 +133,14 @@ export default function NavBar() {
                       </p>
                     </div>
                   </li>
-                  <ListItem href="/help/objeto1" title="Cola de mensajes">
+                  <ListItem href="/help/detectionHelp" title="Ámbito de detección">
+                    ¿Qué tipo de ataques puede prevenir SecurAI?
+                  </ListItem>
+                  <ListItem href="/help/bufferHelp" title="Cola de mensajes">
                     El buffer de paquetes de red es el elemento central de SecurAI
                   </ListItem>
-                  <ListItem href="/help/objeto2" title="Módulos de detección">
+                  <ListItem href="/help/moduleHelp" title="Módulos de detección">
                     Los módulos consultan la cola de paquetes para buscar amenazas en tu red
-                  </ListItem>
-                  <ListItem href="/help/network-security" title="Ámbito de detección">
-                    ¿Qué tipo de ataques puede prevenir SecurAI?
                   </ListItem>
                   <ListItem href="/help/objeto3" title="HUECO LIBRE">
                     Hueco libre
