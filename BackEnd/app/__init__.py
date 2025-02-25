@@ -6,14 +6,16 @@ from flask_cors import CORS
 from flask_socketio import SocketIO
 
 from .packetCapture import *
+from .loadDefenseAlgorithms import *
+from .attackNotify import AttackNotifier
 from .bufferMonitor import bufferMonitor
 from .bufferCleaner import bufferCleaner
 from .loadAttackTests import loadAttackTests
-from .loadDefenseAlgorithms import *
 
 from .routes.loadDefenseAlgorithms import loadDefenseAlgorithms_bp
 
 app = Flask(__name__)
+global attackNotifier
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -21,6 +23,10 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 def createApp():
 
     app.register_blueprint(loadDefenseAlgorithms_bp, url_prefix="/loadDefenseAlgorithms")
+
+    # Creación del notificador de ataques al frontend, variable (objeto) global para todos los modulos
+    global attackNotifier
+    attackNotifier = AttackNotifier(socketio)
 
     # Hilo de captura de paquetes
     captureThread = threading.Thread(target=packetCapture, daemon=True)
@@ -30,7 +36,7 @@ def createApp():
     loadDefenseAlgorithms()
 
     # Cargar algoritmos de ataque
-    #loadAttackTests()
+    loadAttackTests()
 
     # Envio constante del estado del buffer al frontend
     bufferMonitorThread = threading.Thread(target=bufferMonitor, args=(socketio,), daemon=True)

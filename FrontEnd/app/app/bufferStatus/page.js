@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import useSocket from "../../useSocket";
+import useSocket from "../useSocket/useBufferSocket";
 
 export default function BufferBar() {
   const [bufferSize, setBufferSize] = useState(0);

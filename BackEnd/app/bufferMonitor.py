@@ -1,4 +1,3 @@
-
 import time
 from flask_socketio import SocketIO
 from .packetCapture import packetBuffer

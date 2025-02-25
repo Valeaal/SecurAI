@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { io } from 'socket.io-client';
 
-const useSocket = (setBufferSize) => {
+const useBufferSocket = (setBufferSize) => {
   useEffect(() => {
     // Conectar al servidor de Socket.IO
     const socket = io("http://localhost:4000", {
@@ -24,4 +24,4 @@ const useSocket = (setBufferSize) => {
   return;
 };
 
-export default useSocket;
+export default useBufferSocket;

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { CheckCircle } from "lucide-react";
+import StatusCard from "@/components/statusCard";
 
 export default function Modulesection() {
   const [activeModules, setActiveModules] = useState({});
@@ -10,9 +10,8 @@ export default function Modulesection() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Cargar los nombres de los algoritmos desde el backend al montar el componente
   useEffect(() => {
-    const fetchmodules = async () => {
+    const fetchModules = async () => {
       try {
         const response = await fetch(
           "http://localhost:4000/loadDefenseAlgorithms/loadedNames",
@@ -35,7 +34,7 @@ export default function Modulesection() {
       }
     };
 
-    fetchmodules();
+    fetchModules();
   }, []);
 
   const toggleModule = async (module, isActive) => {
@@ -57,7 +56,6 @@ export default function Modulesection() {
       const data = await response.json();
       console.log(data.message);
 
-      // Si la petición es exitosa, actualizar el estado de los filtros
       setActiveModules((prev) => ({
         ...prev,
         [module]: !isActive,
@@ -73,15 +71,12 @@ export default function Modulesection() {
   return (
     <div className="w-full h-screen p-4 gap-4 flex max-h-[calc(100vh-120px)]">
 
+      {/* Sección de estado */}
       <div className="flex-1 flex flex-col items-center justify-center h-full gap-4">
-        <div className="p-8 bg-darkP rounded-lg shadow-lg w-full text-center">
-          <CheckCircle className="w-24 h-24 text-textG1 mx-auto mb-8" />
-          <p className="text-textG2 font-semibold">
-            No estás siendo atacado, SecurAI te protege.
-          </p>
-        </div>
+        <StatusCard />
       </div>
 
+      {/* Sección de módulos */}
       <div className="my-scrollbar w-1/3 flex flex-col justify-start items-center overflow-y-auto">
         <div className="grid grid-cols-2 gap-4 w-full">
           {modules.map((module) => {

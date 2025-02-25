@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import useSocket from "../useSocket";
+import useBufferSocket from "../app/useSocket/useBufferSocket";
 
 export default function BufferBar() {
   const [bufferSize, setBufferSize] = useState(0);
   const maxBuffer = 100000; // Máximo de paquetes antes de llenarse
 
-  useSocket(setBufferSize);
+  useBufferSocket(setBufferSize);
 
   // Calcular el ancho de la barra en porcentaje
   const progress = Math.min((bufferSize / maxBuffer) * 100, 100);

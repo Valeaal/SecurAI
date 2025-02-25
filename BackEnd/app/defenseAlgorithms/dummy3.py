@@ -3,6 +3,7 @@ import time
 import joblib
 import warnings
 import numpy as np
+from app import attackNotifier
 from scapy.layers.l2 import ARP, Ether
 from app.packetCapture import packetBuffer
 from tensorflow.keras.models import load_model  # type: ignore
@@ -105,6 +106,7 @@ def detect():
             # Umbral de detección
             if prediction[0] > 0.5:
                 print(f"🚨 ¡Alerta ARP Flooding! (Prob attk: {prediction[0][0]:.2%})")
+                attackNotifier.notifyAttack(ALGORITHM_NAME)
             else:
                 print(f"✅ Tráfico normal (Prob attk: {prediction[0][0]:.2%})")
 

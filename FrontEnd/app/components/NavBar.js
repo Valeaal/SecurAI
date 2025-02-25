@@ -127,24 +127,24 @@ export default function NavBar() {
                         Centro de Ayuda
                       </div>
                       <p className="text-sm leading-tight text-muted-foreground">
-                        Encuentra respuestas a las preguntas más frecuentes sobre el sistema.
+                        Encuentra respuestas a las preguntas más frecuentes sobre el funcionamiento y el uso de SecurAI.<br></br> Centrado en el usuario: los desarrolladores deben de consultar la documentación.
                       </p>
                     </div>
                   </li>
-                  <ListItem href="/help/objeto1" title="Objeto 1">
-                    Explicación detallada sobre el Objeto 1 y su funcionamiento en el sistema.
+                  <ListItem href="/help/objeto1" title="Cola de mensajes">
+                    El buffer de paquetes de red es el elemento central de SecurAI
                   </ListItem>
-                  <ListItem href="/help/objeto2" title="Objeto 2">
-                    Información útil sobre el Objeto 2 y cómo interactúa con otros módulos.
+                  <ListItem href="/help/objeto2" title="Módulos de detección">
+                    Los módulos consultan la cola de paquetes para buscar amenazas en tu red
                   </ListItem>
-                  <ListItem href="/help/objeto3" title="Objeto 3">
-                    Guía de uso del Objeto 3 y sus principales características.
+                  <ListItem href="/help/network-security" title="Ámbito de detección">
+                    ¿Qué tipo de ataques puede prevenir SecurAI?
                   </ListItem>
-                  <ListItem href="/help/network-security" title="Seguridad en la red">
-                    Consejos y mejores prácticas para mejorar la seguridad de tu red.
+                  <ListItem href="/help/objeto3" title="HUECO LIBRE">
+                    Hueco libre
                   </ListItem>
-                  <ListItem href="/help/advanced-settings" title="Configuración avanzada">
-                    Guía sobre opciones avanzadas de configuración en el sistema.
+                  <ListItem href="/help/advanced-settings" title="HUECO LIBRE">
+                    Hueco libre
                   </ListItem>
                 </ul>
               </NavigationMenuContent>
