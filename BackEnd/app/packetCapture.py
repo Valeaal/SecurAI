@@ -1,17 +1,23 @@
-import time
 import queue
 import threading
-from scapy.all import sniff
+from scapy.all import sniff, Packet
 from .loadDefenseAlgorithms import getDefenseAlgorithmNames
 
 packetBuffer = queue.Queue()
 defenseAlgorithmsNames = getDefenseAlgorithmNames()
 
-def packetCapture():
-    print(f"defenseAlgorithmsNames: ",defenseAlgorithmsNames)
-    sniff(prn=lambda packet: packetBuffer.put(PacketIndexed(packet, defenseAlgorithmsNames)), store=False)
+def packetCapture(socketio):
+    # print(f"defenseAlgorithmsNames: ", defenseAlgorithmsNames)
+    
+    def process_packet(packet):
+        indexedPacket = PacketIndexed(packet, defenseAlgorithmsNames)
+        packetBuffer.put(indexedPacket)
+        # print("Paquete tipo " + str(indexedPacket.get_last_layer()))
+        socketio.emit('packet_layer_info', {'last_layer': indexedPacket.get_last_layer()})
 
-# Estructura de dato que almacena un paquete conjunto con los filtros que ya ha pasado o no
+    sniff(prn=process_packet, store=False)
+
+# Estructura de datos que almacena un paquete junto con los filtros que ya ha pasado o no
 class PacketIndexed:
     def __init__(self, packet, defenseAlgorithms):
         self.packet = packet
@@ -27,3 +33,14 @@ class PacketIndexed:
         # Verifica si el paquete ha sido procesado por un filtro específico
         with self.lock:
             return self.processed.get(filter_name, 0) == 1  # Retorna True si está procesado, False si no lo está
+
+    def get_last_layer(self):
+        excluded_layers = {'Raw', 'Padding'}
+        if isinstance(self.packet, Packet):
+            # Itera las capas en orden inverso (de más alta a más baja)
+            for layer in reversed(self.packet.layers()):
+                layer_name = layer.__name__
+                if layer_name not in excluded_layers:
+                    return layer_name
+        return "Desconocido"
+

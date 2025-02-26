@@ -7,5 +7,5 @@ class AttackNotifier:
 
     def notifyAttack(self, moduleName: str):
         timestamp = datetime.now(timezone.utc).isoformat()
-        print(f"Emitiendo notificación de ataque desde {moduleName} a las {timestamp}")
+        # print(f"Emitiendo notificación de ataque desde {moduleName} a las {timestamp}")
         self.socketio.emit("notify_attack", {"module_source": moduleName, "timestamp": timestamp})

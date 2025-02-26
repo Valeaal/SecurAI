@@ -29,7 +29,8 @@ def createApp():
     attackNotifier = AttackNotifier(socketio)
 
     # Hilo de captura de paquetes
-    captureThread = threading.Thread(target=packetCapture, daemon=True)
+
+    captureThread = threading.Thread(target=packetCapture, args=(socketio,), daemon=True)
     captureThread.start()
 
     # Cargar algoritmos de defensa

@@ -65,17 +65,17 @@ export default function NavBar() {
                         Estadísticas de la red
                       </div>
                       <p className="text-sm leading-tight text-muted-foreground">
-                        Estadísticas generales
+                        Estadísticas generales sobre la red y los paquetes que le llegan a tu ordenador.
                       </p>
                     </div>
                   </li>
-                  <ListItem href="/network-statistics/traffic" title="Tráfico de red">
-                    Datos sobre el tráfico de red, incluyendo las velocidades y el ancho de banda utilizado.
+                  <ListItem href="/netStats/lastLayerStats" title="Tipos de paquetes">
+                    Recopilación sobre el número y la última capa de los paquetes
                   </ListItem>
-                  <ListItem href="/network-statistics/errors" title="Errores de red">
+                  <ListItem href="/netStats/" title="Errores de red">
                     Información detallada sobre los errores de red y los posibles problemas de conectividad.
                   </ListItem>
-                  <ListItem href="/network-statistics/latency" title="Latencia de la red">
+                  <ListItem href="/netStats/" title="Latencia de la red">
                     Estadísticas sobre la latencia de la red y cómo puede afectar al rendimiento del sistema.
                   </ListItem>
                 </ul>
