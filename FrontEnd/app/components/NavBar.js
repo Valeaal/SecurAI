@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   NavigationMenu,
@@ -12,50 +12,84 @@ import {
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation"
+import { Switch } from "@/components/ui/switch";
 import { HelpCircle, ShieldAlert, BarChart2 } from "lucide-react";
 
 // Definición de ListItem en JavaScript (sin tipos)
-const ListItem = React.forwardRef(({ className, title, children, ...props }, ref) => {
-  return (
-    <li>
-      <NavigationMenuLink asChild>
-        <a
-          ref={ref}
-          className={cn(
-            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-gradient-to-b hover:from-muted/50 hover:to-muted focus:bg-gradient-to-b focus:from-muted/50 focus:to-muted focus:text-textP1",
-            className
-          )}
-          {...props}
-        >
-          <div className="text-sm font-medium leading-none">{title}</div>
-          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-            {children}
-          </p>
-        </a>
-      </NavigationMenuLink>
-    </li>
-  );
-});
+const ListItem = React.forwardRef(
+  ({ className, title, children, ...props }, ref) => {
+    return (
+      <li>
+        <NavigationMenuLink asChild>
+          <a
+            ref={ref}
+            className={cn(
+              "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-gradient-to-b hover:from-muted/50 hover:to-muted focus:bg-gradient-to-b focus:from-muted/50 focus:to-muted focus:text-textP1",
+              className
+            )}
+            {...props}
+          >
+            <div className="text-sm font-medium leading-none">{title}</div>
+            <div className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+              {children}
+            </div>
+          </a>
+        </NavigationMenuLink>
+      </li>
+    );
+  }
+);
 ListItem.displayName = "ListItem";
+
+// ListItemWithSwitch con uso de localStorage para persistencia
+const ListItemWithSwitch = ({ title, description }) => {
+  // Obtener el estado del switch desde localStorage o establecerlo en false si no existe
+  const storedState = typeof window !== "undefined" ? localStorage.getItem(title) : null;
+  const [isActive, setIsActive] = React.useState(
+    storedState ? JSON.parse(storedState) : false
+  );
+
+  const handleToggle = () => {
+    const newState = !isActive;
+    setIsActive(newState);
+    // Guardar el nuevo estado en localStorage
+    if (typeof window !== "undefined") {
+      localStorage.setItem(title, JSON.stringify(newState));
+    }
+  };
+
+  return (
+    <ListItem title={title}>
+      <div className="flex items-center justify-between">
+        <span className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+          {description}
+        </span>
+        <Switch checked={isActive} onCheckedChange={handleToggle} />
+      </div>
+    </ListItem>
+  );
+};
 
 export default function NavBar() {
   return (
     <header className="w-full p-4">
       <div className="flex flex-col md:flex-row items-center justify-between">
-        <h1 className="text-2xl font-bold text-textG1 mb-4 md:mb-0">
-          SecurAI
-        </h1>
+        <h1 className="text-2xl font-bold text-textG1 mb-4 md:mb-0">SecurAI</h1>
 
         <NavigationMenu>
           <NavigationMenuList>
-            <NavigationMenuLink href="/" className={navigationMenuTriggerStyle()}>
+            <NavigationMenuLink
+              href="/"
+              className={navigationMenuTriggerStyle()}
+            >
               Inicio
             </NavigationMenuLink>
 
             {/* Menú de Estadísticas de la Red */}
             <NavigationMenuItem>
-              <NavigationMenuTrigger>Estadísticas de la red</NavigationMenuTrigger>
+              <NavigationMenuTrigger>
+                Estadísticas de la red
+              </NavigationMenuTrigger>
               <NavigationMenuContent>
                 <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[450px] lg:grid-cols-[.75fr_1fr]">
                   <li className="row-span-3">
@@ -65,18 +99,26 @@ export default function NavBar() {
                         Estadísticas de la red
                       </div>
                       <p className="text-sm leading-tight text-muted-foreground">
-                        Estadísticas generales sobre la red y los paquetes que le llegan a tu ordenador.
+                        Estadísticas generales sobre la red y los paquetes que
+                        le llegan a tu ordenador.
                       </p>
                     </div>
                   </li>
-                  <ListItem href="/netStats/numberStats" title="Número de paquetes">
+                  <ListItem
+                    href="/netStats/numberStats"
+                    title="Número de paquetes"
+                  >
                     Información de la evolución del número de paquetes recibidos
                   </ListItem>
-                  <ListItem href="/netStats/typeStats" title="Tipos de paquetes">
+                  <ListItem
+                    href="/netStats/typeStats"
+                    title="Tipos de paquetes"
+                  >
                     Clasificación de los tipos de paquetes (última capa)
                   </ListItem>
                   <ListItem href="/netStats/" title="Latencia de la red">
-                    Estadísticas sobre la latencia de la red y cómo puede afectar al rendimiento del sistema.
+                    Estadísticas sobre la latencia de la red y cómo puede
+                    afectar al rendimiento del sistema.
                   </ListItem>
                 </ul>
               </NavigationMenuContent>
@@ -84,7 +126,9 @@ export default function NavBar() {
 
             {/* Menú de Simulaciones de Ataque */}
             <NavigationMenuItem>
-              <NavigationMenuTrigger>Simulaciones de ataque</NavigationMenuTrigger>
+              <NavigationMenuTrigger>
+                Simulaciones de ataque
+              </NavigationMenuTrigger>
               <NavigationMenuContent>
                 <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[600px] lg:grid-cols-[.75fr_1fr]">
                   <li className="row-span-3">
@@ -98,21 +142,26 @@ export default function NavBar() {
                       </p>
                     </div>
                   </li>
-                  <ListItem href="/attack-simulations/arp-spoofing" title="ARP Spoofing">
-                    Prueba la resistencia del sistema contra ataques de suplantación de direcciones MAC.
-                  </ListItem>
-                  <ListItem href="/attack-simulations/dos" title="Ataque DoS">
-                    Simula un ataque de denegación de servicio para analizar la respuesta del sistema.
-                  </ListItem>
-                  <ListItem href="/attack-simulations/mitm" title="Man-in-the-Middle">
-                    Prueba la detección de ataques de intermediario en la comunicación de red.
-                  </ListItem>
-                  <ListItem href="/attack-simulations/port-scanning" title="Escaneo de Puertos">
-                    Simula un escaneo de puertos para detectar vulnerabilidades en la red.
-                  </ListItem>
-                  <ListItem href="/attack-simulations/dns-spoofing" title="DNS Spoofing">
-                    Prueba ataques de falsificación de DNS y su impacto en la seguridad.
-                  </ListItem>
+                  <ListItemWithSwitch 
+                    title="ARP Spoofing" 
+                    description="Prueba la resistencia del sistema contra ataques de suplantación de direcciones MAC." 
+                  />
+                  <ListItemWithSwitch 
+                    title="Ataque DoS" 
+                    description="Simula un ataque de denegación de servicio para analizar la respuesta del sistema."
+                  />
+                  <ListItemWithSwitch 
+                    title="Man-in-the-Middle" 
+                    description="Prueba la detección de ataques de intermediario en la comunicación de red."
+                  />
+                  <ListItemWithSwitch 
+                    title="Escaneo de Puertos" 
+                    description="Simula un escaneo de puertos para detectar vulnerabilidades en la red."
+                  />
+                  <ListItemWithSwitch 
+                    title="DNS Spoofing" 
+                    description="Prueba ataques de falsificación de DNS y su impacto en la seguridad."
+                  />
                 </ul>
               </NavigationMenuContent>
             </NavigationMenuItem>
@@ -129,18 +178,29 @@ export default function NavBar() {
                         Centro de Ayuda
                       </div>
                       <p className="text-sm leading-tight text-muted-foreground">
-                        Encuentra respuestas a las preguntas más frecuentes sobre el funcionamiento y el uso de SecurAI.<br></br> Centrado en el usuario: los desarrolladores deben de consultar la documentación.
+                        Encuentra respuestas a las preguntas más frecuentes
+                        sobre el funcionamiento y el uso de SecurAI.<br></br>{" "}
+                        Centrado en el usuario: los desarrolladores deben de
+                        consultar la documentación.
                       </p>
                     </div>
                   </li>
-                  <ListItem href="/help/detectionHelp" title="Ámbito de detección">
+                  <ListItem
+                    href="/help/detectionHelp"
+                    title="Ámbito de detección"
+                  >
                     ¿Qué tipo de ataques puede prevenir SecurAI?
                   </ListItem>
                   <ListItem href="/help/bufferHelp" title="Cola de mensajes">
-                    El buffer de paquetes de red es el elemento central de SecurAI
+                    El buffer de paquetes de red es el elemento central de
+                    SecurAI
                   </ListItem>
-                  <ListItem href="/help/moduleHelp" title="Módulos de detección">
-                    Los módulos consultan la cola de paquetes para buscar amenazas en tu red
+                  <ListItem
+                    href="/help/moduleHelp"
+                    title="Módulos de detección"
+                  >
+                    Los módulos consultan la cola de paquetes para buscar
+                    amenazas en tu red
                   </ListItem>
                   <ListItem href="/help/objeto3" title="HUECO LIBRE">
                     Hueco libre
