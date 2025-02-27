@@ -14,7 +14,7 @@ def getDefenseAlgorithmNames():
 
 def loadDefenseAlgorithms(path=defenseAlgorithmsPath):
 
-    print("Cargando algoritmos de defensa...")
+    # print("Cargando algoritmos de defensa...")
     global algorithm_names
     algorithms.clear()
 
@@ -28,7 +28,7 @@ def loadDefenseAlgorithms(path=defenseAlgorithmsPath):
 
             if hasattr(module, "detect"):
                 algorithms[moduleName] = module
-                print(f"✅ {fileName} cargado correctamente.")
+                # print(f"✅ {fileName} cargado correctamente.")
                 moduleThread = threading.Thread(target=module.detect, daemon=True)
                 moduleThread.start()
             else:

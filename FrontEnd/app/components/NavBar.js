@@ -69,11 +69,11 @@ export default function NavBar() {
                       </p>
                     </div>
                   </li>
-                  <ListItem href="/netStats/lastLayerStats" title="Tipos de paquetes">
-                    Recopilación sobre el número y la última capa de los paquetes
+                  <ListItem href="/netStats/numberStats" title="Número de paquetes">
+                    Información de la evolución del número de paquetes recibidos
                   </ListItem>
-                  <ListItem href="/netStats/" title="Errores de red">
-                    Información detallada sobre los errores de red y los posibles problemas de conectividad.
+                  <ListItem href="/netStats/typeStats" title="Tipos de paquetes">
+                    Clasificación de los tipos de paquetes (última capa)
                   </ListItem>
                   <ListItem href="/netStats/" title="Latencia de la red">
                     Estadísticas sobre la latencia de la red y cómo puede afectar al rendimiento del sistema.

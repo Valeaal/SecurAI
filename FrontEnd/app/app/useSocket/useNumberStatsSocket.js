@@ -25,7 +25,7 @@ export default function useStatsSocket() {
 
       setData((prevData) => {
         const updatedData = [...prevData, newEntry]; // Añadir el nuevo dato
-        return updatedData.length > 10 ? updatedData.slice(1) : updatedData;
+        return updatedData.length > 15 ? updatedData.slice(1) : updatedData;
       });
 
       // Resetea el contador de paquetes

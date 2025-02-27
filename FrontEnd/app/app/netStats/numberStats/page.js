@@ -1,18 +1,18 @@
 "use client";
 import { useState, useEffect } from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import useStatsSocket from "@/app/useSocket/useStatsSocket"; // Asegúrate de ajustar la ruta si es necesario
+import useStatsSocket from "@/app/useSocket/useNumberStatsSocket"; // Asegúrate de ajustar la ruta si es necesario
 
-export default function Page() {
+export default function numberStats() {
   const data = useStatsSocket(); // Obtener datos de paquetes del hook
 
   return (
     <div className="p-4 mt-8">
-      <h2 className="text-2xl text-textG1 font-bold text-center">Historial de Paquetes Recibidos</h2>
+      <h2 className="text-2xl text-textG1 font-bold text-center">Historial del número de paquetes recibidos</h2>
 
       {/* Gráfico de Área */}
       <div className="">
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={600}>
           <AreaChart
             data={data}
             margin={{
