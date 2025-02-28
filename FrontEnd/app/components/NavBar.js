@@ -52,16 +52,36 @@ const ListItemWithSwitch = ({ title, description }) => {
   const handleToggle = () => {
     const newState = !isActive;
     setIsActive(newState);
+    
     // Guardar el nuevo estado en localStorage
     if (typeof window !== "undefined") {
       localStorage.setItem(title, JSON.stringify(newState));
     }
+    
+    // Realizar la solicitud HTTP al cambiar el estado
+    fetch("http://localhost:4000/loadAttackTests/startOrStop", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        attackName: title,
+        isActive: newState,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Respuesta de la API:", data);
+      })
+      .catch((error) => {
+        console.error("Error al hacer la solicitud:", error);
+      });
   };
 
   return (
     <ListItem title={title}>
       <div className="flex items-center justify-between">
-        <span className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+        <span className="line-clamp-2 mr-1 text-sm leading-snug text-muted-foreground">
           {description}
         </span>
         <Switch checked={isActive} onCheckedChange={handleToggle} />
@@ -143,8 +163,8 @@ export default function NavBar() {
                     </div>
                   </li>
                   <ListItemWithSwitch 
-                    title="ARP Spoofing" 
-                    description="Prueba la resistencia del sistema contra ataques de suplantación de direcciones MAC." 
+                    title="arpFlooding" 
+                    description="Envío de Paquetes ARP Request y Reply con MACs e IPs dinámicas." 
                   />
                   <ListItemWithSwitch 
                     title="Ataque DoS" 

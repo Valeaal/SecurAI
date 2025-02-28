@@ -39,21 +39,20 @@ def startModule(algorithm_name):
         module = algorithms[algorithm_name]
         if module.running:
             print(f"⚠️ El módulo {algorithm_name} ya está en ejecución.")
-            return
-
+            return "Start completado."
         module.running = True
-
     else:
         print(f"⚠️ El módulo {algorithm_name} no está cargado. ¿El .py sigue la especificación?.")
+        return "Stop módulo no cargado."
+
 
 def stopModule(algorithm_name):
     if algorithm_name in algorithms:
         module = algorithms[algorithm_name]
         if not module.running:
             print(f"⚠️ El módulo {algorithm_name} no estaba en ejecución.")
-            return
-
+            return "Stop completado."
         module.running = False
-
     else:
         print(f"⚠️ El módulo {algorithm_name} no está cargado. ¿El .py sigue la especificación?.")
+        return "Stop módulo no cargado."

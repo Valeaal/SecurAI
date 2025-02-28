@@ -12,6 +12,7 @@ from .bufferMonitor import bufferMonitor
 from .bufferCleaner import bufferCleaner
 from .loadAttackTests import loadAttackTests
 
+from .routes.loadAttackTests import loadAttackTests_bp
 from .routes.loadDefenseAlgorithms import loadDefenseAlgorithms_bp
 
 app = Flask(__name__)
@@ -23,6 +24,7 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 def createApp():
 
     app.register_blueprint(loadDefenseAlgorithms_bp, url_prefix="/loadDefenseAlgorithms")
+    app.register_blueprint(loadAttackTests_bp, url_prefix="/loadAttackTests")
 
     # Creación del notificador de ataques al frontend, variable (objeto) global para todos los modulos
     global attackNotifier
