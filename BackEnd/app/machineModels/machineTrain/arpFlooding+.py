@@ -7,6 +7,8 @@ from tensorflow.keras.callbacks import EarlyStopping  # type: ignore
 from tensorflow.keras import Sequential, regularizers  # type: ignore
 from tensorflow.keras.layers import Dense, LSTM, Dropout  # type: ignore
 from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.metrics import confusion_matrix, classification_report
+
 
 # Cargar el dataset
 data = pd.read_csv('./app/machineModels/dataSets/arpFlooding+.csv')
@@ -84,8 +86,8 @@ y = balanced_data['label']
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
-# Crear secuencias de 20 paquetes
-sequence_length = 20
+# Crear secuencias de 150 paquetes
+sequence_length = 100
 X_sequences = []
 y_sequences = []
 
@@ -115,6 +117,20 @@ model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=
 early_stopping = EarlyStopping(monitor='val_loss', patience=2, restore_best_weights=True)
 
 model.fit(X_train, y_train, epochs=4, batch_size=32, validation_data=(X_test, y_test), callbacks=[early_stopping])
+
+# Evaluación en el conjunto de prueba
+y_pred = model.predict(X_test)
+
+# Convertir las probabilidades de salida a clases, tomando la clase con la mayor probabilidad
+y_pred_classes = np.argmax(y_pred, axis=-1)
+
+# Imprimir la matriz de confusión
+print("Matriz de confusión:")
+print(confusion_matrix(y_test.flatten(), y_pred_classes.flatten()))
+
+# Imprimir el reporte de clasificación con detalles como precision, recall y f1-score
+print("Reporte de clasificación:")
+print(classification_report(y_test.flatten(), y_pred_classes.flatten()))
 
 # Guardar modelo, scaler y los encoders
 model.save('./app/machineModels/models/arpFlooding+.h5')
