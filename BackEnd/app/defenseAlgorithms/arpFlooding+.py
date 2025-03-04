@@ -155,12 +155,10 @@ def detect():
                             # Seleccionar la mayor probabilidad
                             max_prob_class = np.argmax(probabilidad)  # Selecciona el índice de la clase con la mayor probabilidad
 
-                            # Ahora comparamos con la clase 2 (que supongo corresponde a ARP)
-                            if max_prob_class == 2:
+                            # Ahora comparamos con la clase 1 (que supongo corresponde a ARP)
+                            if max_prob_class == 1:
                                 print(f"🚨 ¡Alerta ARP Flooding! (ARP {arp_type} - Datos: {len(packet)} bytes - Probabilidad: {probabilidad[2]:.2%})")
                                 attackNotifier.notifyAttack(ALGORITHM_NAME)
-                            elif max_prob_class == 1:
-                                print(f"🟡 ¡Alerta ARP Spoofing! (ARP {arp_type} - Datos: {len(packet)} bytes - Probabilidad: {probabilidad[1]:.2%})")
                             elif max_prob_class == 0:
                                 print(f"✅ Tráfico normal (ARP {arp_type} - Datos: {len(packet)} bytes - Probabilidad: {probabilidad[0]:.2%})")
 

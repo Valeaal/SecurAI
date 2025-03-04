@@ -19,6 +19,7 @@ columns_to_drop = ['eth.src', 'eth.dst', 'arp.dst.hw_mac',
                    'arp.src.hw_mac', 'arp.src.proto_ipv4', 'arp.dst.proto_ipv4', 
                    'ip.src', 'ip.dst']
 data = data.drop(columns=columns_to_drop, errors='ignore')
+data = data[data['label'] != 1]
 
 # Filtrar solo los paquetes ARP antes de codificar
 arp_data = data[data['protocol'] == 'ARP']
@@ -28,29 +29,21 @@ other_data = data[data['protocol'] != 'ARP']
 print("Distribucion de label en ARP antes del balanceo:")
 print(arp_data['label'].value_counts())
 
-# Balancear las clases 0, 1 y 2 dentro de ARP
+# Obtener la cuenta mínima de las clases presentes en los datos
 min_count_arp_0 = arp_data['label'].value_counts().get(0, 0)
-min_count_arp_1 = arp_data['label'].value_counts().get(1, 0)
 min_count_arp_2 = arp_data['label'].value_counts().get(2, 0)
 
-# Encuentra el número mínimo y máximo de muestras entre las tres clases
-min_count_arp = min(min_count_arp_0, min_count_arp_1, min_count_arp_2)
-max_count_arp = max(min_count_arp_0, min_count_arp_1, min_count_arp_2)
+# Encuentra el número mínimo de muestras entre las clases 0 y 2
+min_count_arp = min(min_count_arp_0, min_count_arp_2)
 
-# Establecer el porcentaje de reducción de las clases más grandes (por ejemplo, el 80%)
-percentage = 0.8
-
-# Ajustamos las clases más grandes a un 80% del tamaño de la clase más grande
+# Ajustar todas las clases al tamaño de la clase minoritaria
 arp_data_balanced = arp_data.groupby('label', group_keys=False).apply(
-    lambda x: x.sample(n=int(len(x) * percentage), random_state=42) if len(x) > max_count_arp * percentage else x
+    lambda x: x.sample(n=min_count_arp, random_state=42)
 ).reset_index(drop=True)
 
-# Ver cuentas de clases antes de balancear
-print("Distribucion de label en ARP tras el balanceo:")
+# Ver cuentas de clases después del balanceo
+print("Distribución de label en ARP tras el balanceo:")
 print(arp_data_balanced['label'].value_counts())
-
-# Combina el ARP balanceado con el resto de las clases (que no están balanceadas)
-data_balanced = pd.concat([arp_data_balanced, other_data], ignore_index=True)
 
 # Crear un diccionario para almacenar los LabelEncoders de todas las columnas de tipo string
 encoders = {}
@@ -78,9 +71,12 @@ balanced_data = data.groupby('label', group_keys=False)\
                     .apply(lambda x: x.sample(n=min_count, random_state=42))\
                     .reset_index(drop=True)
 
+# Después de realizar el balanceo, aplicar el refactoring a balanced_data
+balanced_data['label'] = balanced_data['label'].replace({2: 1, 3: 2, 4: 3}).astype(int)
+
 # Normalizar datos
 X = balanced_data.drop(columns=['label'])
-y = balanced_data['label']
+y = balanced_data['label'].astype(int)
 
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
@@ -95,7 +91,7 @@ for i in range(len(X_scaled) - sequence_length):
     y_sequences.append(y[i:i + sequence_length])
 
 X_sequences = np.array(X_sequences)
-y_sequences = np.array(y_sequences)
+y_sequences = np.array(y_sequences).astype(int)
 
 # Dividir en conjuntos de entrenamiento y prueba
 X_train, X_test, y_train, y_test = train_test_split(X_sequences, y_sequences, test_size=0.3, random_state=42)
@@ -108,7 +104,7 @@ model = Sequential([
     LSTM(16, return_sequences=True, 
          kernel_regularizer=regularizers.l2(0.01)),
     Dropout(0.6),
-    Dense(5, activation='softmax', 
+    Dense(4, activation='softmax', 
           kernel_regularizer=regularizers.l2(0.01))
 ])
 
