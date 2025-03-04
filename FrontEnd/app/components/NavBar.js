@@ -136,9 +136,8 @@ export default function NavBar() {
                   >
                     Clasificación de los tipos de paquetes (última capa)
                   </ListItem>
-                  <ListItem href="/netStats/" title="Latencia de la red">
-                    Estadísticas sobre la latencia de la red y cómo puede
-                    afectar al rendimiento del sistema.
+                  <ListItem href="/netStats/" title="Hueco libre">
+                    Hueco libre
                   </ListItem>
                 </ul>
               </NavigationMenuContent>
@@ -158,29 +157,29 @@ export default function NavBar() {
                         Simulaciones de ataque
                       </div>
                       <p className="text-sm leading-tight text-muted-foreground">
-                        Simula ataques de red para evaluar la seguridad.
+                        Simula ataques de red para evaluar la detección y la seguridad de los módulos que has activado.
                       </p>
                     </div>
                   </li>
                   <ListItemWithSwitch 
                     title="arpFlooding" 
-                    description="Envío de Paquetes ARP Request y Reply con MACs e IPs dinámicas." 
+                    description="Hueco libre" 
                   />
                   <ListItemWithSwitch 
-                    title="Ataque DoS" 
-                    description="Simula un ataque de denegación de servicio para analizar la respuesta del sistema."
+                    title="HUECO LIBRE" 
+                    description="Hueco libre"
                   />
                   <ListItemWithSwitch 
-                    title="Man-in-the-Middle" 
-                    description="Prueba la detección de ataques de intermediario en la comunicación de red."
+                    title="HUECO LIBRE" 
+                    description="Hueco libre"
                   />
                   <ListItemWithSwitch 
-                    title="Escaneo de Puertos" 
-                    description="Simula un escaneo de puertos para detectar vulnerabilidades en la red."
+                    title="HUECO LIBRE" 
+                    description="Hueco libre"
                   />
                   <ListItemWithSwitch 
-                    title="DNS Spoofing" 
-                    description="Prueba ataques de falsificación de DNS y su impacto en la seguridad."
+                    title="HUECO LIBRE" 
+                    description="Hueco libre"
                   />
                 </ul>
               </NavigationMenuContent>

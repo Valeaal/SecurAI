@@ -98,6 +98,8 @@ def detect():
 
             if packet.haslayer(ARP) and packet[ARP].op == 1:
                 print(f"ARP Request: Busca la IP {packet[ARP].pdst}")
+            if packet.haslayer(ARP) and packet[ARP].op == 2:
+                print(f"ARP Reply: La IP {packet[ARP].psrc} es {packet[ARP].hwsrc}")
 
             # Escalar características y hacer la predicción
             features_scaled = scaler.transform(features)
@@ -133,11 +135,4 @@ def detect():
         #Cuando ya se ha actualizado el indice de forma segura con el siguiente paquete a analizar
         current_packet.mark_processed(ALGORITHM_NAME)
         current_packet = next_packet
-
-def stop():
-    """
-    Detiene la detección de ARP Flooding estableciendo `running = False`.
-    """
-    global running
-    running = False  # Esto hará que el bucle de `detect()` termine
                 

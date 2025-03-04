@@ -28,7 +28,7 @@ def loadAttackTests(path=attackTestsPath):
             # Asegurarse de que el módulo tiene la función `attack`
             if hasattr(module, "attack"):
                 attackTests[moduleName] = module
-                print(f"✅ {fileName} cargado correctamente.")                
+                # print(f"✅ {fileName} cargado correctamente.")                
                 moduleThread = threading.Thread(target=module.attack, daemon=True)
                 moduleThread.start()
             else:

@@ -10,7 +10,7 @@ from tensorflow.keras.callbacks import EarlyStopping # type: ignore
 import joblib
 
 # Cargar el dataset
-data = pd.read_csv('./app/machineModels/dataSets/arpSpoofing.csv')
+data = pd.read_csv('./app/machineModels/dataSets/arpFlooding.csv')
 
 # Filtrar solo las filas donde Protocol == 0
 data = data[data['Protocol'] == 0]

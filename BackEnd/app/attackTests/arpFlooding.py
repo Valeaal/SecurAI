@@ -10,7 +10,6 @@ def attack():
 
     iface = "en0"  # Ajusta según el sistema
     time.sleep(12)
-    print("Iniciando ARP Flooding con IPs y Macs variables...")
 
     packet_count = 0
 
