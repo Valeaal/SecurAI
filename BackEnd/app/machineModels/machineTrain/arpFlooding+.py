@@ -85,7 +85,7 @@ scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
 # Crear secuencias de 20 paquetes
-sequence_length = 100
+sequence_length = 20
 X_sequences = []
 y_sequences = []
 
