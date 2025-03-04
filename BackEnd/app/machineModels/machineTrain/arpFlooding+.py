@@ -82,7 +82,7 @@ scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
 # Crear secuencias de 128 paquetes
-sequence_length = 128
+sequence_length = 50
 X_sequences = []
 y_sequences = []
 
@@ -111,7 +111,7 @@ model = Sequential([
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 early_stopping = EarlyStopping(monitor='val_loss', patience=2, restore_best_weights=True)
 
-model.fit(X_train, y_train, epochs=4, batch_size=300, validation_data=(X_test, y_test), callbacks=[early_stopping])
+model.fit(X_train, y_train, epochs=4, batch_size=500, validation_data=(X_test, y_test), callbacks=[early_stopping])
 
 # Evaluación en el conjunto de prueba
 y_pred = model.predict(X_test)
