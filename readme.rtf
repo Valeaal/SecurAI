@@ -56,7 +56,8 @@
 \b0\fs36 \cf4 {\listtext	\uc0\u8226 	}Es una red LSTM\
 {\listtext	\uc0\u8226 	}Funciona con el tiempo delta y n\'famero de trama\
 {\listtext	\uc0\u8226 	}El modelo siempre detecta las primeras tramas del batch como benignas, lo esperable\
-{\listtext	\uc0\u8226 	}En tr\'e1fico normal, hay demasiados falsos positivos, se estabiliza al reiniciar el lote\
+{\listtext	\uc0\u8226 	}En tr\'e1fico normal, hay demasiados falsos positivos (spoofing), se estabiliza al reiniciar el lote.\
+{\listtext	\uc0\u8226 	}En tr\'e1fico maligno, empieza por trafico normal, luego spoofing (muy larga esta etapa) y luego flooding. El flooding es demasiado recurrente.\
 \pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
 
 \b\fs48 \cf2 \ul \ulc2 \

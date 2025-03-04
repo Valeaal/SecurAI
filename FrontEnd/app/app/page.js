@@ -77,7 +77,7 @@ export default function home() {
       </div>
 
       {/* Sección de módulos */}
-      <div className="my-scrollbar w-1/3 flex flex-col justify-start items-center overflow-y-auto">
+      <div className="my-scrollbar w-2/5 flex flex-col justify-start items-center overflow-y-auto">
         <div className="grid grid-cols-2 gap-4 w-full">
           {modules.map((module) => {
             const isActive = !!activeModules[module];

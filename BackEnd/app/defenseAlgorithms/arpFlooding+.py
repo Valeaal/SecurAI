@@ -22,7 +22,7 @@ label_encoders = joblib.load('./app/machineModels/models/arpFlooding+_encoders.p
 
 # Variables globales
 prev_time = None
-BATCH_SIZE = 100  # Tamaño del lote
+BATCH_SIZE = 200  # Tamaño del lote
 current_batch = []  # Lista para acumular los paquetes en lotes
 frame_number = 0  # Contador de número de trama dentro del batch
 
@@ -136,7 +136,7 @@ def detect():
                     features_scaled = features_scaled.reshape((1, BATCH_SIZE, features_scaled.shape[1]))
                     predictions = model.predict(features_scaled, verbose=0)
 
-                    print(f"Lote completado, forma de las predicciones: {predictions.shape}")
+                    print(f"arpFlooding+ lote completado, forma de las predicciones: {predictions.shape}")
 
                     # Elimina la dimensión de batch, de (1, 100, 5) a (100, 5)
                     predictions = np.squeeze(predictions, axis=0)
@@ -160,7 +160,7 @@ def detect():
                                 print(f"🚨 ¡Alerta ARP Flooding! (ARP {arp_type} - Datos: {len(packet)} bytes - Probabilidad: {probabilidad[2]:.2%})")
                                 attackNotifier.notifyAttack(ALGORITHM_NAME)
                             elif max_prob_class == 1:
-                                print(f"⍰ ¡Alerta ARP Spoofing! (ARP {arp_type} - Datos: {len(packet)} bytes - Probabilidad: {probabilidad[1]:.2%})")
+                                print(f"🟡 ¡Alerta ARP Spoofing! (ARP {arp_type} - Datos: {len(packet)} bytes - Probabilidad: {probabilidad[1]:.2%})")
                             elif max_prob_class == 0:
                                 print(f"✅ Tráfico normal (ARP {arp_type} - Datos: {len(packet)} bytes - Probabilidad: {probabilidad[0]:.2%})")
 

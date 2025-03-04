@@ -1,16 +1,16 @@
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler, LabelEncoder
-from tensorflow.keras.models import Sequential  # type: ignore
-from tensorflow.keras.layers import Dense, LSTM, Dropout  # type: ignore
-from tensorflow.keras.callbacks import EarlyStopping  # type: ignore
 import joblib
+import numpy as np
+import pandas as pd
+
+from sklearn.model_selection import train_test_split
+from tensorflow.keras.callbacks import EarlyStopping  # type: ignore
+from tensorflow.keras import Sequential, regularizers  # type: ignore
+from tensorflow.keras.layers import Dense, LSTM, Dropout  # type: ignore
+from sklearn.preprocessing import LabelEncoder, StandardScaler
 
 # Cargar el dataset
 data = pd.read_csv('./app/machineModels/dataSets/arpFlooding+.csv')
+data = data.sort_values(by="frame.number").reset_index(drop=True)
 
 # Eliminar solo direcciones MAC e IP
 columns_to_drop = ['eth.src', 'eth.dst', 'arp.dst.hw_mac', 
@@ -101,17 +101,20 @@ X_train, X_test, y_train, y_test = train_test_split(X_sequences, y_sequences, te
 
 # Construcción del modelo LSTM para clasificación multiclase
 model = Sequential([
-    LSTM(64, return_sequences=True, input_shape=(sequence_length, X_train.shape[2])),
-    Dropout(0.2),
-    LSTM(32, return_sequences=True),
+    LSTM(32, return_sequences=True, input_shape=(sequence_length, X_train.shape[2]), 
+         kernel_regularizer=regularizers.l2(0.01)),
     Dropout(0.4),
-    Dense(5, activation='softmax')
+    LSTM(16, return_sequences=True, 
+         kernel_regularizer=regularizers.l2(0.01)),
+    Dropout(0.6),
+    Dense(5, activation='softmax', 
+          kernel_regularizer=regularizers.l2(0.01))
 ])
 
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 early_stopping = EarlyStopping(monitor='val_loss', patience=2, restore_best_weights=True)
 
-model.fit(X_train, y_train, epochs=10, batch_size=32, validation_data=(X_test, y_test), callbacks=[early_stopping])
+model.fit(X_train, y_train, epochs=4, batch_size=32, validation_data=(X_test, y_test), callbacks=[early_stopping])
 
 # Guardar modelo, scaler y los encoders
 model.save('./app/machineModels/models/arpFlooding+.h5')
