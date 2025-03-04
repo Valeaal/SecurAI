@@ -33,18 +33,17 @@ min_count_arp_0 = arp_data['label'].value_counts().get(0, 0)
 min_count_arp_1 = arp_data['label'].value_counts().get(1, 0)
 min_count_arp_2 = arp_data['label'].value_counts().get(2, 0)
 
-# Encuentra el número mínimo de muestras entre las tres clases
+# Encuentra el número mínimo y máximo de muestras entre las tres clases
 min_count_arp = min(min_count_arp_0, min_count_arp_1, min_count_arp_2)
+max_count_arp = max(min_count_arp_0, min_count_arp_1, min_count_arp_2)
 
-print(f"Ajustando labels de ARP a: {min_count_arp}")
+# Establecer el porcentaje de reducción de las clases más grandes (por ejemplo, el 80%)
+percentage = 0.8
 
-# Solo balanceamos si hay suficientes datos
-if min_count_arp > 0:
-    arp_data_balanced = arp_data.groupby('label', group_keys=False).apply(
-        lambda x: x.sample(n=min(min_count_arp, len(x)), random_state=42)  # Aseguramos que no se muestrean más elementos de los que existen
-    ).reset_index(drop=True)
-else:
-    arp_data_balanced = arp_data  # Si no hay suficiente, lo dejamos como está
+# Ajustamos las clases más grandes a un 80% del tamaño de la clase más grande
+arp_data_balanced = arp_data.groupby('label', group_keys=False).apply(
+    lambda x: x.sample(n=int(len(x) * percentage), random_state=42) if len(x) > max_count_arp * percentage else x
+).reset_index(drop=True)
 
 # Ver cuentas de clases antes de balancear
 print("Distribucion de label en ARP tras el balanceo:")
@@ -86,8 +85,8 @@ y = balanced_data['label']
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
-# Crear secuencias de 150 paquetes
-sequence_length = 100
+# Crear secuencias de 128 paquetes
+sequence_length = 128
 X_sequences = []
 y_sequences = []
 
@@ -116,17 +115,13 @@ model = Sequential([
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 early_stopping = EarlyStopping(monitor='val_loss', patience=2, restore_best_weights=True)
 
-model.fit(X_train, y_train, epochs=4, batch_size=32, validation_data=(X_test, y_test), callbacks=[early_stopping])
+model.fit(X_train, y_train, epochs=4, batch_size=300, validation_data=(X_test, y_test), callbacks=[early_stopping])
 
 # Evaluación en el conjunto de prueba
 y_pred = model.predict(X_test)
 
 # Convertir las probabilidades de salida a clases, tomando la clase con la mayor probabilidad
 y_pred_classes = np.argmax(y_pred, axis=-1)
-
-# Imprimir la matriz de confusión
-print("Matriz de confusión:")
-print(confusion_matrix(y_test.flatten(), y_pred_classes.flatten()))
 
 # Imprimir el reporte de clasificación con detalles como precision, recall y f1-score
 print("Reporte de clasificación:")
