@@ -6,12 +6,13 @@ from sklearn.model_selection import train_test_split
 from tensorflow.keras.callbacks import EarlyStopping  # type: ignore
 from tensorflow.keras import Sequential, regularizers  # type: ignore
 from tensorflow.keras.layers import Dense, LSTM, Dropout  # type: ignore
+from sklearn.utils.class_weight import compute_class_weight
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.metrics import confusion_matrix, classification_report
 
 
 # Cargar el dataset
-data = pd.read_csv('./app/machineModels/dataSets/arpFlooding+.csv')
+data = pd.read_csv('./app/machineModels/dataSetsOriginals/arpFlooding+.csv')
 data = data.sort_values(by="frame.number").reset_index(drop=True)
 
 # Eliminar solo direcciones MAC e IP
@@ -65,7 +66,7 @@ data['arp.opcode'] = data['arp.opcode'].replace({'request': 1, 'reply': 2}).asty
 # Rellenar valores NaN con 0
 data.fillna(0, inplace=True)
 
-# Balancear las clases (0, 1, 2, 3, 4)
+# Balancear las clases (0, 1, 2, 3)
 min_count = data['label'].value_counts().min()
 balanced_data = data.groupby('label', group_keys=False)\
                     .apply(lambda x: x.sample(n=min_count, random_state=42))\
@@ -98,12 +99,12 @@ X_train, X_test, y_train, y_test = train_test_split(X_sequences, y_sequences, te
 
 # Construcción del modelo LSTM para clasificación multiclase
 model = Sequential([
-    LSTM(32, return_sequences=True, input_shape=(sequence_length, X_train.shape[2]), 
+    LSTM(64, return_sequences=True, input_shape=(sequence_length, X_train.shape[2]), 
          kernel_regularizer=regularizers.l2(0.01)),
-    Dropout(0.4),
-    LSTM(16, return_sequences=True, 
+    Dropout(0.2),
+    LSTM(32, return_sequences=True, 
          kernel_regularizer=regularizers.l2(0.01)),
-    Dropout(0.6),
+    Dropout(0.2),
     Dense(4, activation='softmax', 
           kernel_regularizer=regularizers.l2(0.01))
 ])
@@ -111,7 +112,7 @@ model = Sequential([
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 early_stopping = EarlyStopping(monitor='val_loss', patience=2, restore_best_weights=True)
 
-model.fit(X_train, y_train, epochs=4, batch_size=500, validation_data=(X_test, y_test), callbacks=[early_stopping])
+model.fit(X_train, y_train, epochs=2, batch_size=1500, validation_data=(X_test, y_test), callbacks=[early_stopping])
 
 # Evaluación en el conjunto de prueba
 y_pred = model.predict(X_test)
@@ -124,10 +125,10 @@ print("Reporte de clasificación:")
 print(classification_report(y_test.flatten(), y_pred_classes.flatten()))
 
 # Guardar modelo, scaler y los encoders
-model.save('./app/machineModels/models/arpFlooding+.h5')
-joblib.dump(scaler, './app/machineModels/models/arpFlooding+.pkl')
-joblib.dump(encoders, './app/machineModels/models/arpFlooding+_encoders.pkl')
+model.save('./app/machineModels/models/arpFloodingLSTM.h5')
+joblib.dump(scaler, './app/machineModels/models/arpFloodingLSTM.pkl')
+joblib.dump(encoders, './app/machineModels/encoders/arpFloodingLSTM.pkl')
 
-balanced_data.to_csv('./app/machineModels/dataSets/arpFlooding+_transformed.csv', index=False)
+balanced_data.to_csv('./app/machineModels/dataSetsTransformed/arpFloodingLSTM.csv', index=False)
 
 print("Modelo LSTM multiclase entrenado y guardado correctamente.")

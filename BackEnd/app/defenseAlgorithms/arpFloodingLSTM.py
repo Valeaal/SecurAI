@@ -16,9 +16,9 @@ running = False  # Control de ejecución
 warnings.simplefilter("ignore", category=UserWarning)
 
 # Cargar modelo, scaler y el diccionario de encoders
-model = load_model('./app/machineModels/models/arpFlooding+.h5')
-scaler = joblib.load('./app/machineModels/models/arpFlooding+.pkl')
-label_encoders = joblib.load('./app/machineModels/models/arpFlooding+_encoders.pkl')
+model = load_model('./app/machineModels/models/arpFloodingLSTM.h5')
+scaler = joblib.load('./app/machineModels/models/arpFloodingLSTM.pkl')
+label_encoders = joblib.load('./app/machineModels/encoders/arpFloodingLSTM.pkl')
 
 # Variables globales
 prev_time = None
@@ -150,7 +150,7 @@ def detect():
                             arp_type = "reply" if packet[ARP].op == 2 else "request"
                             
                             # Imprimir las probabilidades de todas las clases
-                            print(f"Probabilidades por paquete (Clase 0-3): {probabilidad.tolist()}")  # Esto imprimirá las probabilidades de cada clase por paquete
+                            # print(f"Probabilidades por paquete (Clase 0-3): {probabilidad.tolist()}")  # Esto imprimirá las probabilidades de cada clase por paquete
 
                             # Seleccionar la mayor probabilidad
                             max_prob_class = np.argmax(probabilidad)  # Selecciona el índice de la clase con la mayor probabilidad

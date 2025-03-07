@@ -10,7 +10,7 @@ from tensorflow.keras.callbacks import EarlyStopping # type: ignore
 import joblib
 
 # Cargar el dataset
-data = pd.read_csv('./app/machineModels/dataSets/arpFlooding.csv')
+data = pd.read_csv('./app/machineModels/dataSetsOriginals/arpFlooding.csv')
 
 # Filtrar solo las filas donde Protocol == 0
 data = data[data['Protocol'] == 0]
@@ -160,7 +160,7 @@ model.fit(X_train, y_train, epochs=2, batch_size=32, validation_data=(X_test, y_
 model.save('./app/machineModels/models/arpFlooding.h5')
 joblib.dump(scaler, './app/machineModels/models/arpFlooding.pkl')
 
-data.to_csv('./app/machineModels/dataSets/arpFlooding_transformed.csv', index=False)
+data.to_csv('./app/machineModels/dataSetsTransformed/arpFlooding.csv', index=False)
 
 print("Dataset actualizado guardado correctamente")
 print("Primeras filas del dataset:")

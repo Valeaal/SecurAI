@@ -26,6 +26,9 @@
 {\listtext	\uc0\u8226 	}Cada vez que se quiera avisar de un paquete malicioso, llamar a la funci\'f3n attackMonitor de __init__.py, pas\'e1ndole un JSON\
 {\listtext	\uc0\u8226 	}Para que un m\'f3dulo notifique un ataque, deber\'e1 de usar la funci\'f3n notifyAttack() del objeto global attackNotifier, importarlo desde app\
 {\listtext	\uc0\u8226 	}El nombre del .py del m\'f3dulo de detecci\'f3n ser\'e1 el que aparecer\'e1 en el FrontEnd.\
+\ls1\ilvl0{\listtext	\uc0\u8226 	}Para entrenar los modelos, hay que acceder desde la carpeta Backend para que funcionen las rutas relativas es decir, desde VSCode con la terminal situada en Backend, ejecutar 
+\i python3 app/machineModels/machineTrain/arpFlooding.py 
+\i0 por ejemplo.\
 \pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
 
 \b\fs48 \cf3 Frontend\
@@ -37,11 +40,11 @@
 \pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
 
 \b\fs48 \cf2 \ul Consideraciones sobre el rendimiento y funcionamiento de los modelos\
-\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
 \cf3 \ulnone arpFlooding\
 \pard\tx220\tx720\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\li720\fi-720\pardirnatural\partightenfactor0
 \ls3\ilvl0
 \b0\fs36 \cf4 {\listtext	\uc0\u8226 	}Es una red normal dense.\
+\ls3\ilvl0{\listtext	\uc0\u8226 	}Usa el dataset arpFlooding\
 \pard\tx220\tx720\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\li720\fi-720\pardirnatural\partightenfactor0
 \ls4\ilvl0\cf4 {\listtext	\uc0\u8226 	}No detecta como ataques los tipo request\
 {\listtext	\uc0\u8226 	}Funciona con un contador de IPs/Mac repetidas\
@@ -50,15 +53,19 @@
 \i0 \cf4 \
 \pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
 
-\b\fs48 \cf3 arpFlooding+\
+\b\fs48 \cf3 arpFloodingLSTM\
 \pard\tx220\tx720\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\li720\fi-720\pardirnatural\partightenfactor0
 \ls5\ilvl0
 \b0\fs36 \cf4 {\listtext	\uc0\u8226 	}Es una red LSTM\
 {\listtext	\uc0\u8226 	}Funciona con el tiempo delta y n\'famero de trama\
-{\listtext	\uc0\u8226 	}El modelo siempre detecta las primeras tramas del batch como benignas, lo esperable\
-{\listtext	\uc0\u8226 	}En tr\'e1fico normal, hay demasiados falsos positivos (spoofing).\
-{\listtext	\uc0\u8226 	}En tr\'e1fico maligno, empieza por trafico normal, luego spoofing (muy larga esta etapa) y luego flooding. El spoofing es demasiado recurrente.\
+\ls5\ilvl0{\listtext	\uc0\u8226 	}Usa como dataset original arpFlooding+, luego genera uno transormado arpFloodingLSTM\
+{\listtext	\uc0\u8226 	}Por ello, genera un diccionario de encoders para el nombre del protocolo de cada paquete.\
+\ls5\ilvl0{\listtext	\uc0\u8226 	}Dataset ordenado\
+{\listtext	\uc0\u8226 	}Con todas las tramas, no solo ARP\
+{\listtext	\uc0\u8226 	}Hemos suprimido la clase 1, arpSpoofing\
+{\listtext	\uc0\u8226 	}Problema: En tr\'e1fico normal, hay demasiados falsos positivos. Documentar como enfoque no v\'e1lido por ahora.\
+\ls5\ilvl0{\listtext	\uc0\u8226 	}Posibles correcciones: Implementar como enfoque el que este tipo de red predice el siguiente Label, as\'ed que podr\'edamos por lote decir si el siguiente lote ser\'e1 ataque o no.\
 \pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
 
-\b\fs48 \cf2 \ul \ulc2 \
+\b\fs48 \cf2 \ul \
 }
