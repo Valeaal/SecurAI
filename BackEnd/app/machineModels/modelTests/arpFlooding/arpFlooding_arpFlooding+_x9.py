@@ -3,7 +3,7 @@ import numpy as np
 import re
 import joblib
 from sklearn.metrics import classification_report
-from tensorflow.keras.models import load_model #type: ignore
+from tensorflow.keras.models import load_model # type: ignore
 
 # ── Rutas de archivos ───────────────────────────────────────────────
 DATASET_PATH = "app/machineModels/dataSetsOriginals/arpFlooding+.csv"
@@ -24,13 +24,16 @@ data = data[data['protocol'] == 'ARP'].copy()
 data = data[data['label'].isin([0, 2])].copy()
 data['label'] = data['label'].replace({2: 1})  # Convertir 2 en 1 (problema binario)
 
-# Función para normalizar una dirección MAC (quitar espacios y convertir a mayúsculas)
+# ── Triplicar el dataset ───────────────────────────────────────
+data = pd.concat([data] * 9, ignore_index=True)
+
+# Función para normalizar una dirección MAC
 def normalize_mac(mac):
     if isinstance(mac, str):
         return mac.strip().upper()
     return ""
 
-# Diccionarios globales para las métricas ARP (clave: MAC normalizada)
+# Diccionarios globales para métricas ARP
 arp_counts = {}
 arp_request_counts = {}
 arp_reply_counts = {}
@@ -44,7 +47,6 @@ def calculate_arp_metrics(row):
       - arp_reply_count
       - ratio_request_reply
       - unique_dst_ip_count
-    Se usa la MAC normalizada.
     """
     src_mac = normalize_mac(row['arp.src.hw_mac'])
     op_code = row['arp.opcode']
@@ -79,7 +81,7 @@ def calculate_arp_metrics(row):
 
 # ── Transformación del dataset ───────────────────────────────────────
 
-# Calcular la columna mac_diferente_eth_arp comparando 'eth.src' y 'arp.src.hw_mac' como strings
+# Calcular la columna mac_diferente_eth_arp
 data['mac_diferente_eth_arp'] = data.apply(
     lambda row: 1 if normalize_mac(row['eth.src']) != normalize_mac(row['arp.src.hw_mac']) else 0,
     axis=1
@@ -89,49 +91,36 @@ data['mac_diferente_eth_arp'] = data.apply(
 metrics = data.apply(calculate_arp_metrics, axis=1)
 data = pd.concat([data, metrics], axis=1)
 
-# Crear la columna op_code(arp) a partir de arp.opcode
+# Crear la columna op_code(arp)
 data['op_code(arp)'] = data['arp.opcode'].astype(str).apply(
     lambda x: 1 if x.lower() == 'request' else (2 if x.lower() == 'reply' else x)
 )
 
-# Seleccionar las columnas finales y renombrar 'label' a 'Label'
+# Seleccionar columnas finales
 final_columns = [
-    'op_code(arp)',              # Código de operación ARP
-    'mac_diferente_eth_arp',
-    'arp_packets_por_mac',
-    'arp_request_count',
-    'arp_reply_count',
-    'ratio_request_reply',
-    'unique_dst_ip_count',
-    'label'                     # Se renombrará a Label
+    'op_code(arp)', 'mac_diferente_eth_arp', 'arp_packets_por_mac',
+    'arp_request_count', 'arp_reply_count', 'ratio_request_reply',
+    'unique_dst_ip_count', 'label'  
 ]
 final_data = data[final_columns].copy()
 final_data.rename(columns={'label': 'Label'}, inplace=True)
 
-# Reordenar columnas (opcional)
-ordered_columns = [
-    'op_code(arp)', 'mac_diferente_eth_arp', 'arp_packets_por_mac',
-    'arp_request_count', 'arp_reply_count', 'ratio_request_reply',
-    'unique_dst_ip_count', 'Label'
-]
-final_data = final_data[ordered_columns]
-
-# Guardar el dataset final transformado
-output_path = "app/machineModels/modelTests/arpFlooding_arpFlooding+.csv"
+# ── Guardar el dataset triplicado ───────────────────────────────────────
+output_path = "app/machineModels/modelTests/arpFlooding/arpFlooding_arpFlooding+_x9.csv"
 final_data.to_csv(output_path, index=False)
-print(f"Dataset transformado guardado en: {output_path}")
+print(f"Dataset triplicado guardado en: {output_path}")
 print(final_data.head())
 
-# ── Evaluación del modelo con el dataset transformado ───────────────────────
+# ── Evaluación del modelo ───────────────────────────────────────
 
 # Separar características y etiquetas
 X = final_data.drop(columns=['Label']).to_numpy()
 y_true = final_data['Label'].to_numpy()
 
-# Escalar las características usando el scaler cargado
+# Escalar las características
 X_scaled = scaler.transform(X)
 
-# Predecir con el modelo (asumiendo salida con sigmoid)
+# Predecir con el modelo
 predictions = model.predict(X_scaled)
 y_pred = (predictions >= 0.5).astype(int).reshape(-1)
 
