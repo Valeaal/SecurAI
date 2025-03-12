@@ -4,9 +4,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from tensorflow.keras.models import Sequential # type: ignore
-from tensorflow.keras.layers import Dense # type: ignore
-from tensorflow.keras.callbacks import EarlyStopping # type: ignore
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score
 import joblib
 
 # Cargar el dataset
@@ -136,7 +135,7 @@ plt.ylabel('Cantidad')
 plt.tight_layout()
 plt.show()
 
-# 4. Usar los datos balanceados para el modelo
+# 4. Preparar los datos para el modelo
 X = balanced_data.drop(columns=['Label'])
 y = balanced_data['Label']
 
@@ -144,24 +143,25 @@ y = balanced_data['Label']
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
-# Dividir en conjunto de entrenamiento y prueba
+# División en entrenamiento y prueba
 X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.3, random_state=42)
 
-# Construir y entrenar el modelo (igual que antes)
-model = Sequential([
-    Dense(16, activation='relu', input_shape=(X_train.shape[1],)),
-    Dense(1, activation='sigmoid')
-])
+# Crear y entrenar el modelo SVM
+model = SVC(kernel='rbf', probability=True, random_state=42)
+model.fit(X_train, y_train)
 
-model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-early_stopping = EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
-model.fit(X_train, y_train, epochs=2, batch_size=32, validation_data=(X_test, y_test), callbacks=[early_stopping])
+# Evaluar el modelo
+y_pred = model.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
+print(f"\nPrecisión del modelo SVM: {accuracy * 100:.2f}%")
 
-model.save('./app/machineModels/models/arpFlooding.h5')
-joblib.dump(scaler, './app/machineModels/models/arpFlooding.pkl')
+# Guardar el modelo y el escalador
+joblib.dump(model, './app/machineModels/models/arpFloodingSVMmodel.pkl')
+joblib.dump(scaler, './app/machineModels/models/arpFloodingSVMscaler.pkl')
 
-data.to_csv('./app/machineModels/dataSetsTransformed/arpFlooding.csv', index=False)
+# Guardar el dataset transformado
+data.to_csv('./app/machineModels/dataSetsTransformed/arpFloodingSVM.csv', index=False)
 
-print("Dataset actualizado guardado correctamente")
+print("\n✅ Dataset actualizado guardado correctamente.")
 print("Primeras filas del dataset:")
 print(data.head())
