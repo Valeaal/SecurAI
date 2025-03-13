@@ -92,8 +92,8 @@ def detect():
         ### PROCESO DE ANALISIS ###
         if running and packet.haslayer(ARP):
             features = extract_features(packet)
-            print("----------------------------------------")
-            print("Características calculadas:", features[0])
+            print(f"----------------arpFloodingSVM------------------------")
+            # print("Características calculadas:", features[0])
 
             if packet.haslayer(ARP) and packet[ARP].op == 1:
                 print(f"ARP Request: Busca la IP {packet[ARP].pdst}")
