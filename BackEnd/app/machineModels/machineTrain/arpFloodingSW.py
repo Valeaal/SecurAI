@@ -119,6 +119,8 @@ final_columns = [
 final_data = data[final_columns].copy()
 final_data.rename(columns={'label': 'Label'}, inplace=True)
 
+final_data = final_data.sample(frac=1, random_state=42).reset_index(drop=True)
+
 # ── Guardar el dataset transformado ─────────────────────────────────────────────
 csv_output_path = './app/machineModels/dataSetsTransformed/arpFloodingSW.csv'
 final_data.to_csv(csv_output_path, index=False)
