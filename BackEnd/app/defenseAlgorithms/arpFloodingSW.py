@@ -37,7 +37,7 @@ def extract_features(packet):
         current_time = packet.time
 
         # ── Actualizar la ventana deslizante: eliminar paquetes antiguos ──
-        while arp_window and arp_window[0]['time'] < current_time - 120:
+        while arp_window and arp_window[0]['time'] < current_time - 90:
             arp_window.pop(0)
         
         # Agregar la información del paquete actual a la ventana

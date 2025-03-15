@@ -1,0 +1,165 @@
+
+============================================================
+Evaluando modelo con ventana deslizante de 30 segundos
+============================================================
+Ventana: 30 seg. - Test Loss: 0.3720 - Test Accuracy: 0.9321
+Classification Report:
+              precision    recall  f1-score   support
+
+           0       0.89      0.99      0.94       329
+           1       0.99      0.87      0.92       304
+
+    accuracy                           0.93       633
+   macro avg       0.94      0.93      0.93       633
+weighted avg       0.94      0.93      0.93       633
+
+
+============================================================
+Evaluando modelo con ventana deslizante de 50 segundos
+============================================================
+Ventana: 50 seg. - Test Loss: 0.3353 - Test Accuracy: 0.9084
+Classification Report:
+              precision    recall  f1-score   support
+
+           0       0.85      1.00      0.92       329
+           1       1.00      0.81      0.89       304
+
+    accuracy                           0.91       633
+   macro avg       0.93      0.90      0.91       633
+weighted avg       0.92      0.91      0.91       633
+
+
+============================================================
+Evaluando modelo con ventana deslizante de 70 segundos
+============================================================
+Ventana: 70 seg. - Test Loss: 0.4054 - Test Accuracy: 0.9068
+Classification Report:
+              precision    recall  f1-score   support
+
+           0       0.85      1.00      0.92       329
+           1       1.00      0.81      0.89       304
+
+    accuracy                           0.91       633
+   macro avg       0.92      0.90      0.91       633
+weighted avg       0.92      0.91      0.91       633
+
+
+============================================================
+Evaluando modelo con ventana deslizante de 90 segundos
+============================================================
+Ventana: 90 seg. - Test Loss: 0.5495 - Test Accuracy: 0.9479
+Classification Report:
+              precision    recall  f1-score   support
+
+           0       0.91      1.00      0.95       329
+           1       1.00      0.89      0.94       304
+
+    accuracy                           0.95       633
+   macro avg       0.95      0.95      0.95       633
+weighted avg       0.95      0.95      0.95       633
+
+
+============================================================
+Evaluando modelo con ventana deslizante de 110 segundos
+============================================================
+Ventana: 110 seg. - Test Loss: 0.4504 - Test Accuracy: 0.9210
+Classification Report:
+              precision    recall  f1-score   support
+
+           0       0.87      1.00      0.93       329
+           1       1.00      0.84      0.91       304
+
+    accuracy                           0.92       633
+   macro avg       0.93      0.92      0.92       633
+weighted avg       0.93      0.92      0.92       633
+
+
+============================================================
+Evaluando modelo con ventana deslizante de 130 segundos
+============================================================
+Ventana: 130 seg. - Test Loss: 0.4122 - Test Accuracy: 0.9463
+Classification Report:
+              precision    recall  f1-score   support
+
+           0       0.91      1.00      0.95       329
+           1       1.00      0.89      0.94       304
+
+    accuracy                           0.95       633
+   macro avg       0.95      0.94      0.95       633
+weighted avg       0.95      0.95      0.95       633
+
+
+============================================================
+Evaluando modelo con ventana deslizante de 150 segundos
+============================================================
+Ventana: 150 seg. - Test Loss: 0.4538 - Test Accuracy: 0.9447
+Classification Report:
+              precision    recall  f1-score   support
+
+           0       0.90      1.00      0.95       329
+           1       1.00      0.88      0.94       304
+
+    accuracy                           0.94       633
+   macro avg       0.95      0.94      0.94       633
+weighted avg       0.95      0.94      0.94       633
+
+
+============================================================
+Evaluando modelo con ventana deslizante de 170 segundos
+============================================================
+Ventana: 170 seg. - Test Loss: 0.3757 - Test Accuracy: 0.9321
+Classification Report:
+              precision    recall  f1-score   support
+
+           0       0.88      1.00      0.94       329
+           1       1.00      0.86      0.92       304
+
+    accuracy                           0.93       633
+   macro avg       0.94      0.93      0.93       633
+weighted avg       0.94      0.93      0.93       633
+
+
+============================================================
+Evaluando modelo con ventana deslizante de 190 segundos
+============================================================
+Ventana: 190 seg. - Test Loss: 0.5653 - Test Accuracy: 0.7725
+Classification Report:
+              precision    recall  f1-score   support
+
+           0       0.73      0.90      0.80       329
+           1       0.85      0.63      0.73       304
+
+    accuracy                           0.77       633
+   macro avg       0.79      0.77      0.77       633
+weighted avg       0.79      0.77      0.77       633
+
+
+============================================================
+Evaluando modelo con ventana deslizante de 210 segundos
+============================================================
+Ventana: 210 seg. - Test Loss: 0.4185 - Test Accuracy: 0.9400
+Classification Report:
+              precision    recall  f1-score   support
+
+           0       0.93      0.95      0.94       329
+           1       0.95      0.93      0.94       304
+
+    accuracy                           0.94       633
+   macro avg       0.94      0.94      0.94       633
+weighted avg       0.94      0.94      0.94       633
+
+
+============================================================
+Evaluando modelo con ventana deslizante de 230 segundos
+============================================================
+Ventana: 230 seg. - Test Loss: 0.2652 - Test Accuracy: 0.9115
+Classification Report:
+              precision    recall  f1-score   support
+
+           0       0.85      1.00      0.92       329
+           1       1.00      0.82      0.90       304
+
+    accuracy                           0.91       633
+   macro avg       0.93      0.91      0.91       633
+weighted avg       0.92      0.91      0.91       633
+

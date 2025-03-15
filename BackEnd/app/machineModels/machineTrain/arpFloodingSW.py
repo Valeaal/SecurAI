@@ -8,6 +8,7 @@ from sklearn.model_selection import train_test_split
 from tensorflow.keras.layers import Dense  # type: ignore
 from tensorflow.keras.models import Sequential  # type: ignore
 from tensorflow.keras.callbacks import EarlyStopping  # type: ignore
+from sklearn.utils import resample  # Para balancear las clases
 
 # ── Cargar y filtrar el dataset antes de cualquier otra operación ───────────
 data = pd.read_csv('./app/machineModels/dataSetsOriginals/arpFlooding+.csv')
@@ -19,7 +20,7 @@ data = data[data['protocol'] == 'ARP'].copy()
 data = data[data['label'].isin([0, 2])].copy()
 data['label'] = data['label'].replace({2: 1})  # Convertir 2 en 1 (problema binario)
 
-# ── Añadir columna: Conteo de ARP en los últimos 2 minutos (ventana deslizante) ───────────
+# ── Añadir columna: Conteo de ARP en los últimos segundos (ventana deslizante) ───────────
 # Asegurarse de que 'frame.number' y 'frame.time_delta' son numéricos y ordenar por 'frame.number'
 data['frame.number'] = pd.to_numeric(data['frame.number'], errors='coerce')
 data['frame.time_delta'] = pd.to_numeric(data['frame.time_delta'], errors='coerce')
@@ -28,12 +29,12 @@ data = data.sort_values(by='frame.number').reset_index(drop=True)
 # Calcular el tiempo absoluto acumulado a partir de 'frame.time_delta'
 data['abs_time'] = data['frame.time_delta'].cumsum()
 
-# Calcular el número total de paquetes en los últimos 2 minutos (para cualquier MAC)
+# Calcular el número total de paquetes en los últimos segundos (para cualquier MAC)
 times = data['abs_time'].values
 window_counts = np.empty_like(times, dtype=int)
 start = 0
 for i in range(len(times)):
-    while times[i] - times[start] > 120:
+    while times[i] - times[start] > 90:
         start += 1
     window_counts[i] = i - start + 1
 data['arp_count_sliding_window'] = window_counts
@@ -54,8 +55,8 @@ ratio_request_reply_sliding = np.empty(n, dtype=float)
 
 start = 0
 for i in range(n):
-    # Ajustar la ventana: avanzar el puntero mientras la diferencia de tiempo sea mayor a 120 segundos
-    while data.loc[i, 'abs_time'] - data.loc[start, 'abs_time'] > 120:
+    # Ajustar la ventana: avanzar el puntero mientras la diferencia de tiempo sea mayor a X segundos
+    while data.loc[i, 'abs_time'] - data.loc[start, 'abs_time'] > 90:
         start += 1
 
     # Normalizar la MAC de origen del paquete actual
@@ -119,12 +120,35 @@ final_columns = [
 final_data = data[final_columns].copy()
 final_data.rename(columns={'label': 'Label'}, inplace=True)
 
-final_data = final_data.sample(frac=1, random_state=42).reset_index(drop=True)
+"""
+# ── Balanceo de clases (undersampling de la clase mayoritaria) ───────────
+# Primero, separar las clases
+class_0 = final_data[final_data['Label'] == 0]
+class_1 = final_data[final_data['Label'] == 1]
 
-# ── Guardar el dataset transformado ─────────────────────────────────────────────
-csv_output_path = './app/machineModels/dataSetsTransformed/arpFloodingSW.csv'
+# Imprimir el número de muestras antes del balanceo
+print(f"Antes del balanceo:")
+print(f"Clase 0: {len(class_0)} muestras")
+print(f"Clase 1: {len(class_1)} muestras")
+
+# Realizar un undersampling de la clase mayoritaria para igualar el número de muestras
+if len(class_0) < len(class_1):
+    class_1_resampled = resample(class_1, replace=False, n_samples=len(class_0), random_state=42)
+    final_data = pd.concat([class_0, class_1_resampled]).sample(frac=1, random_state=42)
+    print(f"\nDespués del balanceo:")
+    print(f"Clase 1: {len(class_1_resampled)} muestras")
+else:
+    class_0_resampled = resample(class_0, replace=False, n_samples=len(class_1), random_state=42)
+    final_data = pd.concat([class_0_resampled, class_1]).sample(frac=1, random_state=42)
+    print(f"\nDespués del balanceo:")
+    print(f"Clase 0: {len(class_0_resampled)} muestras")"
+
+"""
+
+# ── Guardar el dataset ─────────────────────────────────────────────
+csv_output_path = './app/machineModels/dataSetsTransformed/arpFloodingSW_balanced.csv'
 final_data.to_csv(csv_output_path, index=False)
-print(f"Dataset actualizado guardado correctamente en: {csv_output_path}")
+print(f"Dataset balanceado guardado correctamente en: {csv_output_path}")
 
 # ── Entrenamiento del modelo ─────────────────────────────────────────────
 # Separar características y etiqueta
