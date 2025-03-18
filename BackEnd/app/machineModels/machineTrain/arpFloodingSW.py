@@ -120,30 +120,29 @@ final_columns = [
 final_data = data[final_columns].copy()
 final_data.rename(columns={'label': 'Label'}, inplace=True)
 
-"""
+
 # ── Balanceo de clases (undersampling de la clase mayoritaria) ───────────
 # Primero, separar las clases
 class_0 = final_data[final_data['Label'] == 0]
 class_1 = final_data[final_data['Label'] == 1]
 
-# Imprimir el número de muestras antes del balanceo
-print(f"Antes del balanceo:")
-print(f"Clase 0: {len(class_0)} muestras")
-print(f"Clase 1: {len(class_1)} muestras")
+reduction_factor = 0.8  # Porcentaje al que se reducirá la clase mayoritaria
 
-# Realizar un undersampling de la clase mayoritaria para igualar el número de muestras
+# Mostrar tamaño de clases originales
+print(f"Tamaño original - Clase 0: {len(class_0)}, Clase 1: {len(class_1)}")
+
 if len(class_0) < len(class_1):
-    class_1_resampled = resample(class_1, replace=False, n_samples=len(class_0), random_state=42)
+    new_size = int(len(class_1) * reduction_factor)
+    print(f"Reduciendo Clase 1 de {len(class_1)} a {new_size} muestras.")
+    
+    class_1_resampled = resample(class_1, replace=False, n_samples=new_size, random_state=42)
     final_data = pd.concat([class_0, class_1_resampled]).sample(frac=1, random_state=42)
-    print(f"\nDespués del balanceo:")
-    print(f"Clase 1: {len(class_1_resampled)} muestras")
 else:
-    class_0_resampled = resample(class_0, replace=False, n_samples=len(class_1), random_state=42)
+    new_size = int(len(class_0) * reduction_factor)
+    print(f"Reduciendo Clase 0 de {len(class_0)} a {new_size} muestras.")
+    
+    class_0_resampled = resample(class_0, replace=False, n_samples=new_size, random_state=42)
     final_data = pd.concat([class_0_resampled, class_1]).sample(frac=1, random_state=42)
-    print(f"\nDespués del balanceo:")
-    print(f"Clase 0: {len(class_0_resampled)} muestras")"
-
-"""
 
 # ── Guardar el dataset ─────────────────────────────────────────────
 csv_output_path = './app/machineModels/dataSetsTransformed/arpFloodingSW_balanced.csv'

@@ -1,17 +1,4 @@
 ============================================================
-Ventana: 30 seg. - Test Loss: 52.3171 - Test Accuracy: 0.2870
-Classification Report:
-              precision    recall  f1-score   support
-
-           0       0.26      1.00      0.41      1054
-           1       1.00      0.05      0.10      3218
-
-    accuracy                           0.29      4272
-   macro avg       0.63      0.53      0.26      4272
-weighted avg       0.82      0.29      0.18      4272
-
-
-============================================================
 Ventana: 60 seg. - Test Loss: 53.0532 - Test Accuracy: 0.2882
 Classification Report:
               precision    recall  f1-score   support
@@ -22,19 +9,6 @@ Classification Report:
     accuracy                           0.29      4272
    macro avg       0.63      0.53      0.26      4272
 weighted avg       0.82      0.29      0.18      4272
-
-
-============================================================
-Ventana: 90 seg. - Test Loss: 54.7489 - Test Accuracy: 0.2769
-Classification Report:
-              precision    recall  f1-score   support
-
-           0       0.25      1.00      0.41      1054
-           1       0.99      0.04      0.08      3218
-
-    accuracy                           0.28      4272
-   macro avg       0.62      0.52      0.24      4272
-weighted avg       0.81      0.28      0.16      4272
 
 
 ============================================================
@@ -51,28 +25,80 @@ weighted avg       0.81      0.26      0.13      4272
 
 
 ============================================================
-Ventana: 150 seg. - Test Loss: 56.3489 - Test Accuracy: 0.2610
+Ventana: 240 seg. - Test Loss: 57.3446 - Test Accuracy: 0.2523
 Classification Report:
               precision    recall  f1-score   support
 
            0       0.25      1.00      0.40      1054
-           1       0.98      0.02      0.04      3218
+           1       1.00      0.01      0.01      3218
 
-    accuracy                           0.26      4272
-   macro avg       0.62      0.51      0.22      4272
-weighted avg       0.80      0.26      0.13      4272
+    accuracy                           0.25      4272
+   macro avg       0.62      0.50      0.21      4272
+weighted avg       0.81      0.25      0.11      4272
 
 
 ============================================================
-Ventana: 180 seg. - Test Loss: 56.7367 - Test Accuracy: 0.2577
+Ventana: 360 seg. - Test Loss: 57.3441 - Test Accuracy: 0.2523
 Classification Report:
               precision    recall  f1-score   support
 
            0       0.25      1.00      0.40      1054
-           1       0.98      0.01      0.03      3218
+           1       1.00      0.01      0.01      3218
 
-    accuracy                           0.26      4272
-   macro avg       0.61      0.51      0.21      4272
-weighted avg       0.80      0.26      0.12      4272
+    accuracy                           0.25      4272
+   macro avg       0.62      0.50      0.21      4272
+weighted avg       0.81      0.25      0.11      4272
+
+
+============================================================
+Ventana: 480 seg. - Test Loss: 57.3441 - Test Accuracy: 0.2523
+Classification Report:
+              precision    recall  f1-score   support
+
+           0       0.25      1.00      0.40      1054
+           1       1.00      0.01      0.01      3218
+
+    accuracy                           0.25      4272
+   macro avg       0.62      0.50      0.21      4272
+weighted avg       0.81      0.25      0.11      4272
+
+
+============================================================
+Ventana: 600 seg. - Test Loss: 57.3441 - Test Accuracy: 0.2523
+Classification Report:
+              precision    recall  f1-score   support
+
+           0       0.25      1.00      0.40      1054
+           1       1.00      0.01      0.01      3218
+
+    accuracy                           0.25      4272
+   macro avg       0.62      0.50      0.21      4272
+weighted avg       0.81      0.25      0.11      4272
+
+
+============================================================
+Ventana: 720 seg. - Test Loss: 57.3441 - Test Accuracy: 0.2523
+Classification Report:
+              precision    recall  f1-score   support
+
+           0       0.25      1.00      0.40      1054
+           1       1.00      0.01      0.01      3218
+
+    accuracy                           0.25      4272
+   macro avg       0.62      0.50      0.21      4272
+weighted avg       0.81      0.25      0.11      4272
+
+
+============================================================
+Ventana: 840 seg. - Test Loss: 57.3441 - Test Accuracy: 0.2523
+Classification Report:
+              precision    recall  f1-score   support
+
+           0       0.25      1.00      0.40      1054
+           1       1.00      0.01      0.01      3218
+
+    accuracy                           0.25      4272
+   macro avg       0.62      0.50      0.21      4272
+weighted avg       0.81      0.25      0.11      4272
 
 

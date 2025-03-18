@@ -114,7 +114,7 @@ def main():
     print("Cargando dataset...")
     data = pd.read_csv(dataset_path)
 
-    window_durations = [30, 60, 90, 120, 150, 180]
+    window_durations = [60, 120, 240, 360, 480, 600, 720, 840]
     results = []
 
     for window in window_durations:

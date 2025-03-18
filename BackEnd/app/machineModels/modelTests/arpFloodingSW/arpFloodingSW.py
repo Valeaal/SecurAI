@@ -124,12 +124,24 @@ for window_length in window_values:
     class_0 = final_data[final_data['Label'] == 0]
     class_1 = final_data[final_data['Label'] == 1]
 
+    reduction_factor = 0.8  # Porcentaje al que se reducirá la clase mayoritaria
+
+    # Mostrar tamaño de clases originales
+    print(f"Tamaño original - Clase 0: {len(class_0)}, Clase 1: {len(class_1)}")
+
     if len(class_0) < len(class_1):
-        class_1_resampled = resample(class_1, replace=False, n_samples=len(class_0), random_state=42)
+        new_size = int(len(class_1) * reduction_factor)
+        print(f"Reduciendo Clase 1 de {len(class_1)} a {new_size} muestras.")
+        
+        class_1_resampled = resample(class_1, replace=False, n_samples=new_size, random_state=42)
         final_data = pd.concat([class_0, class_1_resampled]).sample(frac=1, random_state=42)
     else:
-        class_0_resampled = resample(class_0, replace=False, n_samples=len(class_1), random_state=42)
+        new_size = int(len(class_0) * reduction_factor)
+        print(f"Reduciendo Clase 0 de {len(class_0)} a {new_size} muestras.")
+        
+        class_0_resampled = resample(class_0, replace=False, n_samples=new_size, random_state=42)
         final_data = pd.concat([class_0_resampled, class_1]).sample(frac=1, random_state=42)
+
 
     
     X = final_data.drop('Label', axis=1)
