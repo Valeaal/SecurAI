@@ -12,7 +12,7 @@ def getAttackTestsNames():
     return list(attackTests.keys())
 
 def loadAttackTests(path=attackTestsPath):
-    print("Cargando ataques...")
+    print(f"Cargando ataques...")
     attackTests.clear()  # Limpiar ataques previos
 
     for fileName in os.listdir(path):

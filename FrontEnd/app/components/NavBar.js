@@ -163,11 +163,11 @@ export default function NavBar() {
                   </li>
                   <ListItemWithSwitch 
                     title="arpFlooding" 
-                    description="Hueco libre" 
+                    description="Ataque no muy agresivo de desbordamiento de ARP" 
                   />
                   <ListItemWithSwitch 
-                    title="HUECO LIBRE" 
-                    description="Hueco libre"
+                    title="tcpSYN" 
+                    description="Denegación de servicio abriendo demasiadas conexiones TCP"
                   />
                   <ListItemWithSwitch 
                     title="HUECO LIBRE" 
