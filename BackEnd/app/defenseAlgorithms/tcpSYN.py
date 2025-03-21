@@ -8,9 +8,8 @@ from app import attackNotifier
 from app.packetCapture import packetBuffer
 from tensorflow.keras.models import load_model  # type: ignore
 
-
 ALGORITHM_NAME = os.path.basename(__file__).replace('.py', '')
-running = False # Variable global de control para detener el algoritmo
+running = False  # Variable global de control para detener el algoritmo
 
 warnings.simplefilter("ignore", category=UserWarning)
 
@@ -36,27 +35,24 @@ def detect():
             current_packet == None
 
     while True:
-
         if running:
             current_time = time.time()
             if current_time - last_prediction_time >= 5:
                 current_stats = psutil.net_io_counters(pernic=True)[your_interface]
-                # Calcula las características
-                received_packets = current_stats.packets_recv
-                sent_packets = current_stats.packets_sent
-                received_bytes = current_stats.bytes_recv
-                sent_bytes = current_stats.bytes_sent
                 # Calcula los deltas
-                delta_received_packets = received_packets - last_stats.packets_recv
-                delta_received_bytes = received_bytes - last_stats.bytes_recv
-                delta_sent_packets = sent_packets - last_stats.packets_sent
-                delta_sent_bytes = sent_bytes - last_stats.bytes_sent
-                # Número de puerto (ya que solo tenemos uno)
-                port_number = 1
-                # Extrae las características como array
-                features = np.array([[port_number, received_packets, sent_packets, received_bytes, sent_bytes,
-                                      delta_received_packets, delta_received_bytes, delta_sent_packets, delta_sent_bytes
-                                    ]])
+                delta_received_packets = current_stats.packets_recv - last_stats.packets_recv
+                delta_received_bytes = current_stats.bytes_recv - last_stats.bytes_recv
+                delta_sent_packets = current_stats.packets_sent - last_stats.packets_sent
+                delta_sent_bytes = current_stats.bytes_sent - last_stats.bytes_sent
+
+                # Extrae las características como array (solo deltas)
+                features = np.array([[delta_received_packets, delta_received_bytes, delta_sent_packets, delta_sent_bytes]])
+
+                # Mostrar las características antes de la predicción
+                print(f"Características para predicción: "
+                      f"Delta Received Packets={delta_received_packets}, Delta Received Bytes={delta_received_bytes}, "
+                      f"Delta Sent Packets={delta_sent_packets}, Delta Sent Bytes={delta_sent_bytes}")
+
                 # Escala las características
                 features_scaled = scaler.transform(features)
                 # Predice
@@ -66,22 +62,16 @@ def detect():
                     attackNotifier.notifyAttack(ALGORITHM_NAME)
                 else:
                     print(f"✅ Tráfico normal (Prob attk: {prediction[0][0]:.2%})")
+
                 # Actualiza last_stats y last_prediction_time
                 last_stats = current_stats
                 last_prediction_time = current_time
 
-        ### PROCESO DE ENLACE AL SIGUIENTE PAQUET, SIEMPRE HAY QUE MARCAR COMO COMPLETADO ###
-
-        # Asignacion normal del siguiente indice:
-        # Actualizamos siempre el indice del paquete actual, por si el cleaner ha limpiado el buffer y cambiado los mismos.
+        ### PROCESO DE ENLACE AL SIGUIENTE PAQUETE, SIEMPRE HAY QUE MARCAR COMO COMPLETADO ###
         with packetBuffer.mutex:
             current_index = packetBuffer.queue.index(current_packet)
             remaining_packets = len(packetBuffer.queue) - (current_index + 1)
         
-        # Si hemos acabado con el buffer:
-        # El ultimo paquete no se marca como analizado para no perder la referencia del indice.
-        # Cuando el limpiador actualice el buffer, el indice cambiara. 
-        # Como tenemos aun tendremos un elemento, podemos usarlo para hallar el nuevo indice y a partir de ahi seguir.
         while remaining_packets == 0:
             time.sleep(0.5)                
             with packetBuffer.mutex:
@@ -89,7 +79,5 @@ def detect():
                 remaining_packets = len(packetBuffer.queue) - (current_index + 1)
         
         next_packet = packetBuffer.queue[current_index + 1]
-
-        #Cuando ya se ha actualizado el indice de forma segura con el siguiente paquete a analizar
         current_packet.mark_processed(ALGORITHM_NAME)
         current_packet = next_packet

@@ -18,13 +18,9 @@ data = data[data['Label'].isin(['Normal', 'TCP-SYN'])].copy()
 # Convertir etiquetas a binarias: 0 para "Normal", 1 para "TCP-SYN"
 data['Label'] = data['Label'].apply(lambda x: 0 if x == 'Normal' else 1)
 
-# ── Parsear la columna 'Port Number' a enteros ───────────
-# Extraemos el número del puerto (ej. "Port#:1" -> 1) y lo convertimos a entero
-data['Port Number'] = data['Port Number'].str.extract(r'(\d+)').astype(int)
-
 # ── Seleccionar columnas relevantes ───────────
+# Solo mantenemos las métricas no acumulativas (deltas)
 relevant_columns = [
-    'Port Number', 'Received Packets', 'Sent Packets', 'Received Bytes', 'Sent Bytes',
     'Delta Received Packets', 'Delta Received Bytes', 'Delta Sent Packets', 'Delta Sent Bytes',
     'Label'
 ]
@@ -69,13 +65,13 @@ X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.3, 
 
 # ── Construir y entrenar el modelo ───────────
 model = Sequential([
-    Dense(8, activation='relu', input_shape=(X_train.shape[1],)),
+    Dense(16, activation='relu', input_shape=(X_train.shape[1],)),
     Dense(1, activation='sigmoid')
 ])
 
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 early_stopping = EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
-model.fit(X_train, y_train, epochs=3, batch_size=32, validation_data=(X_test, y_test), callbacks=[early_stopping])
+model.fit(X_train, y_train, epochs=5, batch_size=32, validation_data=(X_test, y_test), callbacks=[early_stopping])
 
 # ── Evaluar el modelo en el conjunto de prueba ───────────
 y_pred = (model.predict(X_test) > 0.5).astype("int32")
