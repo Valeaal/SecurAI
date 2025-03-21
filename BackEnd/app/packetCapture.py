@@ -1,6 +1,6 @@
 import queue
 import threading
-from scapy.all import sniff, Packet
+from scapy.all import sniff, Packet, IP
 from .loadDefenseAlgorithms import getDefenseAlgorithmNames
 
 packetBuffer = queue.Queue()
@@ -12,7 +12,7 @@ def packetCapture(socketio):
     def process_packet(packet):
         indexedPacket = PacketIndexed(packet, defenseAlgorithmsNames)
         packetBuffer.put(indexedPacket)
-        # print("Paquete tipo " + str(indexedPacket.get_last_layer()))
+        # print("Paquete tipo " + str(indexedPacket.get_last_layer()) + " IP origen: " + (indexedPacket.packet[IP].src if indexedPacket.packet.haslayer(IP) else "No IP"))       
         socketio.emit('packet_layer_info', {'last_layer': indexedPacket.get_last_layer()})
 
     sniff(prn=process_packet, store=False)
