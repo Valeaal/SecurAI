@@ -9,3 +9,4 @@ flask-socketio
 flask-cors
 matplotlib
 seaborn
+psutil

@@ -75,7 +75,7 @@ model = Sequential([
 
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 early_stopping = EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
-model.fit(X_train, y_train, epochs=10, batch_size=32, validation_data=(X_test, y_test), callbacks=[early_stopping])
+model.fit(X_train, y_train, epochs=5, batch_size=32, validation_data=(X_test, y_test), callbacks=[early_stopping])
 
 # ── Evaluar el modelo en el conjunto de prueba ───────────
 y_pred = (model.predict(X_test) > 0.5).astype("int32")
