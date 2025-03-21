@@ -40,9 +40,9 @@ def detect():
                 # Número de puerto (ya que solo tenemos uno)
                 port_number = 1
                 # Extrae las características como array
-                features = np.array([[received_packets, sent_packets, received_bytes, sent_bytes,
-                                      delta_received_packets, delta_received_bytes, delta_sent_packets, delta_sent_bytes,
-                                      port_number]])
+                features = np.array([[port_number, received_packets, sent_packets, received_bytes, sent_bytes,
+                                      delta_received_packets, delta_received_bytes, delta_sent_packets, delta_sent_bytes
+                                    ]])
                 # Escala las características
                 features_scaled = scaler.transform(features)
                 # Predice

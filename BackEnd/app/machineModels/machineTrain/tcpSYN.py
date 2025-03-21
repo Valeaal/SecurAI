@@ -34,11 +34,6 @@ final_data = data[relevant_columns].copy()
 # Verificar que no haya valores no numéricos en las columnas seleccionadas
 final_data = final_data.dropna()  # Eliminar filas con valores faltantes
 
-# ── Guardar el dataset modificado ───────────
-csv_output_path = './app/machineModels/dataSetsTransformed/tcpSYN.csv'
-final_data.to_csv(csv_output_path, index=False)
-print(f"Dataset modificado guardado en: {csv_output_path}")
-
 # ── Balanceo de clases (undersampling de la clase mayoritaria) ───────────
 class_0 = final_data[final_data['Label'] == 0]  # Normal
 class_1 = final_data[final_data['Label'] == 1]  # TCP-SYN
@@ -56,6 +51,11 @@ else:
 
 print(f"Tamaño balanceado - Clase 0: {len(final_data[final_data['Label'] == 0])}, Clase 1: {len(final_data[final_data['Label'] == 1])}")
 
+# ── Guardar el dataset modificado ───────────
+csv_output_path = './app/machineModels/dataSetsTransformed/tcpSYN.csv'
+final_data.to_csv(csv_output_path, index=False)
+print(f"Dataset modificado guardado en: {csv_output_path}")
+
 # ── Preparar datos para el entrenamiento ───────────
 X = final_data.drop('Label', axis=1)
 y = final_data['Label']
@@ -69,13 +69,13 @@ X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.3, 
 
 # ── Construir y entrenar el modelo ───────────
 model = Sequential([
-    Dense(16, activation='relu', input_shape=(X_train.shape[1],)),
+    Dense(8, activation='relu', input_shape=(X_train.shape[1],)),
     Dense(1, activation='sigmoid')
 ])
 
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 early_stopping = EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
-model.fit(X_train, y_train, epochs=5, batch_size=32, validation_data=(X_test, y_test), callbacks=[early_stopping])
+model.fit(X_train, y_train, epochs=3, batch_size=32, validation_data=(X_test, y_test), callbacks=[early_stopping])
 
 # ── Evaluar el modelo en el conjunto de prueba ───────────
 y_pred = (model.predict(X_test) > 0.5).astype("int32")
