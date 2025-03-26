@@ -10,31 +10,36 @@ from tensorflow.keras.models import Sequential # type: ignore
 from tensorflow.keras.callbacks import EarlyStopping # type: ignore
 
 # ── Cargar y filtrar el dataset ───────────
-data = pd.read_csv('./app/machineModels/dataSetsOriginals/UNR-IDD.csv')
+data = pd.read_csv('./app/machineModels/dataSetsOriginals/tcpSYN.csv')
 
-# Filtrar solo las filas con etiquetas "Normal" y "TCP-SYN"
-data = data[data['Label'].isin(['Normal', 'TCP-SYN'])].copy()
+# Filtrar solo las filas con etiquetas "Normal" y "Attack"
+data = data[data['Label'].isin(['Normal', 'DDOS'])].copy()
 
-# Convertir etiquetas a binarias: 0 para "Normal", 1 para "TCP-SYN"
+# Convertir etiquetas a binarias: 0 para "Normal", 1 para "Attack"
 data['Label'] = data['Label'].apply(lambda x: 0 if x == 'Normal' else 1)
 
 # ── Seleccionar columnas relevantes ───────────
-# Solo mantenemos las métricas no acumulativas (deltas)
 relevant_columns = [
-    'Delta Received Packets', 'Delta Received Bytes', 'Delta Sent Packets', 'Delta Sent Bytes',
+    'SYN Flag Cnt',
+    'ACK Flag Cnt',
+    'Tot Fwd Pkts',
+    'Tot Bwd Pkts',
+    'Flow Duration',
+    'Flow Pkts/s',
+    'Fwd Pkts/s',
+    'Flow IAT Mean',
+    'Fwd IAT Mean',
+    'Down/Up Ratio',
     'Label'
 ]
 
 final_data = data[relevant_columns].copy()
 
-# Verificar que no haya valores no numéricos en las columnas seleccionadas
-final_data = final_data.dropna()  # Eliminar filas con valores faltantes
-
 # ── Balanceo de clases (undersampling de la clase mayoritaria) ───────────
 class_0 = final_data[final_data['Label'] == 0]  # Normal
-class_1 = final_data[final_data['Label'] == 1]  # TCP-SYN
+class_1 = final_data[final_data['Label'] == 1]  # Attack
 
-print(f"Tamaño original - Clase 0 (Normal): {len(class_0)}, Clase 1 (TCP-SYN): {len(class_1)}")
+print(f"Tamaño original - Clase 0 (Normal): {len(class_0)}, Clase 1 (DDOS): {len(class_1)}")
 
 minority_size = min(len(class_0), len(class_1))
 
@@ -76,7 +81,7 @@ model.fit(X_train, y_train, epochs=5, batch_size=32, validation_data=(X_test, y_
 # ── Evaluar el modelo en el conjunto de prueba ───────────
 y_pred = (model.predict(X_test) > 0.5).astype("int32")
 print("\nReporte de clasificación en el conjunto de prueba:")
-print(classification_report(y_test, y_pred, target_names=['Normal', 'TCP-SYN']))
+print(classification_report(y_test, y_pred, target_names=['Normal', 'Attack']))
 
 # ── Guardar el modelo y el escalador ───────────
 model_path = './app/machineModels/models/tcpSYN.h5'
