@@ -10,52 +10,7 @@ from tensorflow.keras.models import Sequential # type: ignore
 from tensorflow.keras.callbacks import EarlyStopping # type: ignore
 
 # ── Cargar y filtrar el dataset ───────────
-data = pd.read_csv('./app/machineModels/dataSetsOriginals/tcpSYN.csv')
-
-# Filtrar solo las filas con etiquetas "Normal" y "Attack"
-data = data[data['Label'].isin(['Normal', 'DDOS'])].copy()
-
-# Convertir etiquetas a binarias: 0 para "Normal", 1 para "Attack"
-data['Label'] = data['Label'].apply(lambda x: 0 if x == 'Normal' else 1)
-
-# ── Seleccionar columnas relevantes ───────────
-relevant_columns = [
-    'SYN Flag Cnt',
-    'ACK Flag Cnt',
-    'Tot Fwd Pkts',
-    'Tot Bwd Pkts',
-    'Flow Duration',
-    'Flow Pkts/s',
-    'Fwd Pkts/s',
-    'Flow IAT Mean',
-    'Fwd IAT Mean',
-    'Down/Up Ratio',
-    'Label'
-]
-
-final_data = data[relevant_columns].copy()
-
-# ── Balanceo de clases (undersampling de la clase mayoritaria) ───────────
-class_0 = final_data[final_data['Label'] == 0]  # Normal
-class_1 = final_data[final_data['Label'] == 1]  # Attack
-
-print(f"Tamaño original - Clase 0 (Normal): {len(class_0)}, Clase 1 (DDOS): {len(class_1)}")
-
-minority_size = min(len(class_0), len(class_1))
-
-if len(class_0) > len(class_1):
-    class_0_resampled = resample(class_0, replace=False, n_samples=minority_size, random_state=42)
-    final_data = pd.concat([class_0_resampled, class_1]).sample(frac=1, random_state=42)
-else:
-    class_1_resampled = resample(class_1, replace=False, n_samples=minority_size, random_state=42)
-    final_data = pd.concat([class_0, class_1_resampled]).sample(frac=1, random_state=42)
-
-print(f"Tamaño balanceado - Clase 0: {len(final_data[final_data['Label'] == 0])}, Clase 1: {len(final_data[final_data['Label'] == 1])}")
-
-# ── Guardar el dataset modificado ───────────
-csv_output_path = './app/machineModels/dataSetsTransformed/tcpSYN.csv'
-final_data.to_csv(csv_output_path, index=False)
-print(f"Dataset modificado guardado en: {csv_output_path}")
+final_data = pd.read_csv('./app/machineModels/dataSetsOriginals/tcpSYN.csv')
 
 # ── Preparar datos para el entrenamiento ───────────
 X = final_data.drop('Label', axis=1)
