@@ -5,7 +5,7 @@ import joblib
 import warnings
 import numpy as np
 from app import attackNotifier
-from scapy.layers.inet import IP, TCP
+from scapy.all import IP, TCP, Ether, IPv6
 from app.packetCapture import packetBuffer
 from tensorflow.keras.models import load_model  # type: ignore
 from collections import defaultdict
@@ -22,13 +22,36 @@ scaler = joblib.load('./app/machineModels/models/tcpSYN.pkl')
 # Diccionario global para mantener estadísticas por flujo
 # Se guardarán: flow_id, last_time y packet_count
 flow_stats = {}
+
 # Esta función obtiene la clave única de un flujo basado en la tupla (Src IP, Dst IP, Src Port, Dst Port)
 def get_flow_key(packet):
-    if IP in packet and TCP in packet:
-        ip_layer = packet[IP]
-        tcp_layer = packet[TCP]
-        return (ip_layer.src, ip_layer.dst, tcp_layer.sport, tcp_layer.dport)
-    return None
+    # Asegurar que el paquete tiene TCP
+    if not TCP in packet:
+        return None
+    
+    tcp = packet[TCP]
+    src_port = tcp.sport
+    dst_port = tcp.dport
+    
+    # Identificar IPv4/IPv6 y obtener direcciones
+    if IP in packet:
+        ip = packet[IP]
+        version = 4
+        src_ip = ip.src
+        dst_ip = ip.dst
+    elif IPv6 in packet:
+        ip = packet[IPv6]
+        version = 6
+        src_ip = ip.src
+        dst_ip = ip.dst
+    
+    # Crear clave única bidireccional (mismo ID para A->B y B->A)
+    if src_ip < dst_ip:
+        flow_key = (version, src_ip, dst_ip, src_port, dst_port)
+    else:
+        flow_key = (version, dst_ip, src_ip, dst_port, src_port)
+    
+    return flow_key
 
 def extract_features(packet):
     """
@@ -107,9 +130,9 @@ def detect():
         with packetBuffer.mutex:
             current_packet = packetBuffer.queue[0] if packetBuffer.queue else None
 
-    # Definir los nombres de las características para mostrar en el log
+    # Definir los nombres de las características para mostrar en el log (sin Flow ID)
     feature_names = [
-        'Flow ID', 'Time Delta', 'FlagSYN', 'FlagURG',
+        'Time Delta', 'FlagSYN', 'FlagURG',
         'FlagACK', 'FlagPSH', 'FlagFIN', 'FlagRST',
         'packetCountInFlow'
     ]
@@ -118,24 +141,27 @@ def detect():
         packet = current_packet.packet  # Referencia al paquete actual
 
         if running and IP in packet and TCP in packet:
+            flow_key = get_flow_key(packet)  # Obtener Flow ID
+            flow_id = flow_stats[flow_key]['flow_id'] if flow_key in flow_stats else "N/A"
             features = extract_features(packet)
+
             if features is not None:
-                # Escalar las características
-                features_scaled = scaler.transform(features)
+                # Quitar el Flow ID de las características antes de escalar y predecir
+                features_scaled = scaler.transform(features[:, 1:])
                 # Realizar la predicción
                 prediction = model.predict(features_scaled, verbose=0)
-                print(f"----------------- {ALGORITHM_NAME} -----------------")
-                print("Características usadas para la predicción:")
-                # Se asume que el modelo retorna una probabilidad de ataque
                 prob_attack = prediction[0][0]
+
+                print(f"----------------- {ALGORITHM_NAME} -----------------")                
                 if prob_attack > 0.5:
                     print(f"🚨 ¡Alerta TCP SYN Flooding! (Prob attk: {prob_attack:.2%})")
                     attackNotifier.notifyAttack(ALGORITHM_NAME)
                 else:
                     print(f"✅ Tráfico normal (Prob attk: {prob_attack:.2%})")
 
-                # Mostrar cada característica y su valor
-                for name, value in zip(feature_names, features[0]):
+                # Mostrar cada característica y su valor (sin Flow ID)
+                print(f"Flow ID: {flow_id} (no se usa)")
+                for name, value in zip(feature_names, features[0][1:]):
                     print(f"{name}: {value}")
 
         # Proceso de pasar al siguiente paquete, siempre marcar el actual como procesado

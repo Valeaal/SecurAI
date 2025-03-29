@@ -10,7 +10,13 @@ from tensorflow.keras.models import Sequential # type: ignore
 from tensorflow.keras.callbacks import EarlyStopping # type: ignore
 
 # ── Cargar y filtrar el dataset ───────────
-final_data = pd.read_csv('./app/machineModels/dataSetsOriginals/tcpSYN.csv')
+data = pd.read_csv('./app/machineModels/dataSetsOriginals/tcpSYN.csv')
+
+# ── Eliminar Flow ID ───────────
+if 'Flow ID' in data.columns:
+    final_data = data.drop(columns=['Flow ID'])
+else:
+    final_data = data.copy()
 
 # ── Preparar datos para el entrenamiento ───────────
 X = final_data.drop('Label', axis=1)
@@ -41,6 +47,10 @@ print(classification_report(y_test, y_pred, target_names=['Normal', 'Attack']))
 # ── Guardar el modelo y el escalador ───────────
 model_path = './app/machineModels/models/tcpSYN.h5'
 scaler_path = './app/machineModels/models/tcpSYN.pkl'
+
+transformed_csv_path = './app/machineModels/dataSetsTransformed/tcpSYN.csv'
+final_data.to_csv(transformed_csv_path, index=False)
+print(f"📂 Dataset transformado guardado en: {transformed_csv_path}")
 
 model.save(model_path)
 joblib.dump(scaler, scaler_path)
