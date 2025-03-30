@@ -20,19 +20,29 @@ scaler = joblib.load('./app/machineModels/models/tcpSYN.pkl')
 # Diccionario global para mantener estadísticas por flujo (clave = src_tuple o reverse_tuple)
 # Se guarda: packet_count (por flujo)
 flow_stats = {}
+incomplete_syn = {}
+
 
 # Variable global para almacenar el tiempo del último paquete (global, no por flujo)
 last_packet_time = None
 
 def extract_features(packet):
     """
-    Extrae las características de un paquete TCP:
-    - Time Delta: Diferencia de tiempo respecto al último paquete (global).
-    - Flags TCP: SYN, URG, ACK, PSH, FIN, RST.
-    - packetCountInFlow: Número de paquetes en el flujo.
+    Extrae características de un paquete TCP, incluyendo la nueva métrica incompleteSynAcumulative.
     """
     if IP not in packet or TCP not in packet:
         return None
+
+    # Extraer banderas TCP
+    tcp_flags = packet[TCP].flags
+    flags = {
+        'SYN': 1 if 'S' in tcp_flags else 0,
+        'URG': 1 if 'U' in tcp_flags else 0,
+        'ACK': 1 if 'A' in tcp_flags else 0,
+        'PSH': 1 if 'P' in tcp_flags else 0,
+        'FIN': 1 if 'F' in tcp_flags else 0,
+        'RST': 1 if 'R' in tcp_flags else 0
+    }
 
     # Identificar el flujo
     src_ip = packet[IP].src
@@ -45,13 +55,14 @@ def extract_features(packet):
 
     # Determinar qué clave usar (src_tuple o reverse_tuple)
     if src_tuple in flow_stats:
-        stats = flow_stats[src_tuple]
+        flowID = src_tuple
     elif reverse_tuple in flow_stats:
-        stats = flow_stats[reverse_tuple]
+        flowID = reverse_tuple
     else:
-        # Crear un nuevo flujo con src_tuple como clave
-        stats = {'packet_count': 0}
-        flow_stats[src_tuple] = stats
+        flowID = src_tuple  # Se elige src_tuple como clave por defecto para nuevos flujos
+        flow_stats[flowID] = {'packet_count': 0}
+
+    stats = flow_stats[flowID]
 
     # Calcular el delta de tiempo con el tiempo del último paquete global
     global last_packet_time
@@ -65,20 +76,29 @@ def extract_features(packet):
     # Incrementar el conteo de paquetes en el flujo
     stats['packet_count'] += 1
 
-    # Extraer banderas TCP
-    tcp_flags = packet[TCP].flags
-    flags = {
-        'SYN': 1 if 'S' in tcp_flags else 0,
-        'URG': 1 if 'U' in tcp_flags else 0,
-        'ACK': 1 if 'A' in tcp_flags else 0,
-        'PSH': 1 if 'P' in tcp_flags else 0,
-        'FIN': 1 if 'F' in tcp_flags else 0,
-        'RST': 1 if 'R' in tcp_flags else 0
-    }
+    # Gestión de incompleteSynAcumulative
+    global incomplete_syn
+    if flags['SYN'] == 1 and flags['ACK'] == 0:
+        if flowID not in incomplete_syn:
+            incomplete_syn[flowID] = current_time
 
-    # Vector de características: [Time Delta, FlagSYN, FlagURG, FlagACK, FlagPSH, FlagFIN, FlagRST, packetCountInFlow]
-    features = np.array([[time_delta, *flags.values(), stats['packet_count']]])
+    # Si se recibe un paquete con ACK sin SYN, se elimina del diccionario
+    if flags['SYN'] == 0 and flags['ACK'] == 1:
+        if flowID in incomplete_syn:
+            del incomplete_syn[flowID]
+
+    # Eliminar flujos que hayan excedido la ventana de 10 minutos (600 segundos)
+    expired_flows = [fid for fid, syn_time in incomplete_syn.items() if current_time - syn_time > 600]
+    for fid in expired_flows:
+        del incomplete_syn[fid]
+
+    # Calcular la nueva característica
+    incompleteSynAcumulative = len(incomplete_syn)
+
+    # Vector de características actualizado
+    features = np.array([[time_delta, *flags.values(), stats['packet_count'], incompleteSynAcumulative]])
     return features
+
 
 def detect():
     global running
@@ -92,7 +112,7 @@ def detect():
             current_packet = packetBuffer.queue[0] if packetBuffer.queue else None
 
     # Nombres de las características para mostrar en el log
-    feature_names = ['Time Delta', 'FlagSYN', 'FlagURG', 'FlagACK', 'FlagPSH', 'FlagFIN', 'FlagRST', 'packetCountInFlow']
+    feature_names = ['Time Delta', 'FlagSYN', 'FlagURG', 'FlagACK', 'FlagPSH', 'FlagFIN', 'FlagRST', 'packetCountInFlow', 'incompleteSynAcumulative']
 
     while True:
         packet = current_packet.packet  # Paquete actual
@@ -117,16 +137,24 @@ def detect():
                 for name, value in zip(feature_names, features[0]):
                     print(f"{name}: {value}")
 
-        # Pasar al siguiente paquete y marcar el actual como procesado
+        # Asignacion normal del siguiente indice:
+        # Actualizamos siempre el indice del paquete actual, por si el cleaner ha limpiado el buffer y cambiado los mismos.
         with packetBuffer.mutex:
             current_index = packetBuffer.queue.index(current_packet)
             remaining_packets = len(packetBuffer.queue) - (current_index + 1)
+        
+        # Si hemos acabado con el buffer:
+        # El ultimo paquete no se marca como analizado para no perder la referencia del indice.
+        # Cuando el limpiador actualice el buffer, el indice cambiara. 
+        # Como tenemos aun tendremos un elemento, podemos usarlo para hallar el nuevo indice y a partir de ahi seguir.
         while remaining_packets == 0:
-            time.sleep(0.5)
+            time.sleep(0.5)                
             with packetBuffer.mutex:
                 current_index = packetBuffer.queue.index(current_packet)
                 remaining_packets = len(packetBuffer.queue) - (current_index + 1)
-        with packetBuffer.mutex:
-            next_packet = packetBuffer.queue[current_index + 1]
+        
+        next_packet = packetBuffer.queue[current_index + 1]
+
+        #Cuando ya se ha actualizado el indice de forma segura con el siguiente paquete a analizar
         current_packet.mark_processed(ALGORITHM_NAME)
         current_packet = next_packet
