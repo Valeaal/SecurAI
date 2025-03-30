@@ -1,32 +1,33 @@
 import os
 import time
-import psutil
 import joblib
 import warnings
 import numpy as np
 from app import attackNotifier
-from scapy.all import IP, TCP, Ether, IPv6
+from scapy.all import IP, TCP, IPv6
 from app.packetCapture import packetBuffer
 from tensorflow.keras.models import load_model  # type: ignore
-from collections import defaultdict
 
 ALGORITHM_NAME = os.path.basename(__file__).replace('.py', '')
-running = False  # Variable global de control para detener el algoritmo
+running = False  # Variable global para detener el algoritmo
 
 warnings.simplefilter("ignore", category=UserWarning)
 
-# Cargar modelo entrenado y escalador
+# Cargar modelo y escalador
 model = load_model('./app/machineModels/models/tcpSYN.h5')
 scaler = joblib.load('./app/machineModels/models/tcpSYN.pkl')
 
-# Diccionario global para mantener estadísticas por flujo
-# Se guardarán: flow_id, last_time y packet_count
+# Diccionario global para mantener estadísticas por flujo (clave = src_tuple o reverse_tuple)
+# Se guarda: packet_count (por flujo)
 flow_stats = {}
+
+# Variable global para almacenar el tiempo del último paquete (global, no por flujo)
+last_packet_time = None
 
 def extract_features(packet):
     """
     Extrae las características de un paquete TCP:
-    - Time Delta: Diferencia de tiempo respecto al último paquete del flujo.
+    - Time Delta: Diferencia de tiempo respecto al último paquete (global).
     - Flags TCP: SYN, URG, ACK, PSH, FIN, RST.
     - packetCountInFlow: Número de paquetes en el flujo.
     """
@@ -49,15 +50,19 @@ def extract_features(packet):
         stats = flow_stats[reverse_tuple]
     else:
         # Crear un nuevo flujo con src_tuple como clave
-        stats = {'last_time': None, 'packet_count': 0}
+        stats = {'packet_count': 0}
         flow_stats[src_tuple] = stats
 
-    # Calcular el delta de tiempo
+    # Calcular el delta de tiempo con el tiempo del último paquete global
+    global last_packet_time
     current_time = packet.time
-    time_delta = 0.0 if stats['last_time'] is None else current_time - stats['last_time']
-    stats['last_time'] = current_time
+    if last_packet_time is None:
+        time_delta = 0.0
+    else:
+        time_delta = current_time - last_packet_time
+    last_packet_time = current_time
 
-    # Incrementar el número de paquetes en el flujo
+    # Incrementar el conteo de paquetes en el flujo
     stats['packet_count'] += 1
 
     # Extraer banderas TCP
@@ -71,7 +76,7 @@ def extract_features(packet):
         'RST': 1 if 'R' in tcp_flags else 0
     }
 
-    # Vector de características
+    # Vector de características: [Time Delta, FlagSYN, FlagURG, FlagACK, FlagPSH, FlagFIN, FlagRST, packetCountInFlow]
     features = np.array([[time_delta, *flags.values(), stats['packet_count']]])
     return features
 
@@ -86,48 +91,41 @@ def detect():
         with packetBuffer.mutex:
             current_packet = packetBuffer.queue[0] if packetBuffer.queue else None
 
-    # Definir los nombres de las características para mostrar en el log
-    feature_names = [
-        'Time Delta', 'FlagSYN', 'FlagURG',
-        'FlagACK', 'FlagPSH', 'FlagFIN', 'FlagRST',
-        'packetCountInFlow'
-    ]
+    # Nombres de las características para mostrar en el log
+    feature_names = ['Time Delta', 'FlagSYN', 'FlagURG', 'FlagACK', 'FlagPSH', 'FlagFIN', 'FlagRST', 'packetCountInFlow']
 
     while True:
-        packet = current_packet.packet  # Referencia al paquete actual
+        packet = current_packet.packet  # Paquete actual
 
         if running and IP in packet and TCP in packet:
-           
             features = extract_features(packet)
 
             if features is not None:
-                # Quitar el Flow ID de las características antes de escalar y predecir
-                features_scaled = scaler.transform(features[:, 0:])
+                # Escalar las características (todas se usan en la predicción)
+                features_scaled = scaler.transform(features)
                 # Realizar la predicción
                 prediction = model.predict(features_scaled, verbose=0)
                 prob_attack = prediction[0][0]
 
-                print(f"----------------- {ALGORITHM_NAME} -----------------")                
+                print(f"----------------- {ALGORITHM_NAME} -----------------")
                 if prob_attack > 0.5:
                     print(f"🚨 ¡Alerta TCP SYN Flooding! (Prob attk: {prob_attack:.2%})")
                     attackNotifier.notifyAttack(ALGORITHM_NAME)
                 else:
                     print(f"✅ Tráfico normal (Prob attk: {prob_attack:.2%})")
 
-                for name, value in zip(feature_names, features[0][0:]):
+                for name, value in zip(feature_names, features[0]):
                     print(f"{name}: {value}")
 
-        # Proceso de pasar al siguiente paquete, siempre marcar el actual como procesado
+        # Pasar al siguiente paquete y marcar el actual como procesado
         with packetBuffer.mutex:
             current_index = packetBuffer.queue.index(current_packet)
             remaining_packets = len(packetBuffer.queue) - (current_index + 1)
-        
         while remaining_packets == 0:
             time.sleep(0.5)
             with packetBuffer.mutex:
                 current_index = packetBuffer.queue.index(current_packet)
                 remaining_packets = len(packetBuffer.queue) - (current_index + 1)
-        
         with packetBuffer.mutex:
             next_packet = packetBuffer.queue[current_index + 1]
         current_packet.mark_processed(ALGORITHM_NAME)
