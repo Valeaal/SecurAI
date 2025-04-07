@@ -78,12 +78,12 @@ def extract_features(packet):
 
     # Gestión de incompleteSynAcumulative
     global incomplete_syn
-    if flags['SYN'] == 1 and flags['ACK'] == 0:
+    if flags['SYN'] == 1:
         if flowID not in incomplete_syn:
             incomplete_syn[flowID] = current_time
 
     # Si se recibe un paquete con ACK sin SYN, se elimina del diccionario
-    if flags['SYN'] == 0 and flags['ACK'] == 1:
+    if flags['SYN'] == 0 and flags['RST'] == 0:
         if flowID in incomplete_syn:
             del incomplete_syn[flowID]
 
