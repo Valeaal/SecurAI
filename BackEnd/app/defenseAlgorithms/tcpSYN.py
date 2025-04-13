@@ -87,8 +87,8 @@ def extract_features(packet):
         if flowID in incomplete_syn:
             del incomplete_syn[flowID]
 
-    # Eliminar flujos que hayan excedido la ventana de 10 minutos (600 segundos)
-    expired_flows = [fid for fid, syn_time in incomplete_syn.items() if current_time - syn_time > 600]
+    # Eliminar flujos que hayan excedido la ventana de 3 minutos (180 segundos)
+    expired_flows = [fid for fid, syn_time in incomplete_syn.items() if current_time - syn_time > 180]
     for fid in expired_flows:
         del incomplete_syn[fid]
 
