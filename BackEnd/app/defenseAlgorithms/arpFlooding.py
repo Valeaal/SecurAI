@@ -5,7 +5,7 @@ import warnings
 import numpy as np
 from app import attackNotifier
 from scapy.layers.l2 import ARP, Ether
-from app.packetCapture import packetBuffer
+from app.packetCapture import packetBuffer, packetBufferLock
 from tensorflow.keras.models import load_model  # type: ignore
 
 
@@ -77,15 +77,11 @@ def detect():
 
     global running
 
-    with packetBuffer.mutex:
-        current_packet = packetBuffer.queue[0]
-    while current_packet == None:
-        time.sleep(0.5)
-        try:
-            with packetBuffer.mutex:
-                current_packet = packetBuffer.queue[0]
-        except:
-            current_packet == None
+    # Obtención del primer paquete
+    with packetBufferLock:
+            while len(packetBuffer) == 0:
+                time.sleep(0.5)
+            current_packet = packetBuffer[0]
             
     while True:
         packet = current_packet.packet  # Referencia al paquete actual
@@ -113,26 +109,26 @@ def detect():
                 print(f"✅ Tráfico normal (Prob attk: {prediction[0][0]:.2%})")
 
         ### PROCESO DE ENLACE AL SIGUIENTE PAQUETE ###
+        # Actualizamos siempre el indice del paquete actual, porque puede haberlo cambiado la hebra limpiadora.
+        # Si hemos acabado con el buffer el último paquete no se marca como analizado para no perderlo y calcular luego el índice por el que va este proceso.
 
-        # Asignacion normal del siguiente indice:
-        # Actualizamos siempre el indice del paquete actual, por si el cleaner ha limpiado el buffer y cambiado los mismos.
-        with packetBuffer.mutex:
-            current_index = packetBuffer.queue.index(current_packet)
-            remaining_packets = len(packetBuffer.queue) - (current_index + 1)
+        with packetBufferLock:
+            current_index = packetBuffer.index(current_packet)
+            remaining_packets = len(packetBuffer) - (current_index + 1)
         
-        # Si hemos acabado con el buffer:
-        # El ultimo paquete no se marca como analizado para no perder la referencia del indice.
-        # Cuando el limpiador actualice el buffer, el indice cambiara. 
-        # Como tenemos aun tendremos un elemento, podemos usarlo para hallar el nuevo indice y a partir de ahi seguir.
         while remaining_packets == 0:
-            time.sleep(0.5)                
-            with packetBuffer.mutex:
-                current_index = packetBuffer.queue.index(current_packet)
-                remaining_packets = len(packetBuffer.queue) - (current_index + 1)
-        
-        next_packet = packetBuffer.queue[current_index + 1]
+            time.sleep(0.5)       
+            with packetBufferLock:
+                current_index = packetBuffer.index(current_packet)     
+                remaining_packets = len(packetBuffer) - (current_index + 1)
 
-        #Cuando ya se ha actualizado el indice de forma segura con el siguiente paquete a analizar
+        with packetBufferLock:
+            current_index = packetBuffer.index(current_packet)
+            remaining_packets = len(packetBuffer) - (current_index + 1)
+            next_packet = packetBuffer[current_index + 1]
+
+        ### PROCESO DE MARCADO COMO ANALIZADO ###
+
         current_packet.mark_processed(ALGORITHM_NAME)
         current_packet = next_packet
                 
