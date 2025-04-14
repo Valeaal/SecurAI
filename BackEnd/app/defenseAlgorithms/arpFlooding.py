@@ -77,7 +77,7 @@ def detect():
 
     global running
 
-    # Obtención del primer paquete
+###### OBTENCIÓN DEL PRIMER PAQUETE ######
     with packetBufferLock:
             while len(packetBuffer) == 0:
                 time.sleep(0.5)
@@ -86,7 +86,7 @@ def detect():
     while True:
         packet = current_packet.packet  # Referencia al paquete actual
 
-        ### PROCESO DE ANALISIS ###
+###### PROCESO DE ANALISIS ######
         if running and packet.haslayer(ARP):
             features = extract_features(packet)
             print(f"-----------------arpFloodingBase-----------------------")
@@ -108,7 +108,7 @@ def detect():
             else:
                 print(f"✅ Tráfico normal (Prob attk: {prediction[0][0]:.2%})")
 
-        ### PROCESO DE ENLACE AL SIGUIENTE PAQUETE ###
+###### PROCESO DE ENLACE AL SIGUIENTE PAQUETE ######
         # Actualizamos siempre el indice del paquete actual, porque puede haberlo cambiado la hebra limpiadora.
         # Si hemos acabado con el buffer el último paquete no se marca como analizado para no perderlo y calcular luego el índice por el que va este proceso.
 
@@ -127,8 +127,9 @@ def detect():
             remaining_packets = len(packetBuffer) - (current_index + 1)
             next_packet = packetBuffer[current_index + 1]
 
-        ### PROCESO DE MARCADO COMO ANALIZADO ###
+###### PROCESO DE MARCADO COMO ANALIZADO ######
 
         current_packet.mark_processed(ALGORITHM_NAME)
         current_packet = next_packet
+
                 

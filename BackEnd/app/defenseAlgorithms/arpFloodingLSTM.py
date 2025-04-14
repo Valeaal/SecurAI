@@ -7,7 +7,7 @@ import pandas as pd
 from app import attackNotifier
 from scapy.layers.l2 import ARP
 from scapy.layers.inet import TCP, UDP, ICMP
-from app.packetCapture import packetBuffer
+from app.packetCapture import packetBuffer, packetBufferLock
 from tensorflow.keras.models import load_model  # type: ignore
 
 # Configuración
@@ -106,20 +106,19 @@ def extract_features(packet, prev_time, frame_number):
 def detect():
     global running, prev_time, current_batch, frame_number
     originalPackets = []
-    print("Cargado arpFlooding+")
 
-    # Esperar a que haya paquetes en el buffer
-    with packetBuffer.mutex:
-        current_packet = packetBuffer.queue[0] if packetBuffer.queue else None
-    while current_packet is None:
-        time.sleep(0.5)
-        with packetBuffer.mutex:
-            current_packet = packetBuffer.queue[0] if packetBuffer.queue else None
+###### OBTENCIÓN DEL PRIMER PAQUETE ######
+    with packetBufferLock:
+            while len(packetBuffer) == 0:
+                time.sleep(0.5)
+            current_packet = packetBuffer[0]
 
     prev_time = current_packet.packet.time
 
     while True:
         packet = current_packet.packet
+
+###### PROCESO DE ANALISIS ######
 
         if running:
             df_features, current_time_val = extract_features(packet, prev_time, frame_number)
@@ -169,14 +168,29 @@ def detect():
 
                 prev_time = current_time_val
 
-        with packetBuffer.mutex:
-            current_index = packetBuffer.queue.index(current_packet)
-            remaining_packets = len(packetBuffer.queue) - (current_index + 1)
+###### PROCESO DE ENLACE AL SIGUIENTE PAQUETE ######
+        # Actualizamos siempre el indice del paquete actual, porque puede haberlo cambiado la hebra limpiadora.
+        # Si hemos acabado con el buffer el último paquete no se marca como analizado para no perderlo y calcular luego el índice por el que va este proceso.
+
+        with packetBufferLock:
+            current_index = packetBuffer.index(current_packet)
+            remaining_packets = len(packetBuffer) - (current_index + 1)
+        
         while remaining_packets == 0:
-            time.sleep(0.5)
-            with packetBuffer.mutex:
-                current_index = packetBuffer.queue.index(current_packet)
-                remaining_packets = len(packetBuffer.queue) - (current_index + 1)
-        next_packet = packetBuffer.queue[current_index + 1]
+            time.sleep(0.5)       
+            with packetBufferLock:
+                current_index = packetBuffer.index(current_packet)     
+                remaining_packets = len(packetBuffer) - (current_index + 1)
+
+        with packetBufferLock:
+            current_index = packetBuffer.index(current_packet)
+            remaining_packets = len(packetBuffer) - (current_index + 1)
+            next_packet = packetBuffer[current_index + 1]
+
+###### PROCESO DE MARCADO COMO ANALIZADO ######
+
         current_packet.mark_processed(ALGORITHM_NAME)
         current_packet = next_packet
+
+                
+

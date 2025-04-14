@@ -5,7 +5,7 @@ import warnings
 import numpy as np
 from app import attackNotifier
 from scapy.all import IP, TCP, IPv6
-from app.packetCapture import packetBuffer
+from app.packetCapture import packetBuffer, packetBufferLock
 from tensorflow.keras.models import load_model  # type: ignore
 
 ALGORITHM_NAME = os.path.basename(__file__).replace('.py', '')
@@ -103,19 +103,19 @@ def extract_features(packet):
 def detect():
     global running
 
-    # Espera hasta que haya al menos un paquete en el buffer
-    with packetBuffer.mutex:
-        current_packet = packetBuffer.queue[0] if packetBuffer.queue else None
-    while current_packet is None:
-        time.sleep(0.5)
-        with packetBuffer.mutex:
-            current_packet = packetBuffer.queue[0] if packetBuffer.queue else None
+###### OBTENCIÓN DEL PRIMER PAQUETE ######
+    with packetBufferLock:
+            while len(packetBuffer) == 0:
+                time.sleep(0.5)
+            current_packet = packetBuffer[0]
 
     # Nombres de las características para mostrar en el log
     feature_names = ['Time Delta', 'FlagSYN', 'FlagURG', 'FlagACK', 'FlagPSH', 'FlagFIN', 'FlagRST', 'packetCountInFlow', 'incompleteSynAcumulative']
 
     while True:
         packet = current_packet.packet  # Paquete actual
+
+###### PROCESO DE ANALISIS ######
 
         if running and IP in packet and TCP in packet:
             features = extract_features(packet)
@@ -137,24 +137,26 @@ def detect():
                 for name, value in zip(feature_names, features[0]):
                     print(f"{name}: {value}")
 
-        # Asignacion normal del siguiente indice:
-        # Actualizamos siempre el indice del paquete actual, por si el cleaner ha limpiado el buffer y cambiado los mismos.
-        with packetBuffer.mutex:
-            current_index = packetBuffer.queue.index(current_packet)
-            remaining_packets = len(packetBuffer.queue) - (current_index + 1)
-        
-        # Si hemos acabado con el buffer:
-        # El ultimo paquete no se marca como analizado para no perder la referencia del indice.
-        # Cuando el limpiador actualice el buffer, el indice cambiara. 
-        # Como tenemos aun tendremos un elemento, podemos usarlo para hallar el nuevo indice y a partir de ahi seguir.
-        while remaining_packets == 0:
-            time.sleep(0.5)                
-            with packetBuffer.mutex:
-                current_index = packetBuffer.queue.index(current_packet)
-                remaining_packets = len(packetBuffer.queue) - (current_index + 1)
-        
-        next_packet = packetBuffer.queue[current_index + 1]
+###### PROCESO DE ENLACE AL SIGUIENTE PAQUETE ######
+        # Actualizamos siempre el indice del paquete actual, porque puede haberlo cambiado la hebra limpiadora.
+        # Si hemos acabado con el buffer el último paquete no se marca como analizado para no perderlo y calcular luego el índice por el que va este proceso.
 
-        #Cuando ya se ha actualizado el indice de forma segura con el siguiente paquete a analizar
+        with packetBufferLock:
+            current_index = packetBuffer.index(current_packet)
+            remaining_packets = len(packetBuffer) - (current_index + 1)
+        
+        while remaining_packets == 0:
+            time.sleep(0.5)       
+            with packetBufferLock:
+                current_index = packetBuffer.index(current_packet)     
+                remaining_packets = len(packetBuffer) - (current_index + 1)
+
+        with packetBufferLock:
+            current_index = packetBuffer.index(current_packet)
+            remaining_packets = len(packetBuffer) - (current_index + 1)
+            next_packet = packetBuffer[current_index + 1]
+
+###### PROCESO DE MARCADO COMO ANALIZADO ######
+
         current_packet.mark_processed(ALGORITHM_NAME)
         current_packet = next_packet
