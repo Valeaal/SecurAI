@@ -26,7 +26,6 @@ final_columns = [
     'sinpkt', 'dinpkt',  # interpacket time
     'smean', 'dmean',    # tamaño medio de paquetes
     'ct_dst_ltm',        # conexiones recientes a destino
-    'ct_src_dport_ltm',  # nº puertos distintos desde mismo origen
     'Label'              # clase binaria
 ]
 

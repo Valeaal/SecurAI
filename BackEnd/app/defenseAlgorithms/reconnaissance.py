@@ -22,9 +22,8 @@ scaler = joblib.load('./app/machineModels/models/reconnaissance.pkl')
 # Diccionario global para estadísticas por flujo
 flow_stats = {}
 
-# Estructuras para rastrear ct_dst_ltm y ct_src_dport_ltm
+# Estructuras para rastrear ct_dst_ltm
 connection_tracker = defaultdict(lambda: deque())  # IP destino -> cola de timestamps
-port_tracker = defaultdict(lambda: defaultdict(set))  # IP origen -> puerto destino -> timestamps
 TIME_WINDOW = 60  # Ventana de tiempo en segundos
 
 def get_local_ip():
@@ -41,28 +40,20 @@ def get_local_ip():
         return "127.0.0.1"  # Fallback a localhost si falla
 local_ip = get_local_ip()
 
-def update_connection_tracker(dst_ip, timestamp):
-    """Actualiza el rastreo de conexiones al destino"""
-    connection_tracker[dst_ip].append(timestamp)
-    # Eliminar conexiones fuera de la ventana de tiempo
-    while connection_tracker[dst_ip] and connection_tracker[dst_ip][0] < timestamp - TIME_WINDOW:
-        connection_tracker[dst_ip].popleft()
-    return len(connection_tracker[dst_ip])
+def update_connection_tracker(flow_key, timestamp):
+    """Actualiza el rastreo de conexiones basado en el flujo, contando flujos únicos"""
+    # Limpiar flujos antiguos fuera de la ventana de tiempo
+    while connection_tracker[flow_key] and connection_tracker[flow_key][0][1] < timestamp - TIME_WINDOW:
+        connection_tracker[flow_key].popleft()
 
-def update_port_tracker(src_ip, dst_port, timestamp):
-    """Actualiza el rastreo de puertos distintos contactados por el origen"""
-    port_tracker[src_ip][dst_port].add(timestamp)
-    # Limpiar timestamps antiguos
-    all_ports = set()
-    for port in port_tracker[src_ip]:
-        port_tracker[src_ip][port] = {t for t in port_tracker[src_ip][port] if t >= timestamp - TIME_WINDOW}
-        if port_tracker[src_ip][port]:
-            all_ports.add(port)
-    # Eliminar puertos sin timestamps recientes
-    for port in list(port_tracker[src_ip].keys()):
-        if not port_tracker[src_ip][port]:
-            del port_tracker[src_ip][port]
-    return len(all_ports)
+    # Añadir nuevo flujo si no existe
+    if not any(fk == flow_key for fk, _ in connection_tracker[flow_key]):
+        connection_tracker[flow_key].append((flow_key, timestamp))
+
+    # Contar flujos únicos
+    current_flows = set(fk for fk, _ in connection_tracker[flow_key])
+    return len(current_flows)
+
 
 class FlowStats:
     def __init__(self):
@@ -133,7 +124,6 @@ class FlowStats:
             smean,
             dmean,
             self.ct_dst_ltm,
-            self.ct_src_dport_ltm
         ]
         return features
 
@@ -182,20 +172,20 @@ def extract_features(packet):
 
     is_forward = (flow_key[0] == ip_layer.src and flow_key[2] == packet[TCP].sport)
 
-    # Actualizar contadores globales
+    # Actualizar contadores globales para rastrear por flujo
     if TCP in packet:
-        flow_stats[flow_key].ct_dst_ltm = update_connection_tracker(dst_ip, packet.time)
-        flow_stats[flow_key].ct_src_dport_ltm = update_port_tracker(src_ip, packet[TCP].dport, packet.time)
+        flow_stats[flow_key].ct_dst_ltm = update_connection_tracker(flow_key, packet.time)
 
     flow_stats[flow_key].update(packet, is_forward)
 
     features = flow_stats[flow_key].get_features()
     return np.array([features])
 
+
 def print_features(features):
     feature_names = [
         "dur", "spkts", "dpkts", "sbytes", "dbytes", "rate", "sttl", "dttl",
-        "sinpkt", "dinpkt", "smean", "dmean", "ct_dst_ltm", "ct_src_dport_ltm"
+        "sinpkt", "dinpkt", "smean", "dmean", "ct_dst_ltm"
     ]
     print("Características del paquete:")
     for name, value in zip(feature_names, features[0]):
@@ -214,7 +204,7 @@ def detect():
         if running:
             features = extract_features(packet)
 
-            if features is not None and packet.haslayer(IP) and packet[IP].dst in (local_ip, "127.0.0.1"):
+            if features is not None:
 
                 features_scaled = scaler.transform(features)
                 prediction = model.predict(features_scaled, verbose=0)
