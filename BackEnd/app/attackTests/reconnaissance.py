@@ -1,61 +1,45 @@
 import time
 import socket
-import nmap
+from scapy.all import IP, TCP, sr1, RandShort
 
-running = False  # Variable global de control
+running = False  # Control de ejecución
 
-def get_local_ip():
+
+def getLocalIp():
     """Obtiene la IP local de la máquina en la red"""
     try:
-        # Crear un socket temporal para obtener la IP
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(("8.8.8.8", 80))  # Conectar a un servidor externo para descubrir la IP
-        local_ip = s.getsockname()[0]
+        s.connect(("8.8.8.8", 80))
+        localIp = s.getsockname()[0]
         s.close()
-        return local_ip
+        return localIp
     except Exception as e:
         print(f"Error al obtener IP local: {e}")
-        return "127.0.0.1"  # Fallback a localhost si falla
+        return "127.0.0.1"  # Fallback
 
-def attack(target_ip=None, port_range="1-100", scan_type="-sT"):
-    """
-    Simula un ataque de reconocimiento usando un escaneo TCP SYN de Nmap.
-    
-    Args:
-        target_ip (str): Dirección IP objetivo (por defecto: IP local si None)
-        port_range (str): Rango de puertos a escanear (por defecto: 1-100)
-        scan_type (str): Tipo de escaneo de Nmap (por defecto: -sS para TCP SYN)
-    """
+
+def synScan(targetIp, portRange=(1, 100)):
+    """Escaneo SYN manual con Scapy"""
+    for port in range(portRange[0], portRange[1] + 1):
+        pkt = IP(dst=targetIp) / TCP(dport=port, flags='S', sport=RandShort())
+        response = sr1(pkt, timeout=0.5, verbose=0)
+        if response and response.haslayer(TCP) and response[TCP].flags == 0x12:
+            print(f"⚠️ Puerto {port} probablemente abierto")
+
+
+def attack():
     global running
-    
-    if target_ip is None:
-        target_ip = get_local_ip()  # Usa la IP local si no se especifica
-    
+
+    targetIp = getLocalIp()
+
     try:
-        print(f"Iniciando ataque de reconocimiento en {target_ip}, puertos {port_range}")
-        running = True
-        
-        nm = nmap.PortScanner()
-        
         while True:
+
             while running:
-                # Realiza el escaneo
-                nm.scan(target_ip, port_range, arguments=scan_type)
-                
-                # Imprime los resultados del escaneo (opcional)
-                for host in nm.all_hosts():
-                    print(f"Host: {host}")
-                    for proto in nm[host].all_protocols():
-                        print(f"Protocolo: {proto}")
-                        ports = nm[host][proto].keys()
-                        for port in ports:
-                            state = nm[host][proto][port]['state']
-                            print(f"Puerto: {port}\tEstado: {state}")
-                
-                # Pausa breve entre ciclos de escaneo
-                time.sleep(1)
-            
-            time.sleep(1)  # Espera mientras está pausado
-        
+                synScan(targetIp, portRange=(1, 100))
+                time.sleep(0.01)
+
+            time.sleep(1)
     except Exception as e:
         print(f"Error durante el ataque: {e}")
+
