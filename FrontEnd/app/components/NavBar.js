@@ -170,8 +170,8 @@ export default function NavBar() {
                     description="Denegación de servicio abriendo demasiadas conexiones TCP"
                   />
                   <ListItemWithSwitch 
-                    title="na" 
-                    description="na"
+                    title="dnsAmplification" 
+                    description="dnsAmplification"
                   />
                   <ListItemWithSwitch 
                     title="HUECO LIBRE" 
