@@ -21,33 +21,24 @@ scaler = joblib.load('./app/machineModels/models/dnsAmplification.pkl')
 # Ventana deslizante de los últimos 100 “flujos” (paquetes) para cómputo de ct_*
 history = deque(maxlen=100)
 
-# Nombres de las características (para logging)
 feature_names = [
-    'dbytes',            # bytes de respuesta
-    'dpkts',             # paquetes de respuesta
-    'ct_dst_ltm',        # conexiones al mismo destino en últimos 100
-    'ct_src_dport_ltm',  # repeticiones de (origen, puerto destino)
-    'ct_dst_src_ltm'     # repeticiones de (origen, destino)
+    'dbytes',
+    'ct_dst_ltm',
+    'ct_src_dport_ltm',
+    'ct_dst_src_ltm'
 ]
 
 def extract_features(packet):
     """
     Dado un paquete DNS (respuesta UDP), extrae las 5 características usadas por el modelo:
       - dbytes: tamaño en bytes del paquete
-      - dpkts: número de paquetes (siempre 1)
       - ct_dst_ltm: nº de paquetes previos en history con mismo dstip
       - ct_src_dport_ltm: nº de previos con misma (srcip, dport)
       - ct_dst_src_ltm: nº de previos con misma (srcip, dstip)
     Añade el flujo a history y devuelve un array shape (1,5).
     """
     try:
-        # 1. dbytes: longitud total del paquete (bytes)
-        raw = bytes(packet)
-        dbytes = len(raw)
-        # 2. dpkts: siempre 1 paquete
-        dpkts = 1
-
-        # 3‑5. contamos en history
+        dbytes = len(bytes(packet))  # Tamaño en bytes del paquete
         src = packet[IP].src
         dst = packet[IP].dst
         dport = packet[UDP].sport if packet[UDP].sport != 53 else packet[UDP].dport
@@ -56,10 +47,9 @@ def extract_features(packet):
         ct_src_dport_ltm = sum(1 for (s, d, dp) in history if s == src and dp == dport)
         ct_dst_src_ltm = sum(1 for (s, d, dp) in history if s == src and d == dst)
 
-        # Guardamos este “flujo” en history
         history.append((src, dst, dport))
 
-        features = np.array([[dbytes, dpkts, ct_dst_ltm, ct_src_dport_ltm, ct_dst_src_ltm]])
+        features = np.array([[dbytes, ct_dst_ltm, ct_src_dport_ltm, ct_dst_src_ltm]])
         return features
 
     except Exception:

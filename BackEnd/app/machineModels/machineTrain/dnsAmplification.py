@@ -13,22 +13,18 @@ from tensorflow.keras.callbacks import EarlyStopping  # type: ignore
 # Cargar el dataset
 data = pd.read_csv('./app/machineModels/dataSetsOriginals/dnsAmplification.csv', sep=';')
 
-# Seleccionar columnas finales (las métricas ahora son las calculadas con ventana deslizante)
+# Seleccionar columnas finales (sin 'dpkts')
 final_columns = [
-    'dbytes', 'dpkts', 'ct_dst_ltm', 'ct_src_dport_ltm', 'ct_dst_src_ltm', 'label'  
+    'dbytes', 'ct_dst_ltm', 'ct_src_dport_ltm', 'ct_dst_src_ltm', 'label'
 ]
 final_data = data[final_columns].copy()
 final_data.rename(columns={'label': 'Label'}, inplace=True)
 
-# ── Balanceo de clases (undersampling exacto) ───────────
-# Separar las clases
+# Balanceo de clases (undersampling exacto)
 class_0 = final_data[final_data['Label'] == 0]
 class_1 = final_data[final_data['Label'] == 1]
-
-# Identificar la clase minoritaria
 minority_size = min(len(class_0), len(class_1))
 
-# Reducir la clase mayoritaria al tamaño de la menor
 if len(class_0) > len(class_1):
     class_0_resampled = resample(class_0, replace=False, n_samples=minority_size, random_state=42)
     final_data = pd.concat([class_0_resampled, class_1])
@@ -36,46 +32,26 @@ else:
     class_1_resampled = resample(class_1, replace=False, n_samples=minority_size, random_state=42)
     final_data = pd.concat([class_0, class_1_resampled])
 
-# Mezclar las muestras
 final_data = final_data.sample(frac=1, random_state=42).reset_index(drop=True)
 
-# Mostrar tamaños finales
-print(f"Nuevo tamaño por clase: {minority_size}")
-
-
-# ── Guardar el dataset ─────────────────────────────────────────────
+# Guardar dataset balanceado
 csv_output_path = './app/machineModels/dataSetsTransformed/dnsAmplification.csv'
 final_data.to_csv(csv_output_path, index=False)
-print(f"Dataset balanceado guardado correctamente en: {csv_output_path}")
 
-# ── Entrenamiento del modelo ─────────────────────────────────────────────
-# Separar características y etiqueta
+# Entrenamiento
 X = final_data.drop('Label', axis=1)
 y = final_data['Label']
-
-# Escalado
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
-
-# Dividir en conjunto de entrenamiento y prueba
 X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.3, random_state=42)
 
-# Construir y entrenar el modelo
 model = Sequential([
     Dense(16, activation='relu', input_shape=(X_train.shape[1],)),
     Dense(1, activation='sigmoid')
 ])
-
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 early_stopping = EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
 model.fit(X_train, y_train, epochs=2, batch_size=32, validation_data=(X_test, y_test), callbacks=[early_stopping])
 
-# ── Guardar el modelo y el escalador ─────────────────────────────────────────────
-model_path = './app/machineModels/models/dnsAmplification.h5'
-scaler_path = './app/machineModels/models/dnsAmplification.pkl'
-
-model.save(model_path)
-joblib.dump(scaler, scaler_path)
-
-print(f"Modelo guardado en: {model_path}")
-print(f"Scaler guardado en: {scaler_path}")
+model.save('./app/machineModels/models/dnsAmplification.h5')
+joblib.dump(scaler, './app/machineModels/models/dnsAmplification.pkl')
