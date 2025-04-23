@@ -10,6 +10,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1400,
     height: 900,
+    //icon: path.join(__dirname, 'icon.icns'),
     webPreferences: {
       contextIsolation: true,
     },
@@ -18,7 +19,7 @@ function createWindow() {
   // Da tiempo a que Next.js levante el servidor
   setTimeout(() => {
     mainWindow.loadURL('http://localhost:3000');
-  }, 10000); // Espera 10 segundos después de iniciar el frontend
+  }, 15000); // Espera 10 segundos después de iniciar el frontend
 }
 
 function startFlaskBackend() {
@@ -47,7 +48,7 @@ app.whenReady().then(() => {
   setTimeout(() => {
     startNextFrontend(); // Después de 20 segundos, inicia el frontend
     createWindow(); // Después de iniciar el frontend, abre la ventana
-  }, 20000); // Espera 20 segundos para el backend
+  }, 25000); // Espera 20 segundos para el backend
 });
 
 app.on('window-all-closed', () => {
