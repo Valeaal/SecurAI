@@ -47,7 +47,7 @@ def attack():
         # Tipos de consulta DNS comunes
         qtypes = [255]  #ANY
 
-        print("[INFO] Ataque DNS Amplification simulado con múltiples servidores y dominios")
+        #print("[INFO] Ataque DNS Amplification simulado con múltiples servidores y dominios")
 
         while True:
             while running:
