@@ -1,16 +1,34 @@
 {
-  "name": "tfg",
+  "name": "securai",
   "version": "1.0.0",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "dist": "electron-builder"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "build": {
+    "appId": "com.tuempresa.securai",
+    "productName": "SecurAI",
+    "directories": {
+      "buildResources": "build"
+    },
+    "files": [
+      "BackEnd/",
+      "FrontEnd/",
+      "package.json"
+    ],
+    "extraMetadata": {
+      "main": "main.js"
+    },
+    "mac": {
+      "target": "dmg"
+    },
+    "win": {
+      "target": "nsis"
+    }
+  },
   "devDependencies": {
-    "electron": "^35.2.0",
-    "electron-builder": "^26.0.12"
+    "electron": "^27.0.0",
+    "electron-builder": "^24.3.0"
   }
 }

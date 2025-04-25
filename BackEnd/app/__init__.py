@@ -17,7 +17,7 @@ from .routes.loadDefenseAlgorithms import loadDefenseAlgorithms_bp
 
 app = Flask(__name__)
 global attackNotifier
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")
 
 CORS(app, resources={r"/*": {"origins": "*"}})
 
