@@ -13,9 +13,14 @@
       "buildResources": "build"
     },
     "files": [
+      "main.js",
       "BackEnd/",
+      "!BackEnd/venvTFG", 
       "FrontEnd/",
       "package.json"
+    ],
+    "asarUnpack": [
+      "BackEnd/dist/run/_internal"
     ],
     "extraMetadata": {
       "main": "main.js"

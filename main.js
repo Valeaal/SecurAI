@@ -23,20 +23,23 @@ function createWindow() {
 }
 
 function startFlaskBackend() {
-  const backendPath = path.join(__dirname, 'BackEnd');
-  const venvPython = path.join(backendPath, 'venvTFG', 'bin', 'python3');
+  const isWin = process.platform === 'win32';
+  const execName = isWin ? 'SecurAI.exe' : './SecurAI';
 
-  flaskProcess = spawn(venvPython, ['run.py'], {
-    cwd: backendPath,
+  const backendExecutableDir = path.join(__dirname, 'BackEnd', 'dist', 'run', '_internal');
+  const execPath = path.join(backendExecutableDir, execName);
+
+  flaskProcess = spawn(execPath, [], {
+    cwd: backendExecutableDir,
     stdio: 'inherit',
-    shell: true,
+    shell: true
   });
 }
 
 function startNextFrontend() {
   const frontendPath = path.join(__dirname, 'FrontEnd/app');
 
-  nextProcess = spawn('npm', ['run', 'dev'], {
+  nextProcess = spawn('npm', ['start'], {
     cwd: frontendPath,
     stdio: 'inherit',
     shell: true,
@@ -44,11 +47,20 @@ function startNextFrontend() {
 }
 
 app.whenReady().then(() => {
-  startFlaskBackend(); // Inicia el backend silenciosamente
+  // Paso 1: Inicia backend
+  startFlaskBackend();
+
+  // Paso 2: Espera 35 segundos
   setTimeout(() => {
-    startNextFrontend(); // Después de 20 segundos, inicia el frontend
-    createWindow(); // Después de iniciar el frontend, abre la ventana
-  }, 25000); // Espera 20 segundos para el backend
+    // Paso 3: Inicia frontend
+    startNextFrontend();
+
+    // Paso 4: Espera 20 segundos más
+    setTimeout(() => {
+      // Paso 5: Crea la ventana
+      createWindow();
+    }, 20000);
+  }, 35000);
 });
 
 app.on('window-all-closed', () => {
