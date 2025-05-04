@@ -18,11 +18,15 @@ SecurAI es un escudo para tu equipo, un IDS. Detectará diferentes ataques a niv
 
 ## Instalación
 
+### Para su uso normal
+
+Simplemente instala el release más reciente desde este repositorio, seleccionando el SO que desees.
+
 ### Para desarrollo
 ```bash
 
 # Clonar el repositorio
-git clone https://github.com/valeal/SecurAI.git
+git clone https://github.com/valeaal/SecurAI.git
 
 # Entrar al directorio
 cd SecurAI/BackEnd
@@ -46,7 +50,7 @@ npm run dev
 ## Contacto
 Para cualquier consulta relacionada con este proyecto:
 - Email: valeal@uma.es
-- GitHub: [Álvaro Valencia](https://github.com/valeal)
+- GitHub: [Álvaro Valencia](https://github.com/valeaal)
 
 ## Documentación y memoria
 La documentación completa y la memoria del TFG están disponibles en la carpeta `/Memoria` de este repositorio. Muy recomendado para entender el funcionamiento, cambiar SecurAI a su gusto, o desarrollar nuevos módulos.
