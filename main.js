@@ -24,15 +24,23 @@ function createWindow() {
 
 function startFlaskBackend() {
   const isWin = process.platform === 'win32';
-  const execName = isWin ? 'SecurAI.exe' : './SecurAI';
+  const execName = isWin ? 'SecurAI.exe' : 'SecurAI';
 
-  const backendExecutableDir = path.join(__dirname, 'BackEnd', 'dist', 'run', '_internal');
-  const execPath = path.join(backendExecutableDir, execName);
+  const backendDir = path.join(__dirname, 'BackEnd/dist');
+  const execPath = path.join(backendDir, execName);
 
   flaskProcess = spawn(execPath, [], {
-    cwd: backendExecutableDir,
+    cwd: backendDir,
     stdio: 'inherit',
-    shell: true
+    shell: true,
+  });
+
+  flaskProcess.on('error', (err) => {
+    console.error('❌ Error al lanzar el backend:', err);
+  });
+
+  flaskProcess.on('exit', (code) => {
+    console.log(`ℹ️ Backend finalizó con código ${code}`);
   });
 }
 

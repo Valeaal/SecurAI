@@ -19,9 +19,7 @@
       "FrontEnd/",
       "package.json"
     ],
-    "asarUnpack": [
-      "BackEnd/dist/run/_internal"
-    ],
+    "asar": false,
     "extraMetadata": {
       "main": "main.js"
     },
