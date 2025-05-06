@@ -42,8 +42,14 @@ jobs:
             BackEnd/dist
           key: ${{ runner.os }}-pyinstaller-${{ hashFiles('BackEnd/run.spec', 'BackEnd/**.py') }}
     
+      - name: Cambiar al directorio BackEnd
+        run: cd BackEnd
+
       - name: Build del BackEnd con pyinstaller
         run: pyinstaller --noconfirm BackEnd/run.spec
+
+      - name: Cambiar al directorio base
+        run: cd ..
     
       - name: Inicialización de Node.js
         uses: actions/setup-node@v4
