@@ -6,6 +6,10 @@
     "start": "electron .",
     "dist": "electron-builder"
   },
+  "devDependencies": {
+    "electron": "^27.0.0",
+    "electron-builder": "^24.3.0"
+  },
   "build": {
     "appId": "valealSecurAI",
     "productName": "SecurAI",
@@ -15,7 +19,7 @@
     "files": [
       "main.js",
       "BackEnd/",
-      "!BackEnd/venvTFG", 
+      "!BackEnd/venvTFG",
       "FrontEnd/",
       "package.json"
     ],
@@ -34,10 +38,6 @@
     },
     "win": {
       "target": "nsis"
-    },
-    "devDependencies": {
-      "electron": "^27.0.0",
-      "electron-builder": "^24.3.0"
     }
   }
 }
