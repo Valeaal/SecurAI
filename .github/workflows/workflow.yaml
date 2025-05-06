@@ -47,10 +47,6 @@ jobs:
             cd BackEnd
             pyinstaller --noconfirm run.spec
             cd ..
-        
-
-      - name: Cambiar al directorio base
-        run: cd ..
     
       - name: Inicialización de Node.js
         uses: actions/setup-node@v4
