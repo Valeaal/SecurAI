@@ -1,6 +1,6 @@
-name: SecurAI
+name: Build SecurAI
 on:
-  workflow_call:
+  workflow_dispatch:
   push:
     paths:
       - 'BackEnd/**'
