@@ -7,7 +7,7 @@
     "dist": "electron-builder"
   },
   "build": {
-    "appId": "com.tuempresa.securai",
+    "appId": "valealSecurAI",
     "productName": "SecurAI",
     "directories": {
       "buildResources": "build"
@@ -34,7 +34,10 @@
     },
     "win": {
       "target": "nsis"
+    },
+    "devDependencies": {
+      "electron": "^27.0.0",
+      "electron-builder": "^24.3.0"
     }
   }
-
 }
