@@ -63,3 +63,25 @@ jobs:
 
       - name: Build de la app completa
         run: npm run dist
+    
+      - name: Determinar versión del release
+        id: version
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            echo "tag_name=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
+          else
+            echo "tag_name=0.0.0" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Publicar ejecutables en una Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release ${{ steps.version.outputs.tag_name }}
+          tag_name: ${{ steps.version.outputs.tag_name }}
+          files: |
+            dist/*.exe
+            dist/*.dmg
+            dist/*.zip
+            dist/*.AppImage
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
