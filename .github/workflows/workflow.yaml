@@ -51,7 +51,7 @@ jobs:
       - name: Inicialización de Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20.18.3'
+          node-version: '18.0'
           cache: 'npm'
     
       - name: Caché de dependencias de Node
@@ -64,8 +64,8 @@ jobs:
       - name: Instalación de dependencias de Node
         run: npm install
 
-      - name: Actualziación de dependencias de Node
-        run: npm update
+      - name: Preparar dependencias de Electron
+        run: npx electron-builder install-app-deps
 
       - name: Build de la app completa
         run: npm run dist
