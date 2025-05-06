@@ -41,12 +41,13 @@ jobs:
             BackEnd/build
             BackEnd/dist
           key: ${{ runner.os }}-pyinstaller-${{ hashFiles('BackEnd/run.spec', 'BackEnd/**.py') }}
-    
-      - name: Cambiar al directorio BackEnd
-        run: cd BackEnd
 
       - name: Build del BackEnd con pyinstaller
-        run: pyinstaller --noconfirm BackEnd/run.spec
+        run: |
+            cd BackEnd
+            pyinstaller --noconfirm run.spec
+            cd ..
+        
 
       - name: Cambiar al directorio base
         run: cd ..
