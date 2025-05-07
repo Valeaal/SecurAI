@@ -31,6 +31,9 @@
           "arch": "x64"
         }
       ],
+      "dmg": {
+        "blockmap": false
+      },
       "identity": null
     },
     "win": {
