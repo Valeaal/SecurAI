@@ -24,18 +24,21 @@ jobs:
           cache: 'pip'
         
 
-      - name: Instalación de dependencias
+      - name: Instalación de dependencias de Python
         run: pip install -r BackEnd/requirements.txt
 
       - name: Caché del build del Backend con PyInstaller
+        id: cache-pyinstaller
         uses: actions/cache@v4
         with:
           path: |
             BackEnd/build
             BackEnd/dist
           key: ${{ runner.os }}-pyinstaller-${{ hashFiles('BackEnd/run.spec', 'BackEnd/**.py') }}
+      
 
       - name: Build del BackEnd con pyinstaller
+        if: steps.cache-pyinstaller.outputs.cache-hit != 'true'
         run: |
             cd BackEnd
             pyinstaller --noconfirm run.spec
@@ -48,14 +51,17 @@ jobs:
           cache: 'npm'
     
       - name: Caché de dependencias de Node
+        id: cache-node
         uses: actions/cache@v4
         with:
             path: node_modules
             key: ${{ runner.os }}-node-${{ hashFiles('package.json', 'package-lock.json') }}
             restore-keys: ${{ runner.os }}-node-
-    
+        
       - name: Instalación de dependencias de Node
+        if: steps.cache-node.outputs.cache-hit != 'true'
         run: npm install
+        
 
       - name: Build de la app completa
         run: |
