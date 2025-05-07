@@ -52,7 +52,8 @@
     "publish": [
       {
         "provider": "github",
-        "publishAutoUpdate": false
+        "publishAutoUpdate": false,
+        "releaseType": "release"
       }
     ]
   }
