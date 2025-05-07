@@ -13,14 +13,15 @@ SecurAI es un escudo para tu equipo, un Sistema de Detección de Intrusiones (ID
 ## Características implementadas
 - Sistema modular fácilmente escalable
 - Módulos de inteligencia artificial para la detección de patrones complejos
-- Estructura para la creación de nuevos módulos
-- Recopilación de estadísticas
+- Recopilación de estadísticas de la red
+-Simulación de ataques para probar el rendimiento
 
 ## Instalación
 
 ### Para su uso normal
 
 Simplemente instala el release más reciente desde este repositorio, seleccionando el SO que desees.
+Puedes confiar en el proyecto y, si lo deseas, puedes observar su código fuente por supuesto.
 
 ### Para desarrollo
 ```bash

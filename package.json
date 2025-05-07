@@ -29,10 +29,6 @@
         {
           "target": "dmg",
           "arch": "x64"
-        },
-        {
-          "target": "zip",
-          "arch": "x64"
         }
       ],
       "identity": null
@@ -41,10 +37,6 @@
       "target": [
         {
           "target": "nsis",
-          "arch": "x64"
-        },
-        {
-          "target": "zip",
           "arch": "x64"
         }
       ]
