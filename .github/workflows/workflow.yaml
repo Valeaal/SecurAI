@@ -21,13 +21,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.9'
-    
-      - name: Caché de dependencias de Python
-        uses: actions/cache@v4
-        with:
-            path: ${{ runner.os == 'Windows' && 'C:\\Users\\runneradmin\\AppData\\Local\\pip\\Cache' || '~/.cache/pip' }}
-            key: ${{ runner.os }}-pip-${{ hashFiles('BackEnd/requirements.txt') }}
-            restore-keys: ${{ runner.os }}-pip-
+          cache: 'pip'
         
 
       - name: Instalación de dependencias
