@@ -1,7 +1,7 @@
 # 🛡️🌐 Bienvenido a SecurAI 🌐🛡️
 
 ## Descripción del proyecto
-SecurAI es un escudo para tu equipo, un IDS. Detectará diferentes ataques a nivel de red usando inteligencia artificial, y te notificará en caso de amenaza. SecurAI es mi Trabajo de Fin de Grado como ingeniero de software en la UMA.
+SecurAI es un escudo para tu equipo, un Sistema de Detección de Intrusiones (IDS). Detectará diferentes ataques a nivel de red usando inteligencia artificial, y te notificará en caso de amenaza. SecurAI es mi Trabajo de Fin de Grado como ingeniero de software en la UMA.
 
 ## Tabla de contenidos
 - [Descripción del proyecto](#descripción-del-proyecto)
