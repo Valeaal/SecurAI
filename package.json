@@ -24,25 +24,35 @@
       "package.json"
     ],
     "asar": false,
-    "extraMetadata": {
-      "main": "main.js"
-    },
     "mac": {
       "target": [
         {
           "target": "dmg",
-          "arch": ["x64"]
+          "arch": "x64"
+        },
+        {
+          "target": "zip",
+          "arch": "x64"
         }
       ],
       "identity": null
     },
     "win": {
-      "target": "nsis"
+      "target": [
+        {
+          "target": "nsis",
+          "arch": "x64"
+        },
+        {
+          "target": "zip",
+          "arch": "x64"
+        }
+      ]
     },
     "publish": [
       {
         "provider": "github",
-        "releaseType": "release"
+        "publishAutoUpdate": false
       }
     ]
   }
