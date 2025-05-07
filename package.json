@@ -39,6 +39,11 @@
     "win": {
       "target": "nsis"
     },
-    "publish": "always"
+    "publish": [
+      {
+        "provider": "github",
+        "releaseType": "release"
+      }
+    ]
   }
 }

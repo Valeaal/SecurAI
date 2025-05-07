@@ -67,9 +67,9 @@ jobs:
       - name: Build de la app completa
         run: |
           if [[ "$RUNNER_OS" == "macOS" ]]; then
-            npx electron-builder --mac --x64
+            npx electron-builder --mac --x64 --publish always
           elif [[ "$RUNNER_OS" == "Windows" ]]; then
-            npx electron-builder --win
+            npx electron-builder --win --publish always
           fi
         shell: bash
         env:
