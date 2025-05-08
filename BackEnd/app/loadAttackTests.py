@@ -3,7 +3,8 @@ import threading
 import importlib.util
 
 # Ruta donde se encuentran los archivos de ataque
-attackTestsPath = "./app/attackTests"
+baseDir = os.path.dirname(os.path.abspath(__file__))
+attackTestsPath = os.path.join(baseDir, 'app', 'attackTests')
 
 # Diccionario donde almacenamos los módulos y la lista de nombres
 attackTests = {}  # Clave -> Nombre, Valor -> Módulo

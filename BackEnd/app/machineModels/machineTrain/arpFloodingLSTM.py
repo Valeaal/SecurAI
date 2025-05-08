@@ -1,3 +1,4 @@
+import os
 import joblib
 import numpy as np
 import pandas as pd
@@ -10,9 +11,18 @@ from sklearn.utils.class_weight import compute_class_weight
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.metrics import confusion_matrix, classification_report
 
+# Definir base path relativo al archivo actual
+basePath = os.path.dirname(os.path.abspath(__file__))
+
+# Rutas absolutas
+originalDatasetPath = os.path.join(basePath, 'app', 'machineModels', 'dataSetsOriginals', 'arpFlooding+.csv')
+modelPath = os.path.join(basePath, 'app', 'machineModels', 'models', 'arpFloodingLSTM.h5')
+scalerPath = os.path.join(basePath, 'app', 'machineModels', 'models', 'arpFloodingLSTM.pkl')
+encoderPath = os.path.join(basePath, 'app', 'machineModels', 'encoders', 'arpFloodingLSTM.pkl')
+transformedDatasetPath = os.path.join(basePath, 'app', 'machineModels', 'dataSetsTransformed', 'arpFloodingLSTM.csv')
 
 # Cargar el dataset
-data = pd.read_csv('./app/machineModels/dataSetsOriginals/arpFlooding+.csv')
+data = pd.read_csv(originalDatasetPath)
 data = data.sort_values(by="frame.number").reset_index(drop=True)
 
 # Eliminar solo direcciones MAC e IP
@@ -51,19 +61,17 @@ encoders = {}
 
 for col in data.columns:
     if data[col].dtype == 'object':  # Si la columna es string
-        # Si la columna tiene valores hexadecimales, los convertimos a enteros sin usar LabelEncoder
         if data[col].str.startswith("0x", na=False).any():
             data[col] = data[col].apply(lambda x: int(x, 16) if isinstance(x, str) and x.startswith('0x') else x)
         else:
-            # Usamos un LabelEncoder y lo almacenamos en el diccionario
             le = LabelEncoder()
             data[col] = le.fit_transform(data[col])
             encoders[col] = le
 
-# Convertir 'arp.opcode' en valores numéricos (por si acaso)
+# Convertir 'arp.opcode' en valores numéricos
 data['arp.opcode'] = data['arp.opcode'].replace({'request': 1, 'reply': 2}).astype(float)
 
-# Rellenar valores NaN con 0
+# Rellenar valores NaN
 data.fillna(0, inplace=True)
 
 # Balancear las clases (0, 1, 2, 3)
@@ -72,7 +80,7 @@ balanced_data = data.groupby('label', group_keys=False)\
                     .apply(lambda x: x.sample(n=min_count, random_state=42))\
                     .reset_index(drop=True)
 
-# Después de realizar el balanceo, aplicar el refactoring a balanced_data
+# Refactor de labels
 balanced_data['label'] = balanced_data['label'].replace({2: 1, 3: 2, 4: 3}).astype(int)
 
 # Normalizar datos
@@ -82,7 +90,7 @@ y = balanced_data['label'].astype(int)
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
-# Crear secuencias de 128 paquetes
+# Crear secuencias
 sequence_length = 50
 X_sequences = []
 y_sequences = []
@@ -94,10 +102,10 @@ for i in range(len(X_scaled) - sequence_length):
 X_sequences = np.array(X_sequences)
 y_sequences = np.array(y_sequences).astype(int)
 
-# Dividir en conjuntos de entrenamiento y prueba
+# División en train/test
 X_train, X_test, y_train, y_test = train_test_split(X_sequences, y_sequences, test_size=0.3, random_state=42)
 
-# Construcción del modelo LSTM para clasificación multiclase
+# Modelo LSTM
 model = Sequential([
     LSTM(64, return_sequences=True, input_shape=(sequence_length, X_train.shape[2]), 
          kernel_regularizer=regularizers.l2(0.01)),
@@ -114,21 +122,18 @@ early_stopping = EarlyStopping(monitor='val_loss', patience=2, restore_best_weig
 
 model.fit(X_train, y_train, epochs=2, batch_size=1500, validation_data=(X_test, y_test), callbacks=[early_stopping])
 
-# Evaluación en el conjunto de prueba
+# Evaluación
 y_pred = model.predict(X_test)
-
-# Convertir las probabilidades de salida a clases, tomando la clase con la mayor probabilidad
 y_pred_classes = np.argmax(y_pred, axis=-1)
 
-# Imprimir el reporte de clasificación con detalles como precision, recall y f1-score
 print("Reporte de clasificación:")
 print(classification_report(y_test.flatten(), y_pred_classes.flatten()))
 
-# Guardar modelo, scaler y los encoders
-model.save('./app/machineModels/models/arpFloodingLSTM.h5')
-joblib.dump(scaler, './app/machineModels/models/arpFloodingLSTM.pkl')
-joblib.dump(encoders, './app/machineModels/encoders/arpFloodingLSTM.pkl')
+# Guardar modelos y scaler
+model.save(modelPath)
+joblib.dump(scaler, scalerPath)
+joblib.dump(encoders, encoderPath)
 
-balanced_data.to_csv('./app/machineModels/dataSetsTransformed/arpFloodingLSTM.csv', index=False)
+balanced_data.to_csv(transformedDatasetPath, index=False)
 
 print("Modelo LSTM multiclase entrenado y guardado correctamente.")
