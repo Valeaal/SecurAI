@@ -18,9 +18,9 @@ warnings.simplefilter("ignore", category=UserWarning)
 # Cargar modelo, scaler y el diccionario de encoders
 base_dir = os.path.dirname(os.path.abspath(__file__))  # Directorio donde se encuentra el script
 
-model_path = os.path.join(base_dir, 'app', 'machineModels', 'models', 'arpFloodingLSTM.h5')
-scaler_path = os.path.join(base_dir, 'app', 'machineModels', 'models', 'arpFloodingLSTM.pkl')
-encoders_path = os.path.join(base_dir, 'app', 'machineModels', 'encoders', 'arpFloodingLSTM.pkl')
+model_path = os.path.join(base_dir, '..', 'machineModels', 'models', 'arpFloodingLSTM.h5')
+scaler_path = os.path.join(base_dir, '..', 'machineModels', 'models', 'arpFloodingLSTM.pkl')
+encoders_path = os.path.join(base_dir, '..', 'machineModels', 'encoders', 'arpFloodingLSTM.pkl')
 
 model = load_model(model_path)
 scaler = joblib.load(scaler_path)

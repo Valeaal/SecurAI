@@ -16,8 +16,8 @@ warnings.simplefilter("ignore", category=UserWarning)
 # Cargar modelo entrenado y escalador
 base_dir = os.path.dirname(os.path.abspath(__file__))  # Directorio donde se encuentra el script
 
-model_path = os.path.join(base_dir, 'app', 'machineModels', 'models', 'arpFloodingSW.h5')
-scaler_path = os.path.join(base_dir, 'app', 'machineModels', 'models', 'arpFloodingSW.pkl')
+model_path = os.path.join(base_dir, '..', 'machineModels', 'models', 'arpFloodingSW.h5')
+scaler_path = os.path.join(base_dir, '..', 'machineModels', 'models', 'arpFloodingSW.pkl')
 
 model = load_model(model_path)
 scaler = joblib.load(scaler_path)

@@ -17,8 +17,8 @@ warnings.simplefilter("ignore", category=UserWarning)
 # Cargar modelo y escalador
 base_dir = os.path.dirname(os.path.abspath(__file__))  # Directorio donde se encuentra el script
 
-model_path = os.path.join(base_dir, 'app', 'machineModels', 'models', 'dnsAmplification.h5')
-scaler_path = os.path.join(base_dir, 'app', 'machineModels', 'models', 'dnsAmplification.pkl')
+model_path = os.path.join(base_dir, '..', 'machineModels', 'models', 'dnsAmplification.h5')
+scaler_path = os.path.join(base_dir, '..', 'machineModels', 'models', 'dnsAmplification.pkl')
 
 model = load_model(model_path)
 scaler = joblib.load(scaler_path)

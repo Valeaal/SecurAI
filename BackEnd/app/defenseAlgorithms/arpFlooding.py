@@ -15,10 +15,9 @@ running = False # Variable global de control para detener el algoritmo
 warnings.simplefilter("ignore", category=UserWarning)
 
 # Cargar modelo entrenado y escalador
-base_dir = os.path.dirname(os.path.abspath(__file__))  # Directorio donde se encuentra el script
-
-model_path = os.path.join(base_dir, 'app', 'machineModels', 'models', 'arpFlooding.h5')
-scaler_path = os.path.join(base_dir, 'app', 'machineModels', 'models', 'arpFlooding.pkl')
+base_dir = os.path.dirname(os.path.abspath(__file__))
+model_path = os.path.join(base_dir, '..', 'machineModels', 'models', 'arpFlooding.h5')
+scaler_path = os.path.join(base_dir, '..', 'machineModels', 'models', 'arpFlooding.pkl')
 
 model = load_model(model_path)
 scaler = joblib.load(scaler_path)

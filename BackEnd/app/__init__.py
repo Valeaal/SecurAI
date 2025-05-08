@@ -19,8 +19,6 @@ app = Flask(__name__)
 global attackNotifier
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")
 
-base_dir = os.path.dirname(os.path.abspath(__file__))
-
 CORS(app, resources={r"/*": {"origins": "*"}})
 
 def createApp():
