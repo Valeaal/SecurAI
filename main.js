@@ -16,9 +16,6 @@ function createWindow() {
     },
   });
 
-  // Abre las DevTools automáticamente
-  mainWindow.webContents.openDevTools();
-
   // Da tiempo a que Next.js levante el servidor
   setTimeout(() => {
     mainWindow.loadURL('http://localhost:3000');
