@@ -14,8 +14,13 @@ running = False  # Variable global para detener el algoritmo
 warnings.simplefilter("ignore", category=UserWarning)
 
 # Cargar modelo y escalador
-model = load_model('./app/machineModels/models/tcpSYN.h5')
-scaler = joblib.load('./app/machineModels/models/tcpSYN.pkl')
+base_dir = os.path.dirname(os.path.abspath(__file__))  # Directorio donde se encuentra el script
+
+model_path = os.path.join(base_dir, 'app', 'machineModels', 'models', 'tcpSYN.h5')
+scaler_path = os.path.join(base_dir, 'app', 'machineModels', 'models', 'tcpSYN.pkl')
+
+model = load_model(model_path)
+scaler = joblib.load(scaler_path)
 
 # Diccionario global para mantener estadísticas por flujo (clave = src_tuple o reverse_tuple)
 # Se guarda: packet_count (por flujo)

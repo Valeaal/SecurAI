@@ -15,8 +15,13 @@ running = False
 warnings.simplefilter("ignore", category=UserWarning)
 
 # Cargar modelo y escalador
-model = load_model('./app/machineModels/models/dnsAmplification.h5')
-scaler = joblib.load('./app/machineModels/models/dnsAmplification.pkl')
+base_dir = os.path.dirname(os.path.abspath(__file__))  # Directorio donde se encuentra el script
+
+model_path = os.path.join(base_dir, 'app', 'machineModels', 'models', 'dnsAmplification.h5')
+scaler_path = os.path.join(base_dir, 'app', 'machineModels', 'models', 'dnsAmplification.pkl')
+
+model = load_model(model_path)
+scaler = joblib.load(scaler_path)
 
 # Ventana deslizante de los últimos 100 “flujos” (paquetes) para cómputo de ct_*
 history = deque(maxlen=100)

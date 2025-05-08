@@ -14,8 +14,13 @@ running = False # Variable global de control para detener el algoritmo
 warnings.simplefilter("ignore", category=UserWarning)
 
 # Cargar modelo entrenado y escalador
-model = joblib.load('./app/machineModels/models/arpFloodingSVMmodel.pkl')
-scaler = joblib.load('./app/machineModels/models/arpFloodingSVMscaler.pkl')
+base_dir = os.path.dirname(os.path.abspath(__file__))  # Directorio donde se encuentra el script
+
+model_path = os.path.join(base_dir, 'app', 'machineModels', 'models', 'arpFloodingSVMmodel.pkl')
+scaler_path = os.path.join(base_dir, 'app', 'machineModels', 'models', 'arpFloodingSVMscaler.pkl')
+
+model = joblib.load(model_path)
+scaler = joblib.load(scaler_path)
 
 # Diccionarios globales para métricas en tiempo real
 arp_counts = {}  

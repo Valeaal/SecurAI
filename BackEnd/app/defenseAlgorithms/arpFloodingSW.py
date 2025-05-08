@@ -13,9 +13,14 @@ running = False  # Variable global de control para detener el algoritmo
 
 warnings.simplefilter("ignore", category=UserWarning)
 
-# ── Cargar modelo entrenado y escalador (nuevos archivos) ───────────
-model = load_model('./app/machineModels/models/arpFloodingSW.h5')
-scaler = joblib.load('./app/machineModels/models/arpFloodingSW.pkl')
+# Cargar modelo entrenado y escalador
+base_dir = os.path.dirname(os.path.abspath(__file__))  # Directorio donde se encuentra el script
+
+model_path = os.path.join(base_dir, 'app', 'machineModels', 'models', 'arpFloodingSW.h5')
+scaler_path = os.path.join(base_dir, 'app', 'machineModels', 'models', 'arpFloodingSW.pkl')
+
+model = load_model(model_path)
+scaler = joblib.load(scaler_path)
 
 # Lista global para almacenar los paquetes ARP en la ventana deslizante (últimos 2 minutos)
 # Cada entrada es un diccionario con las claves: 'time', 'src_mac', 'op_code', 'dst_ip'

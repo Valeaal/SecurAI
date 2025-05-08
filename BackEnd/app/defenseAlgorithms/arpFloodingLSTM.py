@@ -16,9 +16,15 @@ running = False  # Control de ejecución
 warnings.simplefilter("ignore", category=UserWarning)
 
 # Cargar modelo, scaler y el diccionario de encoders
-model = load_model('./app/machineModels/models/arpFloodingLSTM.h5')
-scaler = joblib.load('./app/machineModels/models/arpFloodingLSTM.pkl')
-label_encoders = joblib.load('./app/machineModels/encoders/arpFloodingLSTM.pkl')
+base_dir = os.path.dirname(os.path.abspath(__file__))  # Directorio donde se encuentra el script
+
+model_path = os.path.join(base_dir, 'app', 'machineModels', 'models', 'arpFloodingLSTM.h5')
+scaler_path = os.path.join(base_dir, 'app', 'machineModels', 'models', 'arpFloodingLSTM.pkl')
+encoders_path = os.path.join(base_dir, 'app', 'machineModels', 'encoders', 'arpFloodingLSTM.pkl')
+
+model = load_model(model_path)
+scaler = joblib.load(scaler_path)
+label_encoders = joblib.load(encoders_path)
 
 # Variables globales
 prev_time = None
