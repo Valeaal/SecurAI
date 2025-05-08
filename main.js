@@ -10,16 +10,19 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1400,
     height: 900,
-    //icon: path.join(__dirname, 'icon.icns'),
+    // icon: path.join(__dirname, 'icon.icns'),
     webPreferences: {
       contextIsolation: true,
     },
   });
 
+  // Abre las DevTools automáticamente
+  mainWindow.webContents.openDevTools();
+
   // Da tiempo a que Next.js levante el servidor
   setTimeout(() => {
     mainWindow.loadURL('http://localhost:3000');
-  }, 15000); // Espera 10 segundos después de iniciar el frontend
+  }, 15000); // Espera 15 segundos después de iniciar el frontend
 }
 
 function startFlaskBackend() {
@@ -31,8 +34,17 @@ function startFlaskBackend() {
 
   flaskProcess = spawn(execPath, [], {
     cwd: backendDir,
-    stdio: 'inherit',
+    stdio: 'pipe',  // Cambiar a 'pipe' para poder capturar la salida
     shell: true,
+  });
+
+  // Captura los logs del proceso de Flask
+  flaskProcess.stdout.on('data', (data) => {
+    console.log(`Flask: ${data}`);
+  });
+
+  flaskProcess.stderr.on('data', (data) => {
+    console.error(`Flask ERROR: ${data}`);
   });
 
   flaskProcess.on('error', (err) => {
@@ -49,8 +61,25 @@ function startNextFrontend() {
 
   nextProcess = spawn('npm', ['start'], {
     cwd: frontendPath,
-    stdio: 'inherit',
+    stdio: 'pipe',  // Cambiar a 'pipe' para poder capturar la salida
     shell: true,
+  });
+
+  // Captura los logs del proceso de Next.js
+  nextProcess.stdout.on('data', (data) => {
+    console.log(`Next.js: ${data}`);
+  });
+
+  nextProcess.stderr.on('data', (data) => {
+    console.error(`Next.js ERROR: ${data}`);
+  });
+
+  nextProcess.on('error', (err) => {
+    console.error('❌ Error al lanzar el frontend:', err);
+  });
+
+  nextProcess.on('exit', (code) => {
+    console.log(`ℹ️ Frontend finalizó con código ${code}`);
   });
 }
 
