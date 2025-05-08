@@ -1,10 +1,10 @@
 import os
 import threading
 import importlib.util
+from app import base_dir
 
 # Ruta donde se encuentran los algoritmos de defensa
-base_dir = os.path.dirname(os.path.abspath(__file__))
-defenseAlgorithmsPath = os.path.join(base_dir, 'app', 'defenseAlgorithms')
+defenseAlgorithmsPath = os.path.join(base_dir, 'defenseAlgorithms')
 
 # Diccionario donde almacenamos los módulos y la lista de nombres
 algorithms = {} # Clave->Nombre, Valor->Modulo
