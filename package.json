@@ -1,5 +1,7 @@
 {
   "name": "tfg",
+  "author": "Álvaro Valencia",
+  "description": "SecurAI IDS, Software UMA TFG",
   "version": "2.0.0",
   "main": "main.js",
   "scripts": {
@@ -32,9 +34,6 @@
         }
       ],
       "identity": null
-    },
-    "dmg": {
-      "blockmap": false
     },
     "win": {
       "target": [
