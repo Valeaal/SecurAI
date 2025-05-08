@@ -35,9 +35,6 @@
       ],
       "identity": null
     },
-    "dmg": {
-      "blockmap": false
-    },
     "win": {
       "target": [
         {
