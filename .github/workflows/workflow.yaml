@@ -64,7 +64,12 @@ jobs:
         
 
       - name: Build de la app completa
-        run: npm run dist --publish always
+        run: |
+          if [[ "$RUNNER_OS" == "macOS" ]]; then
+            npx electron-builder --mac --x64 --publish always
+          elif [[ "$RUNNER_OS" == "Windows" ]]; then
+            npx electron-builder --win --publish always
+          fi
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
