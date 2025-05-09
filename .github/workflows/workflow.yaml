@@ -45,6 +45,7 @@ jobs:
             cd dist
             cp -R run/_internal/* .
             rm -rf run
+        shell: bash
     
       - name: Inicialización de Node.js
         uses: actions/setup-node@v4
