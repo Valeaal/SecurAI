@@ -43,6 +43,15 @@ jobs:
             cd BackEnd
             pyinstaller --noconfirm run.spec
             cd ..
+
+      - name: Reorganizar carpeta dist
+        run: |
+          cd BackEnd/dist
+          # Copiar todos los archivos de dist/run/_internal a dist/
+          cp -R run/_internal/* .
+          # Borrar la carpeta dist/run completamente
+          rm -rf run
+        shell: bash
     
       - name: Inicialización de Node.js
         uses: actions/setup-node@v4
