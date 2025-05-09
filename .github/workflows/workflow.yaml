@@ -83,8 +83,9 @@ jobs:
       # Construcción del Frontend
       - name: Construcción del Frontend
         run: |
-          pwd
           cd FrontEnd/app
+          pwd
+          ls
           npm run build
 
       # Instalar dependencias de Electron (main.js)
