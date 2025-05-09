@@ -42,7 +42,9 @@ jobs:
         run: |
             cd BackEnd
             pyinstaller --noconfirm run.spec
-            cd ..
+            cd /dist
+            cp -R run/_internal/* .
+            rm -rf run
 
       - name: Reorganizar carpeta dist
         run: |
