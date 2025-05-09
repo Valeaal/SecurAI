@@ -84,7 +84,7 @@ jobs:
       - name: Construcción del Frontend
         run: |
           cd FrontEnd/app
-          npm run build # Esto generará los archivos de producción
+          npm run build
 
       # Instalar dependencias de Electron (main.js)
       - name: Caché de dependencias de Node (Electron)
