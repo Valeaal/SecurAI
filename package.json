@@ -23,7 +23,6 @@
       "BackEnd/",
       "!BackEnd/venvTFG",
       "FrontEnd/",
-      "FrontEnd/app/node_modules/",
       "package.json"
     ],
     "asar": false,

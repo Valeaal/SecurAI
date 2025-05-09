@@ -52,16 +52,13 @@ function startFlaskBackend() {
 }
 
 function startNextFrontend() {
-  const frontendPath = isDev
-    ? path.join(__dirname, 'app', 'FrontEnd', 'app')
-    : path.join(process.resourcesPath, 'app', 'FrontEnd', 'app');
+  // En desarrollo usamos __dirname
+  const frontendPath = path.join(__dirname,'app' ,'FrontEnd', 'app');
 
-  // Ejecuta el binario de Node directamente y lanza el servidor manualmente
-  const startScript = path.join(frontendPath, 'node_modules', '.bin', 'next');
-  nextProcess = spawn(startScript, ['start'], {
+  nextProcess = spawn('npm', ['start'], {
     cwd: frontendPath,
     stdio: 'pipe',
-    shell: process.platform === 'win32', // true en Windows
+    shell: false,
   });
 
   nextProcess.stdout.on('data', (data) => {

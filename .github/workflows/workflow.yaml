@@ -7,6 +7,7 @@ on:
       - 'FrontEnd/**'
       - 'main.js'
       - 'package.json'
+      - '.github/workflows/*.yaml'
 jobs:
   build:
     strategy:
@@ -22,7 +23,6 @@ jobs:
         with:
           python-version: '3.9'
           cache: 'pip'
-        
 
       - name: Instalación de dependencias de Python
         run: pip install -r BackEnd/requirements.txt
@@ -36,7 +36,6 @@ jobs:
             BackEnd/dist
           key: ${{ runner.os }}-pyinstaller-${{ hashFiles('BackEnd/run.spec', 'BackEnd/**.py') }}
       
-
       - name: Build del BackEnd con pyinstaller
         if: steps.cache-pyinstaller.outputs.cache-hit != 'true'
         run: |
@@ -46,25 +45,41 @@ jobs:
             cp -R run/_internal/* .
             rm -rf run
         shell: bash
-    
+
       - name: Inicialización de Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20.18.3'
           cache: 'npm'
-    
-      - name: Caché de dependencias de Node
-        id: cache-node
+
+      # Instalar dependencias del FrontEnd
+      - name: Caché de dependencias de Node (Frontend)
+        id: cache-node-frontend
         uses: actions/cache@v4
         with:
-            path: node_modules
-            key: ${{ runner.os }}-node-${{ hashFiles('package.json', 'package-lock.json') }}
-            restore-keys: ${{ runner.os }}-node-
-        
-      - name: Instalación de dependencias de Node
-        if: steps.cache-node.outputs.cache-hit != 'true'
-        run: npm install
-        
+          path: FrontEnd/app/node_modules  # Especifica el directorio node_modules del frontend
+          key: ${{ runner.os }}-node-frontend-${{ hashFiles('FrontEnd/app/package.json', 'FrontEnd/app/package-lock.json') }}  # Usa hash de package.json y package-lock.json
+          restore-keys: ${{ runner.os }}-node-frontend-
+
+      - name: Instalación de dependencias de Node (Frontend)
+        if: steps.cache-node-frontend.outputs.cache-hit != 'true'
+        run: |
+          cd FrontEnd/app
+          npm install
+
+      # Instalar dependencias de Electron (main.js)
+      - name: Caché de dependencias de Node (Electron)
+        id: cache-node-electron
+        uses: actions/cache@v4
+        with:
+          path: node_modules  # Especifica el directorio node_modules de Electron
+          key: ${{ runner.os }}-node-electron-${{ hashFiles('package.json', 'package-lock.json') }}  # Usa hash de package.json y package-lock.json
+          restore-keys: ${{ runner.os }}-node-electron-
+
+      - name: Instalación de dependencias de Node (Electron)
+        if: steps.cache-node-electron.outputs.cache-hit != 'true'
+        run: |
+          npm install
 
       - name: Build de la app completa
         run: |
@@ -76,4 +91,3 @@ jobs:
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-      
