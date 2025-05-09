@@ -25,7 +25,7 @@ function startFlaskBackend() {
   const execName = isWin ? 'SecurAI.exe' : 'SecurAI';
 
   // Usar process.resourcesPath para aplicaciones empaquetadas
-  const backendDir = path.join(process.resourcesPath, 'BackEnd', 'dist', 'SecurAI');
+  const backendDir = path.join(process.resourcesPath, 'app','BackEnd', 'dist', 'SecurAI');
   const execPath = path.join(backendDir, execName);
 
   flaskProcess = spawn(execPath, [], {
