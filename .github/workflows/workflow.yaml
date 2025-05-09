@@ -42,7 +42,7 @@ jobs:
         run: |
             cd BackEnd
             pyinstaller --noconfirm run.spec
-            cd /dist
+            cd dist
             cp -R run/_internal/* .
             rm -rf run
     
