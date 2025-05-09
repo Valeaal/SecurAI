@@ -80,6 +80,13 @@ jobs:
           key: ${{ runner.os }}-next-build-${{ hashFiles('FrontEnd/app/package.json', 'FrontEnd/app/package-lock.json') }}
           restore-keys: ${{ runner.os }}-next-build-
 
+      - name: Verificar importaciones y rutas
+        run: |
+          cat FrontEnd/app/jsconfig.json
+          # Verifica las rutas de los componentes
+          ls FrontEnd/app/components/ui/
+          ls FrontEnd/app/useSocket/
+
       # Construcción del Frontend
       - name: Construcción del Frontend
         run: |
