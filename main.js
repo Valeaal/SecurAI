@@ -31,7 +31,7 @@ function startFlaskBackend() {
   flaskProcess = spawn(execPath, [], {
     cwd: backendDir, // IMPORTANTE: especificar cwd explícitamente
     stdio: 'pipe',
-    shell: true,
+    shell: false,
   });
 
   flaskProcess.stdout.on('data', (data) => {
@@ -58,7 +58,7 @@ function startNextFrontend() {
   nextProcess = spawn('npm', ['start'], {
     cwd: frontendPath,
     stdio: 'pipe',
-    shell: true,
+    shell: false,
   });
 
   nextProcess.stdout.on('data', (data) => {
