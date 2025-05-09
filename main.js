@@ -31,7 +31,6 @@ function startFlaskBackend() {
   flaskProcess = spawn(execPath, [], {
     cwd: backendDir, // IMPORTANTE: especificar cwd explícitamente
     stdio: 'pipe',
-    shell: true,
   });
 
   flaskProcess.stdout.on('data', (data) => {
