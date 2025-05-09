@@ -52,13 +52,16 @@ function startFlaskBackend() {
 }
 
 function startNextFrontend() {
-  // En desarrollo usamos __dirname
-  const frontendPath = path.join(__dirname,'app' ,'FrontEnd', 'app');
+  const isWin = process.platform === 'win32';
+  const frontendPath = path.join(process.resourcesPath, 'app', 'FrontEnd', 'app');
+  const nextBinary = isWin
+    ? path.join(frontendPath, 'node_modules', '.bin', 'next.cmd')
+    : path.join(frontendPath, 'node_modules', '.bin', 'next');
 
-  nextProcess = spawn('npm', ['start'], {
+  nextProcess = spawn(nextBinary, ['start'], {
     cwd: frontendPath,
     stdio: 'pipe',
-    shell: false,
+    shell: false
   });
 
   nextProcess.stdout.on('data', (data) => {
@@ -77,6 +80,7 @@ function startNextFrontend() {
     console.log(`ℹ️ Frontend finalizó con código ${code}`);
   });
 }
+
 
 app.whenReady().then(() => {
   startFlaskBackend();
