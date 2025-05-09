@@ -61,7 +61,7 @@ function startNextFrontend() {
   nextProcess = spawn(nextBinary, ['start'], {
     cwd: frontendPath,
     stdio: 'pipe',
-    shell: false
+    shell: true
   });
 
   nextProcess.stdout.on('data', (data) => {
