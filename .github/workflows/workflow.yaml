@@ -1,4 +1,5 @@
 name: Build SecurAI
+
 on:
   workflow_dispatch:
   push:
@@ -8,6 +9,7 @@ on:
       - 'main.js'
       - 'package.json'
       - '.github/workflows/*.yaml'
+
 jobs:
   build:
     strategy:
@@ -18,6 +20,7 @@ jobs:
       - name: Checkout código
         uses: actions/checkout@v4
 
+      # Inicialización de Python
       - name: Inicialización de Python
         uses: actions/setup-python@v5
         with:
@@ -35,17 +38,18 @@ jobs:
             BackEnd/build
             BackEnd/dist
           key: ${{ runner.os }}-pyinstaller-${{ hashFiles('BackEnd/run.spec', 'BackEnd/**.py') }}
-      
+
       - name: Build del BackEnd con pyinstaller
         if: steps.cache-pyinstaller.outputs.cache-hit != 'true'
         run: |
-            cd BackEnd
-            pyinstaller --noconfirm run.spec
-            cd dist
-            cp -R run/_internal/* .
-            rm -rf run
+          cd BackEnd
+          pyinstaller --noconfirm run.spec
+          cd dist
+          cp -R run/_internal/* .
+          rm -rf run
         shell: bash
 
+      # Inicialización de Node.js
       - name: Inicialización de Node.js
         uses: actions/setup-node@v4
         with:
@@ -57,8 +61,8 @@ jobs:
         id: cache-node-frontend
         uses: actions/cache@v4
         with:
-          path: FrontEnd/app/node_modules  # Especifica el directorio node_modules del frontend
-          key: ${{ runner.os }}-node-frontend-${{ hashFiles('FrontEnd/app/package.json', 'FrontEnd/app/package-lock.json') }}  # Usa hash de package.json y package-lock.json
+          path: FrontEnd/app/node_modules
+          key: ${{ runner.os }}-node-frontend-${{ hashFiles('FrontEnd/app/package.json', 'FrontEnd/app/package-lock.json') }}
           restore-keys: ${{ runner.os }}-node-frontend-
 
       - name: Instalación de dependencias de Node (Frontend)
@@ -67,13 +71,28 @@ jobs:
           cd FrontEnd/app
           npm install
 
+      # Caché de la build de Next.js (Frontend)
+      - name: Caché de la build de Next.js
+        id: cache-next-build
+        uses: actions/cache@v4
+        with:
+          path: FrontEnd/app/.next  # Ruta de la carpeta .next
+          key: ${{ runner.os }}-next-build-${{ hashFiles('FrontEnd/app/package.json', 'FrontEnd/app/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-next-build-
+
+      # Construcción del Frontend
+      - name: Construcción del Frontend
+        run: |
+          cd FrontEnd/app
+          npm run build # Esto generará los archivos de producción
+
       # Instalar dependencias de Electron (main.js)
       - name: Caché de dependencias de Node (Electron)
         id: cache-node-electron
         uses: actions/cache@v4
         with:
-          path: node_modules  # Especifica el directorio node_modules de Electron
-          key: ${{ runner.os }}-node-electron-${{ hashFiles('package.json', 'package-lock.json') }}  # Usa hash de package.json y package-lock.json
+          path: node_modules
+          key: ${{ runner.os }}-node-electron-${{ hashFiles('package.json', 'package-lock.json') }}
           restore-keys: ${{ runner.os }}-node-electron-
 
       - name: Instalación de dependencias de Node (Electron)
@@ -81,12 +100,13 @@ jobs:
         run: |
           npm install
 
+      # Build de la app completa con Electron
       - name: Build de la app completa
         run: |
           if [[ "$RUNNER_OS" == "macOS" ]]; then
             npx electron-builder --mac --x64 --publish always
           elif [[ "$RUNNER_OS" == "Windows" ]]; then
-            npx electron-builder --win --publish always
+            npx electron-builder --win --x64 --publish always
           fi
         shell: bash
         env:
