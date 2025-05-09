@@ -2,7 +2,7 @@
   "name": "tfg",
   "author": "Álvaro Valencia",
   "description": "SecurAI IDS, Software UMA TFG",
-  "version": "1.0.3-beta",
+  "version": "1.0.4-beta",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
