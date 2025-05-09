@@ -15,11 +15,11 @@ from sklearn.metrics import confusion_matrix, classification_report
 basePath = os.path.dirname(os.path.abspath(__file__))
 
 # Rutas absolutas
-originalDatasetPath = os.path.join(basePath, 'app', 'machineModels', 'dataSetsOriginals', 'arpFlooding+.csv')
-modelPath = os.path.join(basePath, 'app', 'machineModels', 'models', 'arpFloodingLSTM.h5')
-scalerPath = os.path.join(basePath, 'app', 'machineModels', 'models', 'arpFloodingLSTM.pkl')
-encoderPath = os.path.join(basePath, 'app', 'machineModels', 'encoders', 'arpFloodingLSTM.pkl')
-transformedDatasetPath = os.path.join(basePath, 'app', 'machineModels', 'dataSetsTransformed', 'arpFloodingLSTM.csv')
+originalDatasetPath = os.path.join(basePath, '..', 'dataSetsOriginals', 'arpFlooding+.csv')
+modelPath = os.path.join(basePath, '..', 'models', 'arpFloodingLSTM.h5')
+scalerPath = os.path.join(basePath, '..', 'models', 'arpFloodingLSTM.pkl')
+encoderPath = os.path.join(basePath, '..', 'encoders', 'arpFloodingLSTM.pkl')
+transformedDatasetPath = os.path.join(basePath, 'app', 'dataSetsTransformed', 'arpFloodingLSTM.csv')
 
 # Cargar el dataset
 data = pd.read_csv(originalDatasetPath)

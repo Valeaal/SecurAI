@@ -14,9 +14,9 @@ from tensorflow.keras.callbacks import EarlyStopping  # type: ignore
 baseDir = os.path.dirname(os.path.abspath(__file__))
 
 # Rutas absolutas
-datasetPath = os.path.join(baseDir, 'app', 'machineModels', 'dataSetsOriginals', 'arpFlooding.csv')
-modelPath = os.path.join(baseDir, 'app', 'machineModels', 'models', 'arpFlooding.h5')
-scalerPath = os.path.join(baseDir, 'app', 'machineModels', 'models', 'arpFlooding.pkl')
+datasetPath = os.path.join(baseDir, '..', 'dataSetsOriginals', 'arpFlooding.csv')
+modelPath = os.path.join(baseDir, '..', 'models', 'arpFlooding.h5')
+scalerPath = os.path.join(baseDir, '..', 'models', 'arpFlooding.pkl')
 transformedDatasetPath = os.path.join(baseDir, 'app', 'machineModels', 'dataSetsTransformed', 'arpFlooding.csv')
 
 # Cargar el dataset
