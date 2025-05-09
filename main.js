@@ -53,7 +53,7 @@ function startFlaskBackend() {
 
 function startNextFrontend() {
   // En desarrollo usamos __dirname
-  const frontendPath = path.join(__dirname, 'FrontEnd', 'app');
+  const frontendPath = path.join(__dirname,'app' ,'FrontEnd', 'app');
 
   nextProcess = spawn('npm', ['start'], {
     cwd: frontendPath,
