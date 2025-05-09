@@ -83,6 +83,7 @@ jobs:
       # Construcción del Frontend
       - name: Construcción del Frontend
         run: |
+          pwd
           cd FrontEnd/app
           npm run build
 
