@@ -9,7 +9,7 @@ algunas técnicas de **inteligencia artificial** y se implementarán diversos al
 - [Contexto](#contexto)
 - [Características implementadas](#características-implementadas)
 - [Instalación](#instalación)
-- [Resolución de problemas](resolucion-de-problemas)
+- [Resolución de problemas](#resolución-de-problemas)
 - [Contacto](#contacto)
 - [Documentación y memoria](#documentación-y-memoria)
 
@@ -43,8 +43,8 @@ Es normal que la aplicación tarde un tiempo considerable en abrise, ya que tien
 
 ### Para su uso normal
 
-- **Si usas MacOS** descarga el archivo .dmg de la [release más reciente](https://github.com/Valeaal/SecurAI/releases/latest) e instálalo como cualquier aplicación de Mac. Como es común en MacOS, el sistema avisará de que no ha podido comprobar la seguridad de la aplicación. Tendrás que confiar en ella desde *Ajustes del Sistema > Privacidad y Seguridad > Abrir Igualmente en el apartado de Seguridad* para poder abrirla.
-- **Si usas Windows** descarga el archivo .exe de la [release más reciente](https://github.com/Valeaal/SecurAI/releases/latest) e instálalo. Si no tienes instalado Npcap, el instalador te pedirá instalarlo, solo tendrás que seguir los indicados pasos. Es probable que salga un aviso de SmartScreen de Microsoft Defender, puedes pulsar *Más Información > Ejecutar de todas formas* para continuar el proceso.
+- **Si usas MacOS** descarga el archivo .dmg de la [release más reciente](https://github.com/Valeaal/SecurAI/releases/latest) e instálalo como cualquier aplicación de Mac. Como es común en MacOS, el sistema avisará de que no ha podido comprobar la seguridad de la aplicación. Tendrás que confiar en ella desde *Ajustes del Sistema > Privacidad y Seguridad > Abrir Igualmente* en el apartado de Seguridad para poder abrirla.
+- **Si usas Windows** descarga el archivo .exe de la [release más reciente](https://github.com/Valeaal/SecurAI/releases/latest) e instálalo. Si no tienes instalado [Npcap](https://wiki.wireshark.org/NPcap), el instalador de SecurAI te pedirá instalarlo, solo tendrás que seguir los pasos indicados y seguir la configuración recomendada, no tienes que instalarlo manualmente. Es probable que salga un aviso de SmartScreen de Microsoft Defender, puedes pulsar *Más Información > Ejecutar de todas formas* para continuar el proceso.
 
 Puedes confiar en el proyecto y, si lo deseas, puedes observar su código fuente por supuesto.
 
