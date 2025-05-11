@@ -77,17 +77,17 @@ npm run dev
 ## Resolución de problemas
 
 - Si tras más de cinco minutos desde el inicio la aplicación muestra la interfaz morada sin más información, o parece no funcionar, es probable que esté funcionando pero el BackEnd no haya establecido bien la comunicación con el FrontEnd. Simplemente hay que recargar el FrontEnd.
-  - **En MacOS** pulsa `cmd+R`.
+  - **En MacOS** pulsa `cmd + R`.
   - **En Windows** pulsa `ctrl + R`.
 
 ## Contacto
 
 Para cualquier consulta relacionada con este proyecto:
 
-- Email: [valeal@uma.es] o [alvavi2002@gmail.com]
+- Email: [valeal@uma.es](valeal@uma.es) o [alvavi2002@gmail.com](alvavi2002@gmail.com)
 - LinkedIn: [Álvaro Valencia](www.linkedin.com/in/valeal)
 - GitHub: [Valeaal](https://github.com/valeaal)
 
 ## Documentación y memoria
 
-La documentación completa y la memoria del TFG están disponibles en la carpeta `/Memoria` de este repositorio. Muy recomendado para entender el funcionamiento, cambiar SecurAI a su gusto, o desarrollar nuevos módulos.
+La documentación completa y la memoria del TFG están disponibles en el archivo `Memoria` de este repositorio. Muy recomendado para entender el funcionamiento, cambiar SecurAI a su gusto, o desarrollar nuevos módulos.
