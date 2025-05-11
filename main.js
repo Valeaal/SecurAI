@@ -112,7 +112,6 @@ function downloadNpcapInstaller(destination, callback) {
 
 // Instala Npcap de forma silenciosa
 function installNpcap(installerPath, callback) {
-  const args = ['/S']; // instalación silenciosa
   const child = spawn(installerPath, args, {
     stdio: 'inherit',
     shell: true
