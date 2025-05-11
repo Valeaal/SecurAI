@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, dialog } = require('electron');
 const path = require('path');
 const { spawn, execFile } = require('child_process');
 const fs = require('fs');
@@ -92,7 +92,7 @@ function isNpcapInstalled(callback) {
 
 // Descarga el instalador de Npcap
 function downloadNpcapInstaller(destination, callback) {
-  const url = 'https://npcap.com/dist/npcap-1.78.exe'; // actualiza a la versión estable si cambia
+  const url = 'https://npcap.com/dist/npcap-1.78.exe'; // actualiza si hay nueva versión
   const file = fs.createWriteStream(destination);
 
   https.get(url, (response) => {
@@ -110,9 +110,29 @@ function downloadNpcapInstaller(destination, callback) {
   });
 }
 
-// Instala Npcap de forma silenciosa
+// Muestra un diálogo al usuario antes de instalar Npcap
+function promptNpcapInstallation(installerPath, callback) {
+  const options = {
+    type: 'info',
+    buttons: ['Instalar ahora', 'Cancelar'],
+    title: 'Npcap requerido',
+    message: 'Npcap es necesario para capturar paquetes en Windows.',
+    detail: 'Se va a abrir el instalador de Npcap. Completa la instalación manualmente y pulsa "Finalizar" en el instalador para continuar.',
+  };
+
+  dialog.showMessageBox(null, options).then((result) => {
+    if (result.response === 0) {
+      installNpcap(installerPath, callback);
+    } else {
+      console.log('🚫 El usuario canceló la instalación de Npcap.');
+      app.quit();
+    }
+  });
+}
+
+// Ejecuta el instalador de Npcap manualmente (sin /S)
 function installNpcap(installerPath, callback) {
-  const child = spawn(installerPath, args, {
+  const child = spawn(installerPath, [], {
     stdio: 'inherit',
     shell: true
   });
@@ -122,7 +142,7 @@ function installNpcap(installerPath, callback) {
       console.log('✅ Npcap instalado correctamente');
       callback();
     } else {
-      console.error(`❌ Npcap falló con código ${code}`);
+      console.error(`❌ Instalación de Npcap falló con código ${code}`);
       app.quit();
     }
   });
@@ -130,7 +150,6 @@ function installNpcap(installerPath, callback) {
 
 app.whenReady().then(() => {
   if (!isWin) {
-    // macOS o Linux: arranque directo
     startFlaskBackend();
     setTimeout(() => {
       startNextFrontend();
@@ -139,7 +158,7 @@ app.whenReady().then(() => {
     return;
   }
 
-  // Windows: comprobar Npcap
+  // En Windows: comprobar si Npcap está instalado
   isNpcapInstalled((installed) => {
     if (installed) {
       startFlaskBackend();
@@ -158,7 +177,7 @@ app.whenReady().then(() => {
           return;
         }
 
-        installNpcap(installerPath, () => {
+        promptNpcapInstallation(installerPath, () => {
           startFlaskBackend();
           setTimeout(() => {
             startNextFrontend();
