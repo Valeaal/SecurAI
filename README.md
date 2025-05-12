@@ -4,6 +4,8 @@ En este trabajo fin de grado (TFG) se plantea desarrollar una aplicación que in
 El IDS analizará el tráfico de la red para estimar la probabilidad de que estemos siendo atacados. Para ello se estudiará el uso de
 algunas técnicas de **inteligencia artificial** y se implementarán diversos algoritmos para notificar al usuario del ataque.
 
+SecurAI es el resultado de esta investigación: un software modular, escalable e innovador que incorpora funcionalidades clave como módulos preestablecidos de detección de amenazas, recopilación de estadísticas de la red y simulación de ataques sobre el propio equipo para comprobar en tiempo real el rendimiento de los módulos.
+
 ## Tabla de contenidos
 
 - [Contexto](#contexto)
