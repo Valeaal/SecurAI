@@ -59,16 +59,7 @@ jobs:
           cache: 'npm'
 
       # Instalar dependencias del FrontEnd
-      - name: Caché de dependencias del FrontEnd
-        id: cache-node-frontend
-        uses: actions/cache@v4
-        with:
-          path: FrontEnd/app/node_modules
-          key: ${{ runner.os }}-node-frontend-${{ hashFiles('FrontEnd/app/package.json', 'FrontEnd/app/package-lock.json') }}
-          restore-keys: ${{ runner.os }}-node-frontend-
-
       - name: Instalación de dependencias del FrontEnd
-        if: steps.cache-node-frontend.outputs.cache-hit != 'true'
         run: |
           cd FrontEnd/app
           npm install
@@ -87,18 +78,9 @@ jobs:
         run: |
           cd FrontEnd/app
           npm run build
-
+      
       # Instalar dependencias de Electron
-      - name: Caché de dependencias de Electron
-        id: cache-node-electron
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-electron-${{ hashFiles('package.json', 'package-lock.json') }}
-          restore-keys: ${{ runner.os }}-node-electron-
-
       - name: Instalación de dependencias de Electron
-        if: steps.cache-node-electron.outputs.cache-hit != 'true'
         run: |
           npm install
 
