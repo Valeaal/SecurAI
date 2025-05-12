@@ -58,7 +58,7 @@ Puedes confiar en el proyecto y, si lo deseas, puedes observar su código fuente
 git clone https://github.com/valeaal/SecurAI.git
 
 # Entrar al directorio
-cd SecurAI/BackEnd
+cd /BackEnd
 
 # Instalar dependencias
 pip install -r requirements.txt
@@ -67,7 +67,8 @@ pip install -r requirements.txt
 python3 run.py
 
 # Entrar al directorio
-cd SecurAI/FrontEnd/app
+cd ..
+cd /FrontEnd/app
 
 # Instalar dependencias
 npm install -i
