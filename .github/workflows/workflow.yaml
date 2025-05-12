@@ -97,6 +97,7 @@ jobs:
           restore-keys: ${{ runner.os }}-electron-build-
 
       - name: Build de la app completa
+        if: steps.cache-electron-build.outputs.cache-hit != 'true'  # Solo construir si no se encuentra la caché
         run: |
           if [[ "$RUNNER_OS" == "macOS" ]]; then
             npx electron-builder --mac --x64 --publish always
@@ -106,5 +107,4 @@ jobs:
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        if: steps.cache-electron-build.outputs.cache-hit != 'true'  # Solo construir si no se encuentra la caché
 
