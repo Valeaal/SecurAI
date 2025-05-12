@@ -29,9 +29,12 @@ jobs:
           python-version: '3.9'
           cache: 'pip'
 
+      # Instalar dependencias del BackEnd
       - name: Instalación de dependencias de Python
         run: pip install -r BackEnd/requirements.txt
 
+
+      # Build del BackEnd
       - name: Caché del build del Backend con PyInstaller
         id: cache-pyinstaller
         uses: actions/cache@v4
