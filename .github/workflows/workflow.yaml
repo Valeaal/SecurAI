@@ -30,9 +30,12 @@ jobs:
           python-version: '3.9'
           cache: 'pip'
 
+      # Instalar dependencias del BackEnd
       - name: Instalación de dependencias de Python
         run: pip install -r BackEnd/requirements.txt
 
+
+      # Build del BackEnd
       - name: Caché del build del Backend con PyInstaller
         id: cache-pyinstaller
         uses: actions/cache@v4
@@ -59,41 +62,45 @@ jobs:
           node-version: '20.18.3'
           cache: 'npm'
 
+      # Instalar dependencias del FrontEnd
       - name: Instalación de dependencias del FrontEnd
         run: |
           cd FrontEnd/app
           npm install
 
+      # Build del FrontEnd
       - name: Caché de la build del FrontEnd
         id: cache-next-build
         uses: actions/cache@v4
         with:
-          path: FrontEnd/app/.next
+          path: FrontEnd/app/.next  # Ruta de la carpeta .next
           key: ${{ runner.os }}-next-build-${{ hashFiles('FrontEnd/app/package.json', 'FrontEnd/app/package-lock.json') }}
           restore-keys: ${{ runner.os }}-next-build-
 
       - name: Build del Frontend
-        if: steps.cache-next-build.outputs.cache-hit != 'true'
+        if: steps.cache-next-build.outputs.cache-hit != 'true'  # Solo si no se ha encontrado la caché
         run: |
           cd FrontEnd/app
           npm run build
-
+      
+      # Instalar dependencias de Electron
       - name: Instalación de dependencias de Electron
         run: |
           npm install
 
+      # Build de la app completa
       - name: Caché de la build completa de Electron
         id: cache-electron-build
         uses: actions/cache@v4
         with:
           path: dist
-          key: ${{ runner.os }}-electron-build-${{ hashFiles('package.json', 'package-lock.json', 'dist/latest.yml', 'dist/latest-mac.yml') }}
+          key: ${{ runner.os }}-electron-build-${{ hashFiles('package.json', 'package-lock.json', 'disr/latest.yml', 'latest-mac.yml') }}
           restore-keys: ${{ runner.os }}-electron-build-
 
       - name: Build de la app completa
         if: steps.cache-electron-build.outputs.cache-hit != 'true'
         run: |
-          if [[ "$GITHUB_REF_NAME" == "main" ]]; then
+          if [[ "${GITHUB_REF##*/}" == "main" ]]; then
             PUBLISH_FLAG="--publish always"
           else
             PUBLISH_FLAG="--publish never"
@@ -108,6 +115,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
+      
       - name: Subir artefactos de prueba
         if: github.ref_name == 'testRelease'
         uses: actions/upload-artifact@v4
@@ -116,3 +124,5 @@ jobs:
           path: |
             dist/*.dmg
             dist/*.exe
+
+
