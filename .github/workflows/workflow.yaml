@@ -21,7 +21,7 @@ jobs:
         include:
           - os: macos-13
             variant: x86
-          - os: macos-13
+          - os: macos-15
             variant: arm64
           - os: windows-latest
             variant: x86
@@ -136,7 +136,7 @@ jobs:
           fi
 
           if [[ "$RUNNER_OS" == "macOS" ]]; then
-              npx electron-builder --mac --x64 $PUBLISH_FLAG
+              npx electron-builder --mac --universal $PUBLISH_FLAG
           elif [[ "$RUNNER_OS" == "Windows" ]]; then
             npx electron-builder --win --x64 $PUBLISH_FLAG
           fi
