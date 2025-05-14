@@ -20,11 +20,11 @@ jobs:
       matrix:
         include:
           - os: macos-13
-            arch: x64
+            variant: x86
           - os: macos-13
-            arch: arm64
+            variant: arm64
           - os: windows-latest
-            arch: x64
+            variant: x86
       fail-fast: false
     runs-on: ${{ matrix.os }}
     continue-on-error: true
@@ -49,9 +49,9 @@ jobs:
       - name: Reemplazar TensorFlow por tensorflow-macos (macOS ARM)
         run: |
           echo "RUNNER_OS=$RUNNER_OS"
-          echo "RUNNER_ARCH=$RUNNER_ARCH"
+          echo "VARIANT=$VARIANT"
 
-          if [[ "$RUNNER_OS" == "macOS" && "$RUNNER_ARCH" == "arm64" ]]; then
+          if [[ "$RUNNER_OS" == "macOS" && "$VARIANT" == "arm64" ]]; then
             echo "Entorno macOS ARM detectado. Reemplazando TensorFlow..."
             pip uninstall -y tensorflow || true
             pip install tensorflow-macos
@@ -59,6 +59,9 @@ jobs:
             echo "No es macOS ARM. No se reemplaza TensorFlow."
           fi
         shell: bash
+        env:
+          VARIANT: ${{ matrix.variant }}
+
 
 
       # Build del BackEnd
