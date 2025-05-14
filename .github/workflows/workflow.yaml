@@ -47,10 +47,19 @@ jobs:
         shell: bash
 
       - name: Reemplazar TensorFlow por tensorflow-macos (macOS ARM)
-        if: runner.os == 'macOS' && runner.arch == 'arm64'
         run: |
-          pip uninstall -y tensorflow || true
-          pip install tensorflow-macos
+          echo "RUNNER_OS=$RUNNER_OS"
+          echo "RUNNER_ARCH=$RUNNER_ARCH"
+
+          if [[ "$RUNNER_OS" == "macOS" && "$RUNNER_ARCH" == "arm64" ]]; then
+            echo "Entorno macOS ARM detectado. Reemplazando TensorFlow..."
+            pip uninstall -y tensorflow || true
+            pip install tensorflow-macos
+          else
+            echo "No es macOS ARM. No se reemplaza TensorFlow."
+          fi
+        shell: bash
+
 
       # Build del BackEnd
       - name: Caché del build del Backend con PyInstaller
@@ -124,12 +133,7 @@ jobs:
           fi
 
           if [[ "$RUNNER_OS" == "macOS" ]]; then
-            ARCH=$(uname -m)
-            if [[ "$ARCH" == "arm64" ]]; then
-              npx electron-builder --mac --arm64 $PUBLISH_FLAG
-            else
               npx electron-builder --mac --x64 $PUBLISH_FLAG
-            fi
           elif [[ "$RUNNER_OS" == "Windows" ]]; then
             npx electron-builder --win --x64 $PUBLISH_FLAG
           fi
