@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - testRelease
+      - macARM
     paths:
       - 'BackEnd/**'
       - 'FrontEnd/**'
@@ -17,7 +18,13 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [macos-13, macos-latest, windows-latest]
+        include:
+          - os: macos-13
+            arch: x64
+          - os: macos-latest
+            arch: arm64
+          - os: windows-latest
+            arch: x64
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout código
@@ -114,7 +121,12 @@ jobs:
           fi
 
           if [[ "$RUNNER_OS" == "macOS" ]]; then
-            npx electron-builder --mac --x64 $PUBLISH_FLAG
+            ARCH=$(uname -m)
+            if [[ "$ARCH" == "arm64" ]]; then
+              npx electron-builder --mac --arm64 $PUBLISH_FLAG
+            else
+              npx electron-builder --mac --x64 $PUBLISH_FLAG
+            fi
           elif [[ "$RUNNER_OS" == "Windows" ]]; then
             npx electron-builder --win --x64 $PUBLISH_FLAG
           fi
@@ -126,7 +138,7 @@ jobs:
         if: github.ref_name == 'testRelease'
         uses: actions/upload-artifact@v4
         with:
-          name: SecurAI-${{ runner.os }}-build
+          name: SecurAI-${{ runner.os }}-${{ matrix.arch }}-build
           path: |
             dist/*.dmg
             dist/*.exe
