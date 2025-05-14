@@ -17,7 +17,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [macos-13, windows-latest]
+        os: [macos-13, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout código
@@ -32,8 +32,15 @@ jobs:
 
       # Instalar dependencias del BackEnd
       - name: Instalación de dependencias de Python
-        run: pip install -r BackEnd/requirements.txt
-
+        run: |
+          pip install -r BackEnd/requirements.txt
+          
+          # Si estamos en macOS ARM, desinstalar tensorflow y usar tensorflow-macos
+          if [[ "$(uname -m)" == "arm64" && "$RUNNER_OS" == "macOS" ]]; then
+            pip uninstall -y tensorflow || true
+            pip install tensorflow-macos
+          fi
+        shell: bash
 
       # Build del BackEnd
       - name: Caché del build del Backend con PyInstaller
@@ -73,12 +80,12 @@ jobs:
         id: cache-next-build
         uses: actions/cache@v4
         with:
-          path: FrontEnd/app/.next  # Ruta de la carpeta .next
+          path: FrontEnd/app/.next
           key: ${{ runner.os }}-next-build-${{ hashFiles('FrontEnd/app/package.json', 'FrontEnd/app/package-lock.json') }}
           restore-keys: ${{ runner.os }}-next-build-
 
       - name: Build del Frontend
-        if: steps.cache-next-build.outputs.cache-hit != 'true'  # Solo si no se ha encontrado la caché
+        if: steps.cache-next-build.outputs.cache-hit != 'true'
         run: |
           cd FrontEnd/app
           npm run build
@@ -115,7 +122,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
-      
       - name: Subir artefactos de prueba
         if: github.ref_name == 'testRelease'
         uses: actions/upload-artifact@v4
@@ -124,5 +130,3 @@ jobs:
           path: |
             dist/*.dmg
             dist/*.exe
-
-
