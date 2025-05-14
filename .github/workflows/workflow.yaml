@@ -145,7 +145,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Subir artefactos de prueba
-        if: github.ref_name == 'testRelease'
+        if: github.ref_name != 'main'
         uses: actions/upload-artifact@v4
         with:
           name: SecurAI-${{ runner.os }}-${{ matrix.variant }}-build
