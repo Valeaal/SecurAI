@@ -44,13 +44,13 @@ jobs:
       - name: Instalación de dependencias de Python
         run: |
           pip install -r BackEnd/requirements.txt
-          
-          # Si estamos en macOS ARM, desinstalar tensorflow y usar tensorflow-macos
-          if [[ "$(uname -m)" == "arm64" && "$RUNNER_OS" == "macOS" ]]; then
-            pip uninstall -y tensorflow || true
-            pip install tensorflow-macos
-          fi
         shell: bash
+
+      - name: Reemplazar TensorFlow por tensorflow-macos (macOS ARM)
+        if: runner.os == 'macOS' && runner.arch == 'ARM64'
+        run: |
+          pip uninstall -y tensorflow || true
+          pip install tensorflow-macos
 
       # Build del BackEnd
       - name: Caché del build del Backend con PyInstaller
