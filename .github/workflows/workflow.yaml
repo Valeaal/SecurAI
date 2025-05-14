@@ -47,7 +47,7 @@ jobs:
         shell: bash
 
       - name: Reemplazar TensorFlow por tensorflow-macos (macOS ARM)
-        if: runner.os == 'macOS' && runner.arch == 'ARM64'
+        if: runner.os == 'macOS' && runner.arch == 'arm64'
         run: |
           pip uninstall -y tensorflow || true
           pip install tensorflow-macos
