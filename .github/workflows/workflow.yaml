@@ -137,9 +137,9 @@ jobs:
           fi
 
           if [[ "$RUNNER_OS" == "macOS" && "${{ matrix.variant }}" == "x86" ]]; then
-            npx electron-builder --mac --x64 $PUBLISH_FLAG
+            npx electron-builder --x64 $PUBLISH_FLAG
           elif [[ "$RUNNER_OS" == "macOS" && "${{ matrix.variant }}" == "arm64" ]]; then
-            npx electron-builder --mac --arm64 $PUBLISH_FLAG
+            npx electron-builder --arm64 $PUBLISH_FLAG
           elif [[ "$RUNNER_OS" == "Windows" ]]; then
             npx electron-builder --win --x64 $PUBLISH_FLAG
           fi
