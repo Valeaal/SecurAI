@@ -73,7 +73,9 @@ jobs:
           path: |
             BackEnd/build
             BackEnd/dist
-          key: ${{ runner.os }}-pyinstaller-${{ hashFiles('BackEnd/run.spec', 'BackEnd/**.py') }}
+          key: ${{ runner.os }}-${{ matrix.variant }}-pyinstaller-${{ hashFiles('BackEnd/run.spec', 'BackEnd/**.py') }}
+          restore-keys: ${{ runner.os }}-${{ matrix.variant }}-pyinstaller-
+
 
       - name: Build del BackEnd con pyinstaller
         if: steps.cache-pyinstaller.outputs.cache-hit != 'true'
@@ -104,8 +106,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: FrontEnd/app/.next
-          key: ${{ runner.os }}-next-build-${{ hashFiles('FrontEnd/app/package.json', 'FrontEnd/app/package-lock.json') }}
-          restore-keys: ${{ runner.os }}-next-build-
+          key: ${{ runner.os }}-${{ matrix.variant }}-next-build-${{ hashFiles('FrontEnd/app/package.json', 'FrontEnd/app/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-${{ matrix.variant }}-next-build-
+
 
       - name: Build del Frontend
         if: steps.cache-next-build.outputs.cache-hit != 'true'
