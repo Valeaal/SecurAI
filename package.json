@@ -27,12 +27,7 @@
     ],
     "asar": false,
     "mac": {
-      "target": [
-        {
-          "target": "dmg",
-          "arch": "x64"
-        }
-      ],
+      "target": "dmg",
       "identity": null
     },
     "win": {
