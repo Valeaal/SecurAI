@@ -153,13 +153,13 @@ jobs:
         if: github.ref_name != 'main'
         uses: actions/upload-artifact@v4
         with:
-          name: SecurAI-${{ runner.os }}-${{ matrix.variant }}-build
+          name: SecurAI-${{ runner.os }}-${{ matrix.variant }}
           path: |
             dist/*.dmg
             dist/*.exe
 
       - name: Crear release y subir instaladores
-        if: github.ref_name == 'main'
+        if: github.ref_name == 'pruebaMacos-latest'
         uses: softprops/action-gh-release@v1
         with:
           name: SecurAI v${{ steps.version.outputs.version }}
