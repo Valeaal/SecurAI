@@ -14,7 +14,7 @@ on:
       - 'main.js'
       - 'package.json'
       - '.github/workflows/*.yaml'
-      
+
 permissions:
   contents: write
 
@@ -161,7 +161,22 @@ jobs:
             dist/*.dmg
             dist/*.exe
 
-      - name: Crear release y subir instaladores
+      - name: Renombrar instaladores para release
+        if: github.ref_name == 'pruebaMacos-latest'
+        run: |
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            for f in dist/*.exe; do
+              mv "$f" "dist/SecurAI-${{ runner.os }}-${{ matrix.variant }}.exe"
+            done
+          elif [[ "$RUNNER_OS" == "macOS" ]]; then
+            for f in dist/*.dmg; do
+              mv "$f" "dist/SecurAI-${{ runner.os }}-${{ matrix.variant }}.dmg"
+            done
+          fi
+        shell: bash
+
+
+      - name: Crear release
         if: github.ref_name == 'pruebaMacos-latest'
         uses: softprops/action-gh-release@v1
         with:
