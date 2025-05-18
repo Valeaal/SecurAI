@@ -153,6 +153,28 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
+      - name: Verificar node_modules en app (solo macOS)
+        if: runner.os == 'macOS'
+        run: |
+          APP_PATH=$(find dist/mac -name "*.app" | head -n 1)
+          echo "App path: $APP_PATH"
+
+          # Ruta donde esperas node_modules dentro de la app
+          NODE_MODULES_PATH="$APP_PATH/Contents/Resources/app/FrontEnd/app/node_modules"
+
+          if [ -d "$NODE_MODULES_PATH" ]; then
+            echo "✅ node_modules EXISTE en $NODE_MODULES_PATH"
+            echo "Listado de node_modules:"
+            ls -la "$NODE_MODULES_PATH"
+          else
+            echo "❌ node_modules NO encontrado en $NODE_MODULES_PATH"
+            echo "Contenido de $(dirname "$NODE_MODULES_PATH"):"
+            ls -la "$(dirname "$NODE_MODULES_PATH")"
+            exit 1
+          fi
+        shell: bash
+
+
       - name: Subir artefactos de prueba
         if: github.ref_name != 'main'
         uses: actions/upload-artifact@v4
