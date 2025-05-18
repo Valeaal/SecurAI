@@ -24,7 +24,7 @@
       "!BackEnd/venvTFG",
       "FrontEnd/",
       "package.json",
-       "node_modules/"
+       "FrontEnd/app/node_modules/"
     ],
     "asar": false,
     "mac": {
