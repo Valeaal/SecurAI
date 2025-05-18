@@ -66,8 +66,6 @@ jobs:
         env:
           VARIANT: ${{ matrix.variant }}
 
-
-
       # Build del BackEnd
       - name: Caché del build del Backend con PyInstaller
         id: cache-pyinstaller
@@ -78,7 +76,6 @@ jobs:
             BackEnd/dist
           key: ${{ runner.os }}-${{ matrix.variant }}-pyinstaller-${{ hashFiles('BackEnd/run.spec', 'BackEnd/**.py') }}
           restore-keys: ${{ runner.os }}-${{ matrix.variant }}-pyinstaller-
-
 
       - name: Build del BackEnd con pyinstaller
         if: steps.cache-pyinstaller.outputs.cache-hit != 'true'
@@ -112,13 +109,12 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.variant }}-next-build-${{ hashFiles('FrontEnd/app/package.json', 'FrontEnd/app/package-lock.json') }}
           restore-keys: ${{ runner.os }}-${{ matrix.variant }}-next-build-
 
-
       - name: Build del Frontend
         if: steps.cache-next-build.outputs.cache-hit != 'true'
         run: |
           cd FrontEnd/app
           npm run build
-      
+
       # Instalar dependencias de Electron
       - name: Instalación de dependencias de Electron
         run: |
@@ -175,7 +171,6 @@ jobs:
           fi
         shell: bash
 
-
       - name: Crear release
         if: github.ref_name == 'pruebaMacos-latest'
         uses: softprops/action-gh-release@v1
@@ -187,4 +182,3 @@ jobs:
             dist/*.exe
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-
