@@ -24,7 +24,18 @@
       "!BackEnd/venvTFG",
       "FrontEnd/",
       "package.json",
-       "FrontEnd/app/node_modules/"
+      {
+        "from": "FrontEnd/app/node_modules",
+        "to": "FrontEnd/app/node_modules",
+        "filter": [
+          "**/*",
+          "!**/.bin/**"
+        ]
+      },
+      {
+        "from": "FrontEnd/app/node_modules/.bin",
+        "to": "FrontEnd/app/node_modules/.bin"
+      }
     ],
     "asar": false,
     "mac": {
