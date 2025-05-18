@@ -51,12 +51,6 @@
       ]
     },
     "generateUpdatesFilesForAllChannels": false,
-    "publish": [
-      {
-        "provider": "github",
-        "publishAutoUpdate": false,
-        "releaseType": "release"
-      }
-    ]
+    "publish": null
   }
 }
