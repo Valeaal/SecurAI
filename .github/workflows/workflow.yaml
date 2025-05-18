@@ -130,26 +130,24 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.variant }}-electron-build-${{ hashFiles('package.json', 'package-lock.json', 'dist/latest.yml', 'latest-mac.yml') }}
           restore-keys: ${{ runner.os }}-${{ matrix.variant }}-electron-build-
 
-
       - name: Build de la app completa
         if: steps.cache-electron-build.outputs.cache-hit != 'true'
         run: |
-          if [[ "${GITHUB_REF##*/}" == "main" ]]; then
-            PUBLISH_FLAG="--publish always"
-          else
-            PUBLISH_FLAG="--publish never"
-          fi
-
           if [[ "$RUNNER_OS" == "macOS" && "${{ matrix.variant }}" == "x86" ]]; then
-            npx electron-builder --mac --x64  $PUBLISH_FLAG
+            npx electron-builder --mac --x64
           elif [[ "$RUNNER_OS" == "macOS" && "${{ matrix.variant }}" == "arm64" ]]; then
-            npx electron-builder --mac --arm64 $PUBLISH_FLAG
+            npx electron-builder --mac --arm64
           elif [[ "$RUNNER_OS" == "Windows" ]]; then
-            npx electron-builder --win --x64 $PUBLISH_FLAG
+            npx electron-builder --win --x64
           fi
         shell: bash
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: Leer versión desde package.json
+        id: version
+        run: |
+          VERSION=$(jq -r .version package.json)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+        shell: bash
 
       - name: Subir artefactos de prueba
         if: github.ref_name != 'main'
@@ -159,4 +157,16 @@ jobs:
           path: |
             dist/*.dmg
             dist/*.exe
+
+      - name: Crear release y subir instaladores
+        if: github.ref_name == 'main'
+        uses: softprops/action-gh-release@v1
+        with:
+          name: SecurAI v${{ steps.version.outputs.version }}
+          tag_name: v${{ steps.version.outputs.version }}
+          files: |
+            dist/*.dmg
+            dist/*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
