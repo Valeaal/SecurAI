@@ -14,8 +14,9 @@ on:
       - 'main.js'
       - 'package.json'
       - '.github/workflows/*.yaml'
-  permissions:
-    contents: write
+      
+permissions:
+  contents: write
 
 jobs:
   build:
