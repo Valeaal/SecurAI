@@ -99,8 +99,6 @@ jobs:
         run: |
           cd FrontEnd/app
               npm install --verbose
-              ls -la
-              ls -la node_modules || echo "No se creó node_modules"
 
       # Build del FrontEnd
       - name: Caché de la build del FrontEnd
