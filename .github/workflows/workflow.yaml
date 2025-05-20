@@ -158,7 +158,7 @@ jobs:
             dist/*.exe
 
       - name: Renombrar instaladores para release
-        if: github.ref_name == 'pruebaMacos-latest'
+        if: github.ref_name == 'main'
         run: |
           if [[ "$RUNNER_OS" == "Windows" ]]; then
             for f in dist/*.exe; do
@@ -172,7 +172,7 @@ jobs:
         shell: bash
 
       - name: Crear release
-        if: github.ref_name == 'pruebaMacos-latest'
+        if: github.ref_name == 'main'
         uses: softprops/action-gh-release@v1
         with:
           name: SecurAI v${{ steps.version.outputs.version }}
