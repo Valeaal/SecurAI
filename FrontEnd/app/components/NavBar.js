@@ -124,21 +124,14 @@ export default function NavBar() {
                       </p>
                     </div>
                   </li>
-                  <ListItem
-                    href="/netStats/numberStats"
-                    title="Número de paquetes"
-                  >
-                    Información de la evolución del número de paquetes recibidos
-                  </ListItem>
-                  <ListItem
-                    href="/netStats/typeStats"
-                    title="Tipos de paquetes"
-                  >
-                    Clasificación de los tipos de paquetes (última capa)
-                  </ListItem>
-                  <ListItem href="/netStats/" title="Hueco libre">
-                    Hueco libre
-                  </ListItem>
+                  <div className="row-span-3 flex flex-col justify-center gap-4">
+                    <ListItem href="/netStats/numberStats" title="Número de paquetes" className="flex-grow">
+                      Información de la evolución del número de paquetes recibidos
+                    </ListItem>
+                    <ListItem href="/netStats/typeStats" title="Tipos de paquetes" className="flex-grow">
+                      Clasificación de los tipos de paquetes (última capa)
+                    </ListItem>
+                  </div>
                 </ul>
               </NavigationMenuContent>
             </NavigationMenuItem>
@@ -172,14 +165,6 @@ export default function NavBar() {
                   <ListItemWithSwitch 
                     title="dnsAmplification" 
                     description="dnsAmplification"
-                  />
-                  <ListItemWithSwitch 
-                    title="HUECO LIBRE" 
-                    description="Hueco libre"
-                  />
-                  <ListItemWithSwitch 
-                    title="HUECO LIBRE" 
-                    description="Hueco libre"
                   />
                 </ul>
               </NavigationMenuContent>
