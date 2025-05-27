@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import useStatsSocket from "@/app/useSocket/useNumberStatsSocket"; // Asegúrate de ajustar la ruta si es necesario
+import useStatsSocket from "@/app/useSocket/useNumberStatsSocket";
 
 export default function numberStats() {
   const data = useStatsSocket(); // Obtener datos de paquetes del hook

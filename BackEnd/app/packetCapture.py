@@ -2,7 +2,6 @@ import threading
 from scapy.all import sniff, Packet, IP
 from .loadDefenseAlgorithms import getDefenseAlgorithmNames
 
-# Reemplazamos queue.Queue por una lista y un candado
 packetBuffer = []
 packetBufferLock = threading.Lock()
 defenseAlgorithmsNames = getDefenseAlgorithmNames()

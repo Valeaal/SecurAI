@@ -13,7 +13,7 @@ export default function moduleHelp() {
           <AccordionItem value="item-1">
             <AccordionTrigger>¿Qué significa que el sistema sea modular?</AccordionTrigger>
             <AccordionContent>
-              El sistema modular de SecurAI está diseñado para que puedas añadir, quitar o modificar módulos de detección de manera independiente sin afectar al funcionamiento del resto del sistema. Cada módulo se encarga de un tipo específico de detección, por ejemplo, ARP Spoofing, DoS o escaneo de puertos. Los módulos funcionan de forma autónoma, pero todos comparten una estructura común para facilitar su integración, la cola (buffer) de mensajes (paquetes). <br></br>
+              El sistema modular de SecurAI está diseñado para que puedas añadir, quitar o modificar módulos de detección de manera independiente sin afectar al funcionamiento del resto del sistema. Cada módulo se encarga de un tipo específico de detección, por ejemplo, ARP Spoofing, TCP SYN o DNS Amplification. Los módulos funcionan de forma autónoma, pero todos comparten una estructura común para facilitar su integración, la cola (buffer) de mensajes (paquetes). <br></br>
               Esto significa que puedes tener múltiples módulos activos al mismo tiempo, cada uno trabajando en sus propios parámetros, sin interferir con los demás.
             </AccordionContent>
           </AccordionItem>
@@ -27,7 +27,7 @@ export default function moduleHelp() {
           </AccordionItem>
 
           <AccordionItem value="item-3">
-            <AccordionTrigger>En la interfaz, ¿por qué algunos módulos destacan más que otros?</AccordionTrigger>
+            <AccordionTrigger>En la interfaz, ¿cómo sé que módulos están activos en tiempo real?</AccordionTrigger>
             <AccordionContent>
               Los módulos en verde oscuro están desactivados en este momento es decir: El sistema los ha detectado como válidos pero el usuario no los ha activado ahora mismo.<br></br>
               Los módulos en verde más claro están activados en este momento es decir: Están filtrando los paquetes ahora mismo. 

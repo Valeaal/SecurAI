@@ -189,10 +189,7 @@ export default function NavBar() {
                       </p>
                     </div>
                   </li>
-                  <ListItem
-                    href="/help/detectionHelp"
-                    title="Ámbito de detección"
-                  >
+                  <ListItem href="/help/detectionHelp" title="Ámbito de detección">
                     ¿Qué tipo de ataques puede prevenir SecurAI?
                   </ListItem>
                   <ListItem href="/help/bufferHelp" title="Cola de mensajes">
@@ -203,22 +200,25 @@ export default function NavBar() {
                     href="/help/moduleHelp"
                     title="Módulos de detección"
                   >
-                    Los módulos consultan la cola de paquetes para buscar
-                    amenazas en tu red
+                    Los módulos cogen paquetes de la cola para buscar amenazas en ellos
                   </ListItem>
-                  <ListItem href="/help/objeto3" title="HUECO LIBRE">
-                    Hueco libre
+                  <ListItem href="/help/statsHelp" title="Estadísticas">
+                    ¿Qué miden esas métricas exactamente?
                   </ListItem>
-                  <ListItem href="/help/advanced-settings" title="HUECO LIBRE">
-                    Hueco libre
+                  <ListItem href="/help/moreHelp" title="Información detallada">
+                    Solución de problemas, desarrollo de nuevos módulos, actualizaciones de SecurAI...
                   </ListItem>
                 </ul>
               </NavigationMenuContent>
             </NavigationMenuItem>
 
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+            <NavigationMenuLink
+              href="/credits"
+              className={navigationMenuTriggerStyle()}
+            >
               Créditos
             </NavigationMenuLink>
+
           </NavigationMenuList>
         </NavigationMenu>
       </div>
