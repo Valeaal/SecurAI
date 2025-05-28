@@ -8,9 +8,9 @@ const log = require('electron-log');
 
 // 🛠 Fix para entorno PATH en macOS
 if (process.platform === 'darwin') {
-  const fixPath = require('fix-path');
-  fixPath();
+  require('fix-path')();
 }
+
 
 // Configuración de electron-log
 const logDir = app.getPath('logs');
