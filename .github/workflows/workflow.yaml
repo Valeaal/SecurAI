@@ -75,7 +75,6 @@ jobs:
             BackEnd/build
             BackEnd/dist
           key: ${{ runner.os }}-${{ matrix.variant }}-pyinstaller-${{ hashFiles('BackEnd/run.spec', 'BackEnd/**.py') }}
-          restore-keys: ${{ runner.os }}-${{ matrix.variant }}-pyinstaller-
 
       - name: Build del BackEnd con pyinstaller
         if: steps.cache-pyinstaller.outputs.cache-hit != 'true'
@@ -107,7 +106,6 @@ jobs:
         with:
           path: FrontEnd/app/.next
           key: ${{ runner.os }}-${{ matrix.variant }}-next-build-${{ hashFiles('FrontEnd/app/package.json', 'FrontEnd/app/package-lock.json', 'FrontEnd/app/**.js') }}
-          restore-keys: ${{ runner.os }}-${{ matrix.variant }}-next-build-
 
       - name: Build del Frontend
         if: steps.cache-next-build.outputs.cache-hit != 'true'
@@ -127,7 +125,6 @@ jobs:
         with:
           path: dist
           key: ${{ runner.os }}-${{ matrix.variant }}-electron-build-${{ hashFiles('package.json', 'package-lock.json', 'main.js', 'dist/latest.yml', 'latest-mac.yml') }}
-          restore-keys: ${{ runner.os }}-${{ matrix.variant }}-electron-build-
 
       - name: Build de la app completa
         if: steps.cache-electron-build.outputs.cache-hit != 'true'
