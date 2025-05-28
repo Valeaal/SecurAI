@@ -4,6 +4,22 @@ const { spawn, execFile } = require('child_process');
 const fs = require('fs');
 const https = require('https');
 const os = require('os');
+const log = require('electron-log');
+
+// Configuración de electron-log
+const logDir = app.getPath('logs');
+if (!fs.existsSync(logDir)) {
+  fs.mkdirSync(logDir, { recursive: true });
+}
+log.transports.file.resolvePath = () => path.join(logDir, 'main.log');
+log.transports.file.level = 'info';
+log.transports.console.level = false; // Desactiva la salida a consola
+
+// Redirige los métodos de console
+console.log = log.info;
+console.error = log.error;
+console.warn = log.warn;
+console.info = log.info;
 
 let mainWindow;
 let flaskProcess;
