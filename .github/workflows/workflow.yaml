@@ -106,7 +106,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: FrontEnd/app/.next
-          key: ${{ runner.os }}-${{ matrix.variant }}-next-build-${{ hashFiles('FrontEnd/app/package.json', 'FrontEnd/app/package-lock.json') }}
+          key: ${{ runner.os }}-${{ matrix.variant }}-next-build-${{ hashFiles('FrontEnd/app/package.json', 'FrontEnd/app/package-lock.json', 'FrontEnd/app/**.js') }}
           restore-keys: ${{ runner.os }}-${{ matrix.variant }}-next-build-
 
       - name: Build del Frontend
