@@ -6,6 +6,12 @@ const https = require('https');
 const os = require('os');
 const log = require('electron-log');
 
+// 🛠 Fix para entorno PATH en macOS
+if (process.platform === 'darwin') {
+  const fixPath = require('fix-path');
+  fixPath();
+}
+
 // Configuración de electron-log
 const logDir = app.getPath('logs');
 if (!fs.existsSync(logDir)) {
@@ -13,9 +19,8 @@ if (!fs.existsSync(logDir)) {
 }
 log.transports.file.resolvePath = () => path.join(logDir, 'main.log');
 log.transports.file.level = 'info';
-log.transports.console.level = false; // Desactiva la salida a consola
+log.transports.console.level = false;
 
-// Redirige los métodos de console
 console.log = log.info;
 console.error = log.error;
 console.warn = log.warn;
@@ -78,7 +83,7 @@ function startNextFrontend() {
   nextProcess = spawn(nextBinary, ['start'], {
     cwd: frontendPath,
     stdio: 'pipe',
-    shell: true
+    shell: true,
   });
 
   nextProcess.stdout.on('data', (data) => {
@@ -98,17 +103,15 @@ function startNextFrontend() {
   });
 }
 
-// Verifica si Npcap está instalado usando el Registro de Windows
 function isNpcapInstalled(callback) {
   const checkCommand = 'reg query "HKLM\\SOFTWARE\\Npcap"';
   execFile('cmd', ['/c', checkCommand], (error) => {
-    callback(!error); // instalado si no hay error
+    callback(!error);
   });
 }
 
-// Descarga el instalador de Npcap
 function downloadNpcapInstaller(destination, callback) {
-  const url = 'https://npcap.com/dist/npcap-1.78.exe'; // actualiza si hay nueva versión
+  const url = 'https://npcap.com/dist/npcap-1.78.exe';
   const file = fs.createWriteStream(destination);
 
   https.get(url, (response) => {
@@ -126,7 +129,6 @@ function downloadNpcapInstaller(destination, callback) {
   });
 }
 
-// Muestra un diálogo al usuario antes de instalar Npcap
 function promptNpcapInstallation(installerPath, callback) {
   const options = {
     type: 'info',
@@ -146,11 +148,10 @@ function promptNpcapInstallation(installerPath, callback) {
   });
 }
 
-// Ejecuta el instalador de Npcap manualmente (sin /S)
 function installNpcap(installerPath, callback) {
   const child = spawn(installerPath, [], {
     stdio: 'inherit',
-    shell: true
+    shell: true,
   });
 
   child.on('exit', (code) => {
@@ -174,7 +175,6 @@ app.whenReady().then(() => {
     return;
   }
 
-  // En Windows: comprobar si Npcap está instalado
   isNpcapInstalled((installed) => {
     if (installed) {
       startFlaskBackend();
