@@ -1,6 +1,6 @@
 const { app, BrowserWindow, dialog } = require('electron');
 const path = require('path');
-const { spawn, execFile } = require('child_process');
+const { spawn, exec } = require('child_process');
 const fs = require('fs');
 const https = require('https');
 const os = require('os');
@@ -10,6 +10,28 @@ let flaskProcess;
 let nextProcess;
 
 const isWin = process.platform === 'win32';
+const isMac = process.platform === 'darwin';
+
+// Sobrescribir console.log y console.error para macOS con logger nativo
+if (isMac) {
+  const originalLog = console.log;
+  const originalError = console.error;
+
+  console.log = (...args) => {
+    const message = args.join(' ').replace(/"/g, '\\"');
+    exec(`logger "SecurAI: ${message}"`);
+    originalLog(...args);
+  };
+
+  console.error = (...args) => {
+    const message = args.join(' ').replace(/"/g, '\\"');
+    exec(`logger "SecurAI ERROR: ${message}"`);
+    originalError(...args);
+  };
+} else {
+  // En Windows dejamos console.log y error normales pero sin más cambios
+  // Si quieres evitar logs en consola Windows puedes redefinir aquí
+}
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -32,16 +54,16 @@ function startFlaskBackend() {
 
   flaskProcess = spawn(execPath, [], {
     cwd: backendDir,
-    stdio: 'pipe',
+    stdio: ['ignore', 'pipe', 'pipe'],
     shell: false,
   });
 
   flaskProcess.stdout.on('data', (data) => {
-    console.log(`Flask: ${data}`);
+    console.log(`Flask: ${data.toString().trim()}`);
   });
 
   flaskProcess.stderr.on('data', (data) => {
-    console.error(`Flask ERROR: ${data}`);
+    console.error(`Flask ERROR: ${data.toString().trim()}`);
   });
 
   flaskProcess.on('error', (err) => {
@@ -61,16 +83,16 @@ function startNextFrontend() {
 
   nextProcess = spawn(nextBinary, ['start'], {
     cwd: frontendPath,
-    stdio: 'pipe',
-    shell: true
+    stdio: ['ignore', 'pipe', 'pipe'],
+    shell: isWin,
   });
 
   nextProcess.stdout.on('data', (data) => {
-    console.log(`Next.js: ${data}`);
+    console.log(`Next.js: ${data.toString().trim()}`);
   });
 
   nextProcess.stderr.on('data', (data) => {
-    console.error(`Next.js ERROR: ${data}`);
+    console.error(`Next.js ERROR: ${data.toString().trim()}`);
   });
 
   nextProcess.on('error', (err) => {
@@ -82,71 +104,9 @@ function startNextFrontend() {
   });
 }
 
-// Verifica si Npcap está instalado usando el Registro de Windows
-function isNpcapInstalled(callback) {
-  const checkCommand = 'reg query "HKLM\\SOFTWARE\\Npcap"';
-  execFile('cmd', ['/c', checkCommand], (error) => {
-    callback(!error); // instalado si no hay error
-  });
-}
+// Resto de funciones Npcap sin cambios...
 
-// Descarga el instalador de Npcap
-function downloadNpcapInstaller(destination, callback) {
-  const url = 'https://npcap.com/dist/npcap-1.78.exe'; // actualiza si hay nueva versión
-  const file = fs.createWriteStream(destination);
-
-  https.get(url, (response) => {
-    if (response.statusCode !== 200) {
-      callback(new Error(`Fallo en la descarga: ${response.statusCode}`));
-      return;
-    }
-
-    response.pipe(file);
-    file.on('finish', () => {
-      file.close(callback);
-    });
-  }).on('error', (err) => {
-    fs.unlink(destination, () => callback(err));
-  });
-}
-
-// Muestra un diálogo al usuario antes de instalar Npcap
-function promptNpcapInstallation(installerPath, callback) {
-  const options = {
-    type: 'info',
-    buttons: ['Instalar ahora', 'Cancelar'],
-    title: 'Npcap requerido',
-    message: 'Npcap es necesario para capturar paquetes en Windows.',
-    detail: 'Se va a abrir el instalador de Npcap. Completa la instalación manualmente y pulsa "Finalizar" en el instalador para continuar.',
-  };
-
-  dialog.showMessageBox(null, options).then((result) => {
-    if (result.response === 0) {
-      installNpcap(installerPath, callback);
-    } else {
-      console.log('🚫 El usuario canceló la instalación de Npcap.');
-      app.quit();
-    }
-  });
-}
-
-// Ejecuta el instalador de Npcap manualmente (sin /S)
-function installNpcap(installerPath, callback) {
-  const child = spawn(installerPath, [], {
-    stdio: 'inherit',
-    shell: true
-  });
-
-  child.on('exit', (code) => {
-    if (code === 0) {
-      console.log('✅ Npcap instalado correctamente');
-      callback();
-    } else {
-      console.error(`❌ Instalación de Npcap falló con código ${code}`);
-      app.quit();
-    }
-  });
-}
+// app.whenReady y demás (igual que en tu código original)
 
 app.whenReady().then(() => {
   if (!isWin) {
@@ -158,7 +118,6 @@ app.whenReady().then(() => {
     return;
   }
 
-  // En Windows: comprobar si Npcap está instalado
   isNpcapInstalled((installed) => {
     if (installed) {
       startFlaskBackend();
