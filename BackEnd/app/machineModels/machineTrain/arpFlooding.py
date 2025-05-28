@@ -17,7 +17,7 @@ baseDir = os.path.dirname(os.path.abspath(__file__))
 datasetPath = os.path.join(baseDir, '..', 'dataSetsOriginals', 'arpFlooding.csv')
 modelPath = os.path.join(baseDir, '..', 'models', 'arpFlooding.h5')
 scalerPath = os.path.join(baseDir, '..', 'models', 'arpFlooding.pkl')
-transformedDatasetPath = os.path.join(baseDir, 'app', 'machineModels', 'dataSetsTransformed', 'arpFlooding.csv')
+transformedDatasetPath = os.path.join(baseDir, '..', 'dataSetsTransformed', 'arpFlooding.csv')
 
 # Cargar el dataset
 data = pd.read_csv(datasetPath)

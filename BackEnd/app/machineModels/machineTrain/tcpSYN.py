@@ -1,3 +1,4 @@
+import os
 import joblib
 import numpy as np
 import pandas as pd
@@ -5,12 +6,20 @@ from sklearn.utils import resample
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
-from tensorflow.keras.layers import Dense # type: ignore
-from tensorflow.keras.models import Sequential # type: ignore
-from tensorflow.keras.callbacks import EarlyStopping # type: ignore
+from tensorflow.keras.layers import Dense  # type: ignore
+from tensorflow.keras.models import Sequential  # type: ignore
+from tensorflow.keras.callbacks import EarlyStopping  # type: ignore
+
+# ── Rutas absolutas ───────────────────────────────
+baseDir = os.path.dirname(os.path.abspath(__file__))
+
+datasetPath = os.path.join(baseDir, '..', 'dataSetsOriginals', 'tcpSYN.csv')
+transformedDatasetPath = os.path.join(baseDir, '..', 'dataSetsTransformed', 'tcpSYN.csv')
+modelPath = os.path.join(baseDir, '..', 'models', 'tcpSYN.h5')
+scalerPath = os.path.join(baseDir, '..', 'models', 'tcpSYN.pkl')
 
 # ── Cargar y filtrar el dataset ───────────
-data = pd.read_csv('./app/machineModels/dataSetsOriginals/tcpSYN.csv')
+data = pd.read_csv(datasetPath)
 
 # ── Eliminar Flow ID ───────────
 if 'Flow ID' in data.columns:
@@ -45,15 +54,11 @@ print("\nReporte de clasificación en el conjunto de prueba:")
 print(classification_report(y_test, y_pred, target_names=['Normal', 'Attack']))
 
 # ── Guardar el modelo y el escalador ───────────
-model_path = './app/machineModels/models/tcpSYN.h5'
-scaler_path = './app/machineModels/models/tcpSYN.pkl'
+final_data.to_csv(transformedDatasetPath, index=False)
+print(f"📂 Dataset transformado guardado en: {transformedDatasetPath}")
 
-transformed_csv_path = './app/machineModels/dataSetsTransformed/tcpSYN.csv'
-final_data.to_csv(transformed_csv_path, index=False)
-print(f"📂 Dataset transformado guardado en: {transformed_csv_path}")
+model.save(modelPath)
+joblib.dump(scaler, scalerPath)
 
-model.save(model_path)
-joblib.dump(scaler, scaler_path)
-
-print(f"Modelo guardado en: {model_path}")
-print(f"Scaler guardado en: {scaler_path}")
+print(f"📦 Modelo guardado en: {modelPath}")
+print(f"📦 Scaler guardado en: {scalerPath}")

@@ -19,7 +19,7 @@ originalDatasetPath = os.path.join(basePath, '..', 'dataSetsOriginals', 'arpFloo
 modelPath = os.path.join(basePath, '..', 'models', 'arpFloodingLSTM.h5')
 scalerPath = os.path.join(basePath, '..', 'models', 'arpFloodingLSTM.pkl')
 encoderPath = os.path.join(basePath, '..', 'encoders', 'arpFloodingLSTM.pkl')
-transformedDatasetPath = os.path.join(basePath, 'app', 'dataSetsTransformed', 'arpFloodingLSTM.csv')
+transformedDatasetPath = os.path.join(basePath, '..', 'dataSetsTransformed', 'arpFloodingLSTM.csv')
 
 # Cargar el dataset
 data = pd.read_csv(originalDatasetPath)

@@ -1,3 +1,4 @@
+import os
 import joblib
 import numpy as np
 import pandas as pd
@@ -10,8 +11,17 @@ from tensorflow.keras.models import Sequential  # type: ignore
 from sklearn.utils import resample  # Para balancear las clases
 from tensorflow.keras.callbacks import EarlyStopping  # type: ignore
 
+# Ruta base del script actual
+baseDir = os.path.dirname(os.path.abspath(__file__))
+
+# Rutas absolutas
+datasetPath = os.path.join(baseDir, '..', 'dataSetsOriginals', 'dnsAmplification.csv')
+transformedDatasetPath = os.path.join(baseDir, '..', 'dataSetsTransformed', 'dnsAmplification.csv')
+modelPath = os.path.join(baseDir, '..', 'models', 'dnsAmplification.h5')
+scalerPath = os.path.join(baseDir, '..', 'models', 'dnsAmplification.pkl')
+
 # Cargar el dataset
-data = pd.read_csv('./app/machineModels/dataSetsOriginals/dnsAmplification.csv', sep=';')
+data = pd.read_csv(datasetPath, sep=';')
 
 # Seleccionar columnas finales (sin 'dpkts')
 final_columns = [
@@ -35,8 +45,7 @@ else:
 final_data = final_data.sample(frac=1, random_state=42).reset_index(drop=True)
 
 # Guardar dataset balanceado
-csv_output_path = './app/machineModels/dataSetsTransformed/dnsAmplification.csv'
-final_data.to_csv(csv_output_path, index=False)
+final_data.to_csv(transformedDatasetPath, index=False)
 
 # Entrenamiento
 X = final_data.drop('Label', axis=1)
@@ -53,5 +62,6 @@ model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy']
 early_stopping = EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
 model.fit(X_train, y_train, epochs=2, batch_size=32, validation_data=(X_test, y_test), callbacks=[early_stopping])
 
-model.save('./app/machineModels/models/dnsAmplification.h5')
-joblib.dump(scaler, './app/machineModels/models/dnsAmplification.pkl')
+# Guardar modelo y scaler
+model.save(modelPath)
+joblib.dump(scaler, scalerPath)
