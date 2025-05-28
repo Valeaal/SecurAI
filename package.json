@@ -8,6 +8,9 @@
     "start": "electron .",
     "dist": "electron-builder"
   },
+  "dependencies": {
+    "electron-log": "^5.2.0"
+  },
   "devDependencies": {
     "electron": "^35.2.0",
     "electron-builder": "23.6"
