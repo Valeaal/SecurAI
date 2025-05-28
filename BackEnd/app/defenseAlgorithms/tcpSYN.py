@@ -108,17 +108,22 @@ def extract_features(packet):
 def detect():
     global running
 
-###### OBTENCIÓN DEL PRIMER PAQUETE ######
-    with packetBufferLock:
-            while len(packetBuffer) == 0:
-                time.sleep(0.5)
-            current_packet = packetBuffer[0]
-
     # Nombres de las características para mostrar en el log
     feature_names = ['Time Delta', 'FlagSYN', 'FlagURG', 'FlagACK', 'FlagPSH', 'FlagFIN', 'FlagRST', 'packetCountInFlow', 'incompleteSynAcumulative']
 
+###### OBTENCIÓN DEL PRIMER PAQUETE ######
+
+    with packetBufferLock:
+        num_packets = len(packetBuffer)
+    
+    while num_packets == 0:
+        time.sleep(0.2)
+        with packetBufferLock:
+            num_packets = len(packetBuffer)          
+    current_packet = packetBuffer[0]
+    
     while True:
-        packet = current_packet.packet  # Paquete actual
+        packet = current_packet.packet
 
 ###### PROCESO DE ANALISIS ######
 

@@ -115,12 +115,14 @@ def detect():
 
 ###### OBTENCIÓN DEL PRIMER PAQUETE ######
     with packetBufferLock:
-            while len(packetBuffer) == 0:
-                time.sleep(0.5)
-            current_packet = packetBuffer[0]
-
-    prev_time = current_packet.packet.time
-
+        num_packets = len(packetBuffer)
+    
+    while num_packets == 0:
+        time.sleep(0.2)
+        with packetBufferLock:
+            num_packets = len(packetBuffer)          
+    current_packet = packetBuffer[0]
+    
     while True:
         packet = current_packet.packet
 

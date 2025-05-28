@@ -63,16 +63,20 @@ def extract_features(packet):
 def detect():
     global running
 
-    # Esperamos al primer paquete
+###### OBTENCIÓN DEL PRIMER PAQUETE ######
     with packetBufferLock:
-        while len(packetBuffer) == 0:
-            time.sleep(0.5)
-        current_packet = packetBuffer[0]
-
+        num_packets = len(packetBuffer)
+    
+    while num_packets == 0:
+        time.sleep(0.2)
+        with packetBufferLock:
+            num_packets = len(packetBuffer)          
+    current_packet = packetBuffer[0]
+    
     while True:
         packet = current_packet.packet
 
-        ####### ANÁLISIS ########
+###### PROCESO DE ANALISIS ######
         if running and packet.haslayer(UDP) and packet.haslayer(DNS):
             # Solo respuestas DNS (sport=53) o solicitudes (dport=53).  
             udp = packet[UDP]
