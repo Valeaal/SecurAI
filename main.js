@@ -6,9 +6,10 @@ const https = require('https');
 const os = require('os');
 const log = require('electron-log');
 
+
 // 🛠 Fix para entorno PATH en macOS
 if (process.platform === 'darwin') {
-  require('fix-path')();
+  require('fix-path')();      // ya funciona
 }
 
 
