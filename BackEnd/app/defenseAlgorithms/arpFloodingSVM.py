@@ -111,10 +111,10 @@ def detect():
 
             # Umbral de detección (usamos prob_ataque, la segunda clase)
             if prediction[1] > 0.5:  # prediction[1] = probabilidad de ataque
-                print(f"🚨 ¡Alerta ARP Flooding! (Prob ataque: {prediction[1]:.2%})")
+                print(f"¡Alerta ARP Flooding! (Prob ataque: {prediction[1]:.2%})")
                 attackNotifier.notifyAttack(ALGORITHM_NAME)
             else:
-                print(f"✅ Tráfico normal (Prob ataque: {prediction[1]:.2%})")
+                print(f"Tráfico normal (Prob ataque: {prediction[1]:.2%})")
 
 ###### PROCESO DE ENLACE AL SIGUIENTE PAQUETE ######
         # Actualizamos siempre el indice del paquete actual, porque puede haberlo cambiado la hebra limpiadora.

@@ -29,11 +29,11 @@ def loadAttackTests(path=attackTestsPath):
             # Asegurarse de que el módulo tiene la función `attack`
             if hasattr(module, "attack"):
                 attackTests[moduleName] = module
-                # print(f"✅ {fileName} cargado correctamente.")                
+                # print(f" {fileName} cargado correctamente.")                
                 moduleThread = threading.Thread(target=module.attack, daemon=True)
                 moduleThread.start()
             else:
-                print(f"⚠️ {fileName} no contiene una función `attack`.")
+                print(f" {fileName} no contiene una función `attack`.")
 
 def startAttack(attack_name):
     """
@@ -42,11 +42,11 @@ def startAttack(attack_name):
     if attack_name in attackTests:
         module = attackTests[attack_name]
         if getattr(module, "running", True):
-            print(f"❕ El ataque {attack_name} ya está en ejecución.")
+            print(f"El ataque {attack_name} ya está en ejecución.")
             return
         module.running = True
     else:
-        print(f"❗️ El ataque {attack_name} no está cargado.")
+        print(f"El ataque {attack_name} no está cargado.")
 
 def stopAttack(attack_name):
     """
@@ -55,9 +55,9 @@ def stopAttack(attack_name):
     if attack_name in attackTests:
         module = attackTests[attack_name]
         if not getattr(module, "running", False):
-            print(f"❕ El ataque {attack_name} no estaba en ejecución.")
+            print(f"El ataque {attack_name} no estaba en ejecución.")
             return "Orden de modulo de ataque completada"
         module.running = False
     else:
-        print(f"❗️ El ataque {attack_name} no está cargado.")
+        print(f"El ataque {attack_name} no está cargado.")
         return "Orden de modulo de ataque no completada"

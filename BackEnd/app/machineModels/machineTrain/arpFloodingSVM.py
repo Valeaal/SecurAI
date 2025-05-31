@@ -154,6 +154,6 @@ joblib.dump(scaler, scalerPath)
 # Guardar dataset transformado
 data.to_csv(transformedDatasetPath, index=False)
 
-print("\n✅ Dataset actualizado guardado correctamente.")
+print("\nDataset actualizado guardado correctamente.")
 print("Primeras filas del dataset:")
 print(data.head())

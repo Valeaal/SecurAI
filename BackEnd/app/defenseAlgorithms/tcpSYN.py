@@ -139,10 +139,10 @@ def detect():
 
                 print(f"----------------- {ALGORITHM_NAME} -----------------")
                 if prob_attack > 0.5:
-                    print(f"🚨 ¡Alerta TCP SYN Flooding! (Prob attk: {prob_attack:.2%})")
+                    print(f"¡Alerta TCP SYN Flooding! (Prob attk: {prob_attack:.2%})")
                     attackNotifier.notifyAttack(ALGORITHM_NAME)
                 else:
-                    print(f"✅ Tráfico normal (Prob attk: {prob_attack:.2%})")
+                    print(f"Tráfico normal (Prob attk: {prob_attack:.2%})")
 
                 for name, value in zip(feature_names, features[0]):
                     print(f"{name}: {value}")

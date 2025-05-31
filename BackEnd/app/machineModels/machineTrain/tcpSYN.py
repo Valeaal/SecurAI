@@ -55,10 +55,10 @@ print(classification_report(y_test, y_pred, target_names=['Normal', 'Attack']))
 
 # ── Guardar el modelo y el escalador ───────────
 final_data.to_csv(transformedDatasetPath, index=False)
-print(f"📂 Dataset transformado guardado en: {transformedDatasetPath}")
+print(f"Dataset transformado guardado en: {transformedDatasetPath}")
 
 model.save(modelPath)
 joblib.dump(scaler, scalerPath)
 
-print(f"📦 Modelo guardado en: {modelPath}")
-print(f"📦 Scaler guardado en: {scalerPath}")
+print(f"Modelo guardado en: {modelPath}")
+print(f"Scaler guardado en: {scalerPath}")

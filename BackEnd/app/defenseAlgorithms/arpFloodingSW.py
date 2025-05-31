@@ -112,10 +112,10 @@ def detect():
             prediction = model.predict(features_scaled, verbose=0)
 
             if prediction[0] > 0.5:
-                print(f"🚨 ¡Alerta ARP Flooding! (Prob attk: {prediction[0][0]:.2%})")
+                print(f"¡Alerta ARP Flooding! (Prob attk: {prediction[0][0]:.2%})")
                 attackNotifier.notifyAttack(ALGORITHM_NAME)
             else:
-                print(f"✅ Tráfico normal (Prob attk: {prediction[0][0]:.2%})")
+                print(f"Tráfico normal (Prob attk: {prediction[0][0]:.2%})")
 
 ###### PROCESO DE ENLACE AL SIGUIENTE PAQUETE ######
         # Actualizamos siempre el indice del paquete actual, porque puede haberlo cambiado la hebra limpiadora.

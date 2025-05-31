@@ -6,7 +6,7 @@ def bufferCleaner():
     while True:
         time.sleep(10)
         paquetesEliminados = 0
-        print(f"🗑️ 🗑️ 🗑️ 🗑️ 🗑️ Limpiando el buffer, tam: {len(packetBuffer)}")
+        print(f"Limpiando el buffer, tam: {len(packetBuffer)}")
 
         with packetBufferLock:
             while len(packetBuffer) > 0:
@@ -21,10 +21,10 @@ def bufferCleaner():
                     paquetesEliminados += 1
                     # print(f"Filtros del eliminado: ", first_packet.processed)
                 else:
-                    print(f"🗑️ Total eliminados: {paquetesEliminados}")
+                    print(f"Total eliminados: {paquetesEliminados}")
                     break
 
             if len(packetBuffer) == 0:
                 print("El buffer quedó vacío tras la limpieza.")
 
-        print(f"🗑️ 🗑️ 🗑️ 🗑️ 🗑️ Limpieza terminada.")
+        print(f"Limpieza terminada.")
