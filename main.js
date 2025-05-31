@@ -79,7 +79,7 @@ function startFlaskBackend() {
 function startNextFrontend() {
   const frontendPath = path.join(process.resourcesPath, 'app', 'FrontEnd', 'app');
   const nextBinary = isWin
-    ? path.join(frontendPath, 'node_modules', 'next', 'dist', 'bin', 'next.cmd')
+    ? path.join(frontendPath, 'node_modules', '.bin', 'next.cmd')
     : path.join(frontendPath, 'node_modules', 'next', 'dist', 'bin', 'next');
 
   nextProcess = spawn(nextBinary, ['start'], {
