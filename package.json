@@ -2,7 +2,7 @@
   "name": "SecurAI",
   "author": "Álvaro Valencia",
   "description": "SecurAI IDS, Software UMA TFG",
-  "version": "4.2.3-beta",
+  "version": "4.3.0-beta",
   "type": "commonjs",
   "main": "main.js",
   "scripts": {
