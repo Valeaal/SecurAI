@@ -144,8 +144,7 @@ function promptNpcapInstallation(installerPath, callback) {
     if (result.response === 0) {
       installNpcap(installerPath, callback);
     } else {
-      console.log('🚫 El usuario canceló la instalación de Npcap.');
-      app.quit();
+      console.log('🚫 El usuario canceló la instalación de Npcap, quizás SecurAI no funcione correctamente.');
     }
   });
 }
