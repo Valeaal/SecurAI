@@ -164,7 +164,7 @@ export default function NavBar() {
                   />
                   <ListItemWithSwitch 
                     title="dnsAmplification" 
-                    description="dnsAmplification"
+                    description="Consulta masiva ANY a DNS para amplificar tráfico hacia víctima"
                   />
                 </ul>
               </NavigationMenuContent>

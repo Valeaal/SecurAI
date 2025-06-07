@@ -12,7 +12,7 @@ from tensorflow.keras.callbacks import EarlyStopping  # type: ignore
 # ── Rutas base ──────────────────────────────────────────────────────────────
 baseDir = os.path.dirname(os.path.abspath(__file__))
 datasetPath = os.path.join(baseDir, '..', 'dataSetsOriginals', 'arpFlooding+.csv')
-csvOutputPath = os.path.join(baseDir, '..', 'dataSetsTransformed', 'arpFloodingSW_balanced.csv')
+csvOutputPath = os.path.join(baseDir, '..', 'dataSetsTransformed', 'arpFloodingSW.csv')
 modelPath = os.path.join(baseDir, '..', 'models', 'arpFloodingSW.h5')
 scalerPath = os.path.join(baseDir, '..', 'models', 'arpFloodingSW.pkl')
 

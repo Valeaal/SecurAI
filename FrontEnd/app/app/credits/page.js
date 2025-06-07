@@ -38,12 +38,9 @@ export default function CreditsPage() {
             github.com/Valeaal/SecurAI
           </a>
         </p>
-        <p className="text-lg text-textG2 mb-2">
-          <strong>Versión:</strong> v4.0.2-beta (21 de mayo de 2025)
-        </p>
       </div>
 
-      <div className="mt-8">
+      <div className="mt-20">
         <h3 className="text-2xl font-semibold text-textP2 mb-4">Agradecimientos</h3>
         <ul className="list-disc list-inside text-textP2 space-y-2">
           <li>
