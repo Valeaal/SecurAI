@@ -81,8 +81,8 @@ function startNextFrontend() {
 
   // Ruta absoluta al ejecutable node embebido según SO
   const embeddedNode = isWin
-    ? path.join(process.resourcesPath, 'resources', 'node', 'node.exe')
-    : path.join(process.resourcesPath, 'resources', 'node', 'bin', 'node');
+    ? path.join(process.resourcesPath, 'node', 'node.exe')
+    : path.join(process.resourcesPath, 'node', 'bin', 'node');
 
   // Ejecutable next (script JS)
   const nextScript = path.join(frontendPath, 'node_modules', 'next', 'dist', 'bin', 'next');

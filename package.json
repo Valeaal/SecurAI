@@ -40,6 +40,11 @@
       {
         "from": "FrontEnd/app/node_modules/.bin",
         "to": "FrontEnd/app/node_modules/.bin"
+      },
+      {
+        "from": "resources/node",
+        "to": "resources/node",
+        "filter": ["**/*"]
       }
     ],
     "asar": false,
