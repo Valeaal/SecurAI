@@ -8,6 +8,7 @@ on:
       - testRelease
       - macARM
       - pruebaMacos-latest
+      - nodeEmbebido
     paths:
       - 'BackEnd/**'
       - 'FrontEnd/**'
