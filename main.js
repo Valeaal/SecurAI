@@ -78,14 +78,19 @@ function startFlaskBackend() {
 
 function startNextFrontend() {
   const frontendPath = path.join(process.resourcesPath, 'app', 'FrontEnd', 'app');
-  const nextBinary = isWin
-    ? path.join(frontendPath, 'node_modules', '.bin', 'next.cmd')
-    : path.join(frontendPath, 'node_modules', 'next', 'dist', 'bin', 'next');
 
-  nextProcess = spawn(nextBinary, ['start'], {
+  // Ruta absoluta al ejecutable node embebido según SO
+  const embeddedNode = isWin
+    ? path.join(process.resourcesPath, 'resources', 'node', 'node.exe')
+    : path.join(process.resourcesPath, 'resources', 'node', 'bin', 'node');
+
+  // Ejecutable next (script JS)
+  const nextScript = path.join(frontendPath, 'node_modules', 'next', 'dist', 'bin', 'next');
+
+  nextProcess = spawn(embeddedNode, [nextScript, 'start'], {
     cwd: frontendPath,
     stdio: 'pipe',
-    shell: true,
+    shell: false, // mejor false al usar ruta absoluta de node
   });
 
   nextProcess.stdout.on('data', (data) => {
@@ -104,6 +109,7 @@ function startNextFrontend() {
     console.log(`ℹ️ Frontend finalizó con código ${code}`);
   });
 }
+
 
 function isNpcapInstalled(callback) {
   const checkCommand = 'reg query "HKLM\\SOFTWARE\\Npcap"';

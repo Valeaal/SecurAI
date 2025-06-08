@@ -113,6 +113,37 @@ jobs:
           cd FrontEnd/app
           npm run build
 
+      # Descargar Node.js
+      - name: Descargar Node.js embebido según plataforma
+        run: |
+          NODE_VERSION="20.18.3"
+          DEST_DIR="resources/node"
+
+          mkdir -p $DEST_DIR
+
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            NODE_DIST="node-v${NODE_VERSION}-win-x64.zip"
+            NODE_URL="https://nodejs.org/dist/v${NODE_VERSION}/${NODE_DIST}"
+            curl -o node.zip $NODE_URL
+            powershell -Command "Expand-Archive -Path node.zip -DestinationPath $DEST_DIR"
+            rm node.zip
+            mv $DEST_DIR/node-v${NODE_VERSION}-win-x64/* $DEST_DIR/
+            rm -r $DEST_DIR/node-v${NODE_VERSION}-win-x64
+
+          elif [[ "$RUNNER_OS" == "macOS" ]]; then
+            if [[ "${{ matrix.variant }}" == "arm64" ]]; then
+              NODE_DIST="node-v${NODE_VERSION}-darwin-arm64.tar.gz"
+            else
+              NODE_DIST="node-v${NODE_VERSION}-darwin-x64.tar.gz"
+            fi
+            NODE_URL="https://nodejs.org/dist/v${NODE_VERSION}/${NODE_DIST}"
+            curl -o node.tar.gz $NODE_URL
+            tar -xzf node.tar.gz -C $DEST_DIR --strip-components=1
+            rm node.tar.gz
+          fi
+        shell: bash
+
+
       # Instalar dependencias de Electron
       - name: Instalación de dependencias de Electron
         run: |
