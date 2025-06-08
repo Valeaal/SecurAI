@@ -47,6 +47,8 @@ Es normal que la aplicación tarde un tiempo considerable en abrise, ya que tien
 
 ### Para su uso normal
 
+Recomendamos la lectura del manual de usuario para manejar SecurAI correctamente. Esta está disponible en el repositorio [En español](./User%20Guide/Español/Guia_de_usuario.pdf) y [en inglés](./User%20Guide/English/Users_Guide.pdf).
+
 - **Si usas MacOS** descarga el archivo .dmg de la [release más reciente](https://github.com/Valeaal/SecurAI/releases/latest) e instálalo como cualquier aplicación de Mac. Como es común en MacOS, el sistema avisará de que no ha podido comprobar la seguridad de la aplicación. Tendrás que confiar en ella desde *Ajustes del Sistema > Privacidad y Seguridad > Abrir Igualmente* en el apartado de Seguridad para poder abrirla.
 - **Si usas Windows** descarga el archivo .exe de la [release más reciente](https://github.com/Valeaal/SecurAI/releases/latest) e instálalo. Si no tienes instalado [Npcap](https://wiki.wireshark.org/NPcap), el instalador de SecurAI te pedirá instalarlo, solo tendrás que seguir los pasos indicados y seguir la configuración recomendada, no tienes que instalarlo manualmente. Es probable que salga un aviso de SmartScreen de Microsoft Defender, puedes pulsar *Más Información > Ejecutar de todas formas* para continuar el proceso.
 
@@ -104,4 +106,4 @@ Para cualquier consulta relacionada con este proyecto:
 
 ## Documentación y memoria
 
-La documentación completa y la memoria del TFG están disponibles en el archivo `Memoria` de este repositorio. Muy recomendado para entender el funcionamiento, cambiar SecurAI a su gusto, o desarrollar nuevos módulos.
+La documentación completa y la memoria del TFG están disponibles en este repositorio, puedes acceder a ella mediante [este enlace](./Memoria.pdf). Muy recomendado para entender el funcionamiento, cambiar SecurAI a su gusto, o desarrollar nuevos módulos.
