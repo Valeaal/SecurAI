@@ -38,6 +38,8 @@ La tecnología de detección o prevención de intrusos no es nueva. Un ejemplo d
 - Recopilación de estadísticas de la red.
 - Simulación de ataques para probar el rendimiento.
 - Instaladores cómodos, no se requieren conocimientos previos.
+- Sistema de guardado de logs nativo según el sistema operativo.
+- Integración Continua, Despliegue Continuo (CI/CD).
 
 ## Instalación
 
@@ -77,11 +79,20 @@ npm install -i
 npm run dev
 ```
 
+Si el desarrollador quiere ver los logs que genera la aplicación, puede hacerlo fácilmente gracias a la funcionalidad de guardado de logs nativo al sistema operativo que ejecuta SecurAI.
+
+Los logs se almacenan en la ruta determinada por app.getPath('logs'), que es compatible tanto con Windows como con macOS:
+
+- En Windows: La ruta típicamente es С:\Users\Usuario\AppData\Roaming\SecurAI\logs.
+- En MacOS: La ruta típicamente es /Users/Usuario/Library/Logs/SecurAI/.
+
 ## Resolución de problemas
 
 - Si tras más de cinco minutos desde el inicio la aplicación muestra la interfaz morada sin más información, o parece no funcionar, es probable que esté funcionando pero el BackEnd no haya establecido bien la comunicación con el FrontEnd. Simplemente hay que recargar el FrontEnd.
   - **En MacOS** pulsa `cmd + R`.
   - **En Windows** pulsa `ctrl + R`.
+- Si al abrir la aplicación en Windows siempre te solicita instalar Npcap, SecurAI no está detectando que ya está instalado.
+  - No hay problema, puedes omitir la instalación, SecurAI funcionará con normalidad. Puedes comprobar que al intentar instalar Npcap por segunda vez, el mismo instalador te dice que ya está instalado.
 
 ## Contacto
 
