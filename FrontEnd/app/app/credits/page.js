@@ -53,7 +53,7 @@ export default function CreditsPage() {
             A mi familia por su paciencia y motivación durante este proyecto, y durante todo mi aprendizaje en general.
           </li>
           <li>
-            Y por último a los amigos que hice durante esta etapa de mi vida, ya que sin ellos habría sido aguantar hasta el final de la carrera.
+            Y por último a los amigos que hice durante esta etapa de mi vida, ya que sin ellos habría sido imposible aguantar hasta el final de la carrera.
           </li>
         </ul>
       </div>
