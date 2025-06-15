@@ -22,7 +22,7 @@ export default function CreditsPage() {
           <strong>Autor:</strong> Álvaro Valencia Villalón
         </p>
         <p className="text-lg text-textG2 mb-2">
-          <strong>Proyecto:</strong> Trabajo Fin de Grado en Ingeniería Informática
+          <strong>Proyecto:</strong> Trabajo Fin de Grado en Ingeniería del Software
         </p>
         <p className="text-lg text-textG2 mb-2">
           <strong>Universidad:</strong> Universidad de Málaga (UMA)
@@ -50,7 +50,10 @@ export default function CreditsPage() {
             A la comunidad de código abierto por proporcionar herramientas y recursos invaluables.
           </li>
           <li>
-            A mi familia y amigos por su paciencia y motivación durante este proyecto.
+            A mi familia por su paciencia y motivación durante este proyecto, y durante todo mi aprendizaje en general.
+          </li>
+          <li>
+            Y por último a los amigos que hice durante esta etapa de mi vida, ya que sin ellos habría sido aguantar hasta el final de la carrera.
           </li>
         </ul>
       </div>

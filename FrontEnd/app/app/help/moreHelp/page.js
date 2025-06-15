@@ -36,8 +36,8 @@ export default function moduleHelp() {
                     rel="noopener noreferrer" 
                     style={{textDecoration: 'underline', marginLeft: '4px' }}
                 >
-                    la última versión.
-                </a>. <br />
+                    la última versión
+                </a>.<br />
                 La última versión siempre será la que tenga mejores funciones, y un funcionamiento más pulido. Recuerda que SecurAI es un proyecto open-source de recursos limitados.
             </AccordionContent>
           </AccordionItem>

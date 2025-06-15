@@ -50,7 +50,7 @@ Es normal que la aplicación tarde un tiempo considerable en abrise, ya que tien
 Recomendamos la lectura del manual de usuario para manejar SecurAI correctamente. Esta está disponible en el repositorio [en español](./User%20Guide/Español.pdf) y [en inglés](./User%20Guide/English.pdf).
 
 - **Si usas MacOS** descarga el archivo .dmg de la [release más reciente](https://github.com/Valeaal/SecurAI/releases/latest) e instálalo como cualquier aplicación de Mac. Como es común en MacOS, el sistema avisará de que no ha podido comprobar la seguridad de la aplicación. Tendrás que confiar en ella desde *Ajustes del Sistema > Privacidad y Seguridad > Abrir Igualmente* en el apartado de Seguridad para poder abrirla. Es también posible que se solicite el acceso a la carpeta Documentos, acéptelo.
-- **Si usas Windows** descarga el archivo .exe de la [release más reciente](https://github.com/Valeaal/SecurAI/releases/latest) e instálalo. Si no tienes instalado [Npcap](https://wiki.wireshark.org/NPcap), el instalador de SecurAI te pedirá instalarlo, solo tendrás que seguir los pasos indicados y seguir la configuración recomendada, no tienes que instalarlo manualmente. Es probable que salga un aviso de SmartScreen de Microsoft Defender, puedes pulsar *Más Información > Ejecutar de todas formas* para continuar el proceso. Es también posible que el firewall de Windows pregunte sobre si permite ejecutar Python y Node.js, acéptelo.
+- **Si usas Windows** descarga el archivo .exe de la [release más reciente](https://github.com/Valeaal/SecurAI/releases/latest) e instálalo. Si no tienes instalado [Npcap](https://wiki.wireshark.org/NPcap), el instalador de SecurAI te pedirá instalarlo, solo tendrás que seguir los pasos indicados y seguir la configuración recomendada, no tienes que instalarlo manualmente. Es probable que salga un aviso de SmartScreen de Microsoft Defender, puedes pulsar *Más Información > Ejecutar de todas formas* para continuar el proceso. Es también posible que el firewall de Windows pregunte sobre si permite ejecutar Python y Node.js, acéptalo.
 
 Puedes confiar en el proyecto y, si lo deseas, puedes observar su código fuente por supuesto.
 
@@ -85,8 +85,8 @@ Si el desarrollador quiere ver los logs que genera la aplicación, puede hacerlo
 
 Los logs se almacenan en la ruta determinada por app.getPath('logs'), que es compatible tanto con Windows como con macOS:
 
-- En Windows: La ruta típicamente es С:\Users\Usuario\AppData\Roaming\SecurAI\logs.
-- En MacOS: La ruta típicamente es /Users/Usuario/Library/Logs/SecurAI/.
+- **En Windows:** La ruta típicamente es С:\Users\Usuario\AppData\Roaming\SecurAI\logs.
+- **En MacOS:** La ruta típicamente es /Users/Usuario/Library/Logs/SecurAI/.
 
 ## Resolución de problemas
 
